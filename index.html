@@ -113,46 +113,41 @@
 
 <script>
   const tg = window.Telegram.WebApp;
-  tg.ready();
-  const CURRENCY_ICON = "🪙";
+tg.ready();
+const CURRENCY_ICON = "🪙";
 const CURRENCY_NAME = "₽";
 
-  // элементы интерфейса
-  const usernameEl = document.getElementById("username");
-  const balanceEl = document.querySelector(".balance");
-  const bonusBtn = document.getElementById("bonusBtn");
-
-  // пользователь
-  let userId = "guest";
-
-  if (tg.initDataUnsafe?.user) {
-    userId = tg.initDataUnsafe.user.id;
-    usernameEl.innerText = tg.initDataUnsafe.user.first_name;
-  }
-
-  // ключи хранилища
-  const balanceKey = "balance_" + userId;
-  const bonusTimeKey = "bonus_time_" + userId;
-
-  // баланс
-  let balance = localStorage.getItem(balanceKey);
-  if (!balance) {
-    balance = 1000;
-    localStorage.setItem(balanceKey, balance);
-  }
-
-  balance = parseInt(balance);
-  balanceEl.innerText = CURRENCY_ICON + " " + balance + " " + CURRENCY_NAME;
-
-  // бонус
-  const bonusModal = document.getElementById("bonusModal");
+// элементы интерфейса
+const usernameEl = document.getElementById("username");
+const balanceEl = document.querySelector(".balance");
+const bonusBtn = document.getElementById("bonusBtn");
+const bonusModal = document.getElementById("bonusModal");
 const wheel = document.getElementById("wheel");
 const spinBtn = document.getElementById("spinBtn");
 const bonusInfo = document.getElementById("bonusInfo");
 
-const BONUS_COOLDOWN = 24 * 60 * 60 * 1000;
+// пользователь
+let userId = "guest";
+if (tg.initDataUnsafe?.user) {
+  userId = tg.initDataUnsafe.user.id;
+  usernameEl.innerText = tg.initDataUnsafe.user.first_name;
+}
 
-// призы
+// ключи хранилища
+const balanceKey = "balance_" + userId;
+const bonusTimeKey = "bonus_time_" + userId;
+
+// баланс
+let balance = localStorage.getItem(balanceKey);
+if (!balance) {
+  balance = 1000;
+  localStorage.setItem(balanceKey, balance);
+}
+balance = parseInt(balance);
+balanceEl.innerText = CURRENCY_ICON + " " + balance + " " + CURRENCY_NAME;
+
+// бонус
+const BONUS_COOLDOWN = 24 * 60 * 60 * 1000; // 24 часа
 const rewards = [5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000];
 
 function formatTime(ms) {
@@ -176,28 +171,24 @@ bonusBtn.addEventListener("click", () => {
 });
 
 spinBtn.addEventListener("click", () => {
-  spinBtn.disabled = true; // блокируем кнопку, пока крутится колесо
+  spinBtn.disabled = true; // блокируем кнопку
 
-  const reward = rewards[Math.floor(Math.random() * rewards.length)]; // случайный приз
+  const reward = rewards[Math.floor(Math.random() * rewards.length)];
   const spins = Math.floor(Math.random() * 4) + 4; // 4–7 оборотов
-  const deg = spins * 360 + Math.floor(Math.random() * 360); // случайный угол поворота
+  const deg = spins * 360 + Math.floor(Math.random() * 360);
 
   wheel.style.transform = `rotate(${deg}deg)`; // крутим колесо
 
-  // через 4 секунды показываем результат
   setTimeout(() => {
     balance += reward;
     localStorage.setItem(balanceKey, balance);
     localStorage.setItem(bonusTimeKey, Date.now());
 
     balanceEl.innerText = CURRENCY_ICON + " " + balance + " " + CURRENCY_NAME;
-
     bonusInfo.innerText = `🎉 Ты выиграл ${reward} ${CURRENCY_NAME}`;
     spinBtn.disabled = false; // разблокируем кнопку
   }, 4000);
 });
-
-  });
 </script>
 <div id="bonusModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.8); z-index:10; align-items:center; justify-content:center;">
   <div style="background:#12121a; padding:20px; border-radius:16px; text-align:center; width:300px;">
