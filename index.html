@@ -145,14 +145,56 @@ const CURRENCY_NAME = "₽";
   balanceEl.innerText = CURRENCY_ICON + " " + balance + " " + CURRENCY_NAME;
 
   // бонус
-  bonusBtn.addEventListener("click", () => {
-    const now = Date.now();
-    const lastBonus = localStorage.getItem(bonusTimeKey);
+  const bonusModal = document.getElementById("bonusModal");
+const wheel = document.getElementById("wheel");
+const spinBtn = document.getElementById("spinBtn");
+const bonusInfo = document.getElementById("bonusInfo");
 
-    if (lastBonus && now - lastBonus < 24 * 60 * 60 * 1000) {
-      alert("⏳ Бонус уже получен. Приходи позже!");
-      return;
-    }
+const BONUS_COOLDOWN = 24 * 60 * 60 * 1000;
+
+// призы
+const rewards = [5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000];
+
+function formatTime(ms) {
+  const h = Math.floor(ms / 3600000);
+  const m = Math.floor((ms % 3600000) / 60000);
+  return `${h} ч ${m} мин`;
+}
+
+bonusBtn.addEventListener("click", () => {
+  const lastBonus = localStorage.getItem(bonusTimeKey);
+  const now = Date.now();
+
+  if (lastBonus && now - lastBonus < BONUS_COOLDOWN) {
+    const left = BONUS_COOLDOWN - (now - lastBonus);
+    alert("⏳ Ежедневный бонус будет доступен через " + formatTime(left));
+    return;
+  }
+
+  bonusModal.style.display = "flex";
+  bonusInfo.innerText = "Крути колесо и получи приз!";
+});
+
+spinBtn.addEventListener("click", () => {
+  spinBtn.disabled = true;
+
+  const reward = rewards[Math.floor(Math.random() * rewards.length)];
+  const spins = Math.floor(Math.random() * 4) + 4; // 4–7 оборотов
+  const deg = spins * 360 + Math.floor(Math.random() * 360);
+
+  wheel.style.transform = `rotate(${deg}deg)`;
+
+  setTimeout(() => {
+    balance += reward;
+    localStorage.setItem(balanceKey, balance);
+    localStorage.setItem(bonusTimeKey, Date.now());
+
+    balanceEl.innerText = CURRENCY_ICON + " " + balance + " " + CURRENCY_NAME;
+
+    bonusInfo.innerText = `🎉 Ты выиграл ${reward} ${CURRENCY_NAME}`;
+    spinBtn.disabled = false;
+  }, 4000);
+});
 
     const reward = Math.floor(Math.random() * 200) + 50; // 50–250
     balance += reward;
@@ -164,6 +206,38 @@ const CURRENCY_NAME = "₽";
     alert("🎉 Ты получил +" + reward + " " + CURRENCY_NAME);
   });
 </script>
+<div id="bonusModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.8); z-index:10; align-items:center; justify-content:center;">
+  <div style="background:#12121a; padding:20px; border-radius:16px; text-align:center; width:300px;">
+    <h3>🎡 Колесо фортуны</h3>
 
+    <div id="wheel" style="
+      width:200px;
+      height:200px;
+      margin:20px auto;
+      border-radius:50%;
+      border:8px solid #333;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:22px;
+      transition: transform 4s cubic-bezier(.17,.67,.14,1);
+    ">
+      🪙
+    </div>
+
+    <button id="spinBtn" style="
+      padding:10px 20px;
+      border:none;
+      border-radius:10px;
+      background:#ffb703;
+      font-weight:bold;
+      cursor:pointer;
+    ">
+      Крутить
+    </button>
+
+    <div id="bonusInfo" style="margin-top:10px; font-size:14px; opacity:.8;"></div>
+  </div>
+</div>
 </body>
 </html>
