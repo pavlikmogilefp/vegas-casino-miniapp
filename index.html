@@ -200,31 +200,17 @@ function formatTime(ms) {
 }
 
 bonusBtn.addEventListener("click", () => {
-  const spinSound = document.getElementById("spinSound");
+  // const lastBonus = localStorage.getItem(bonusTimeKey);
+  // const now = Date.now();
 
-spinBtn.addEventListener("click", () => {
-  spinBtn.disabled = true;
+  // if (lastBonus && now - lastBonus < BONUS_COOLDOWN) {
+  //   const left = BONUS_COOLDOWN - (now - lastBonus);
+  //   alert("⏳ Ежедневный бонус будет доступен через " + formatTime(left));
+  //   return;
+  // }
 
-  // включаем звук вращения
-  spinSound.currentTime = 0;
-  spinSound.play();
-
-  // случайный приз
-  const reward = rewards[Math.floor(Math.random() * rewards.length)];
-  const spins = Math.floor(Math.random() * 5) + 5; // 5–9 полных оборотов
-  const deg = spins * 360 + Math.floor(Math.random() * 360); // угол поворота
-
-  wheel.style.transform = `rotate(${deg}deg)`; // крутим колесо
-
-  setTimeout(() => {
-    balance += reward;
-    localStorage.setItem(balanceKey, balance);
-    localStorage.setItem(bonusTimeKey, Date.now());
-
-    balanceEl.innerText = CURRENCY_ICON + " " + balance + " " + CURRENCY_NAME;
-    bonusInfo.innerText = `🎉 Ты выиграл ${reward} ${CURRENCY_NAME}`;
-    spinBtn.disabled = false;
-  }, 4000);
+  bonusModal.style.display = "flex";
+  bonusInfo.innerText = "Крути колесо и получи приз!";
 });
   const lastBonus = localStorage.getItem(bonusTimeKey);
   const now = Date.now();
