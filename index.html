@@ -235,16 +235,24 @@ bonusBtn.addEventListener("click", () => {
 spinBtn.addEventListener("click", () => {
   spinBtn.disabled = true;
 
-  // проигрываем звук
+  // звук
   const spinSound = document.getElementById("spinSound");
   spinSound.currentTime = 0;
   spinSound.play();
+
+  // СБРОС ПОВОРОТА
+  wheel.style.transition = "none";
+  wheel.style.transform = "rotate(0deg)";
 
   const reward = rewards[Math.floor(Math.random() * rewards.length)];
   const spins = Math.floor(Math.random() * 4) + 4;
   const deg = spins * 360 + Math.floor(Math.random() * 360);
 
-  wheel.style.transform = `rotate(${deg}deg)`;
+  // ЗАПУСК ВРАЩЕНИЯ
+  setTimeout(() => {
+    wheel.style.transition = "transform 4s cubic-bezier(.17,.67,.14,1)";
+    wheel.style.transform = `rotate(${deg}deg)`;
+  }, 50);
 
   setTimeout(() => {
     balance += reward;
