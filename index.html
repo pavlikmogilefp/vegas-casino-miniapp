@@ -200,15 +200,6 @@ function formatTime(ms) {
 }
 
 bonusBtn.addEventListener("click", () => {
-  // const lastBonus = localStorage.getItem(bonusTimeKey);
-  // const now = Date.now();
-
-  // if (lastBonus && now - lastBonus < BONUS_COOLDOWN) {
-  //   const left = BONUS_COOLDOWN - (now - lastBonus);
-  //   alert("⏳ Ежедневный бонус будет доступен через " + formatTime(left));
-  //   return;
-  // }
-
   bonusModal.style.display = "flex";
   bonusInfo.innerText = "Крути колесо и получи приз!";
 });
@@ -226,13 +217,18 @@ bonusBtn.addEventListener("click", () => {
 });
 
 spinBtn.addEventListener("click", () => {
-  spinBtn.disabled = true; // блокируем кнопку
+  spinBtn.disabled = true;
+
+  // проигрываем звук
+  const spinSound = document.getElementById("spinSound");
+  spinSound.currentTime = 0;
+  spinSound.play();
 
   const reward = rewards[Math.floor(Math.random() * rewards.length)];
-  const spins = Math.floor(Math.random() * 4) + 4; // 4–7 оборотов
+  const spins = Math.floor(Math.random() * 4) + 4;
   const deg = spins * 360 + Math.floor(Math.random() * 360);
 
-  wheel.style.transform = `rotate(${deg}deg)`; // крутим колесо
+  wheel.style.transform = `rotate(${deg}deg)`;
 
   setTimeout(() => {
     balance += reward;
@@ -241,7 +237,7 @@ spinBtn.addEventListener("click", () => {
 
     balanceEl.innerText = CURRENCY_ICON + " " + balance + " " + CURRENCY_NAME;
     bonusInfo.innerText = `🎉 Ты выиграл ${reward} ${CURRENCY_NAME}`;
-    spinBtn.disabled = false; // разблокируем кнопку
+    spinBtn.disabled = false;
   }, 4000);
 });
 </script>
