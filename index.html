@@ -112,23 +112,29 @@
 </div>
 
 <div id="bonusModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.8); z-index:10; align-items:center; justify-content:center;">
-  <div style="background:#12121a; padding:20px; border-radius:16px; text-align:center; width:300px;">
+  <div style="background:#12121a; padding:20px; border-radius:16px; text-align:center; width:320px; position:relative;">
     <h3>🎡 Колесо фортуны</h3>
 
-    <div id="wheel" style="
-      width:200px;
-      height:200px;
-      margin:20px auto;
-      border-radius:50%;
-      border:8px solid #333;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:22px;
-      transition: transform 4s cubic-bezier(.17,.67,.14,1);
-    ">
-      🪙
-    </div>
+    <!-- Стрелка -->
+    <div id="arrow" style="
+      width: 0;
+      height: 0;
+      border-left: 20px solid transparent;
+      border-right: 20px solid transparent;
+      border-bottom: 30px solid #ff0000;
+      margin: 0 auto -10px auto;
+      z-index: 2;
+      position: relative;
+    "></div>
+
+    <!-- Колесо (твоя картинка) -->
+    <img id="wheel" src="wheel.jpg" style="
+  width: 300px;
+  height: 300px;
+  display: block;
+  margin: 0 auto;
+  transition: transform 4s cubic-bezier(.17,.67,.14,1);
+">
 
     <button id="spinBtn" style="
       padding:10px 20px;
@@ -137,11 +143,13 @@
       background:#ffb703;
       font-weight:bold;
       cursor:pointer;
-    ">
-      Крутить
-    </button>
+      margin-top:15px;
+    ">Крутить</button>
 
     <div id="bonusInfo" style="margin-top:10px; font-size:14px; opacity:.8;"></div>
+
+    <!-- Аудио -->
+    <audio id="spinSound" src="spin.mp3.mp3"></audio>
   </div>
 </div>
 
@@ -192,6 +200,32 @@ function formatTime(ms) {
 }
 
 bonusBtn.addEventListener("click", () => {
+  const spinSound = document.getElementById("spinSound");
+
+spinBtn.addEventListener("click", () => {
+  spinBtn.disabled = true;
+
+  // включаем звук вращения
+  spinSound.currentTime = 0;
+  spinSound.play();
+
+  // случайный приз
+  const reward = rewards[Math.floor(Math.random() * rewards.length)];
+  const spins = Math.floor(Math.random() * 5) + 5; // 5–9 полных оборотов
+  const deg = spins * 360 + Math.floor(Math.random() * 360); // угол поворота
+
+  wheel.style.transform = `rotate(${deg}deg)`; // крутим колесо
+
+  setTimeout(() => {
+    balance += reward;
+    localStorage.setItem(balanceKey, balance);
+    localStorage.setItem(bonusTimeKey, Date.now());
+
+    balanceEl.innerText = CURRENCY_ICON + " " + balance + " " + CURRENCY_NAME;
+    bonusInfo.innerText = `🎉 Ты выиграл ${reward} ${CURRENCY_NAME}`;
+    spinBtn.disabled = false;
+  }, 4000);
+});
   const lastBonus = localStorage.getItem(bonusTimeKey);
   const now = Date.now();
 
