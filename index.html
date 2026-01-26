@@ -201,6 +201,16 @@ function formatTime(ms) {
 }
 
 bonusBtn.addEventListener("click", () => {
+  const lastBonus = localStorage.getItem(bonusTimeKey);
+  const now = Date.now();
+
+  // Проверка cooldown — можно закомментить для теста
+  // if (lastBonus && now - lastBonus < BONUS_COOLDOWN) {
+  //   const left = BONUS_COOLDOWN - (now - lastBonus);
+  //   alert("⏳ Ежедневный бонус будет доступен через " + formatTime(left));
+  //   return;
+  // }
+
   bonusModal.style.display = "flex";
   bonusInfo.innerText = "Крути колесо и получи приз!";
 });
