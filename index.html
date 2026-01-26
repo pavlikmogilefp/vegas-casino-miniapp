@@ -96,7 +96,7 @@
   <div class="balance">💎 1 250</div>
 </div>
 
-<div class="live">🔥 Player123 выиграл 320 💎</div>
+<div class="live">🔥 Player123 выиграл 320 🪙 ₽</div>
 
 <div class="games">
   <div class="game"><span>🚀</span>Crash</div>
@@ -114,6 +114,8 @@
 <script>
   const tg = window.Telegram.WebApp;
   tg.ready();
+  const CURRENCY_ICON = "🪙";
+const CURRENCY_NAME = "₽";
 
   // элементы интерфейса
   const usernameEl = document.getElementById("username");
@@ -140,7 +142,7 @@
   }
 
   balance = parseInt(balance);
-  balanceEl.innerText = "💎 " + balance;
+  balanceEl.innerText = CURRENCY_ICON + " " + balance + " " + CURRENCY_NAME;
 
   // бонус
   bonusBtn.addEventListener("click", () => {
@@ -159,7 +161,7 @@
     localStorage.setItem(bonusTimeKey, now);
 
     balanceEl.innerText = "💎 " + balance;
-    alert("🎉 Ты получил +" + reward + " 💎");
+    alert("🎉 Ты получил +" + reward + " " + CURRENCY_NAME);
   });
 </script>
 
