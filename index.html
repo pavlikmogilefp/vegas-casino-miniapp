@@ -134,24 +134,27 @@ body {
     <h3>🎡 Колесо фортуны</h3>
 
     <!-- Стрелка -->
-    <div style="
-      width:0;
-      height:0;
-      border-left:20px solid transparent;
-      border-right:20px solid transparent;
-      border-bottom:30px solid #ff0000;
-      margin:0 auto -10px auto;
-    "></div>
+    <div id="arrow" style="
+  width: 0;
+  height: 0;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-top: 40px solid #ff0000;
+  margin: 0 auto -20px auto;
+  z-index: 2;
+  position: relative;
+"></div>
 
     <!-- Колесо -->
     <img id="wheel" src="wheel.JPG" style="
-      width:300px;
-      height:300px;
-      display:block;
-      margin:0 auto;
-      border-radius:50%;
-      transition: transform 4s cubic-bezier(.17,.67,.14,1);
-    ">
+  width: 280px; /* чуть меньше чем контейнер */
+  height: 280px;
+  display: block;
+  margin: 0 auto;
+  border-radius: 50%;
+  overflow: hidden; /* на всякий случай */
+  transition: transform 4s cubic-bezier(.17,.67,.14,1);
+">
 
     <button id="spinBtn" style="
       padding:10px 20px;
