@@ -1,91 +1,92 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Vegas Casino</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<meta charset="UTF-8">
+<title>Vegas Casino</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-  <style>
-    body {
-      margin: 0;
-      background: #0b0b0f;
-      color: #fff;
-      font-family: Arial, sans-serif;
-    }
+<style>
+body {
+  margin: 0;
+  background: #0b0b0f;
+  color: #fff;
+  font-family: Arial, sans-serif;
+}
 
-    .top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px;
-      background: #12121a;
-    }
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: #12121a;
+}
 
-    .user {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+.user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
-    .avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: #333;
-    }
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #333;
+}
 
-    .balance {
-      background: #1e1e2e;
-      padding: 6px 10px;
-      border-radius: 10px;
-      font-weight: bold;
-    }
+.balance {
+  background: #1e1e2e;
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-weight: bold;
+}
 
-    .live {
-      background: #151521;
-      padding: 10px;
-      font-size: 14px;
-    }
+.live {
+  background: #151521;
+  padding: 10px;
+  font-size: 14px;
+}
 
-    .games {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      padding: 12px;
-    }
+.games {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 12px;
+}
 
-    .game {
-      background: linear-gradient(135deg, #1f1f3a, #14142a);
-      border-radius: 14px;
-      padding: 20px;
-      text-align: center;
-      font-size: 16px;
-      cursor: pointer;
-    }
+.game {
+  background: linear-gradient(135deg, #1f1f3a, #14142a);
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+  font-size: 16px;
+  cursor: pointer;
+}
 
-    .game span {
-      font-size: 28px;
-      display: block;
-      margin-bottom: 8px;
-    }
+.game span {
+  font-size: 28px;
+  display: block;
+  margin-bottom: 8px;
+}
 
-    .bottom {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      background: #12121a;
-      display: flex;
-      justify-content: space-around;
-      padding: 10px 0;
-    }
+.bottom {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: #12121a;
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0;
+}
 
-    .bottom div {
-      font-size: 14px;
-      opacity: 0.8;
-    }
-  </style>
+.bottom div {
+  font-size: 14px;
+  opacity: 0.8;
+}
+</style>
 </head>
+
 <body>
 
 <div class="top">
@@ -114,7 +115,7 @@
 <!-- Модальное окно бонуса -->
 <div id="bonusModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.8); z-index:10; align-items:center; justify-content:center;">
   <div style="background:#12121a; padding:20px; border-radius:16px; text-align:center; width:320px; position:relative;">
-    
+
     <!-- Кнопка закрыть -->
     <button id="closeBonus" style="
       position: absolute;
@@ -133,24 +134,22 @@
     <h3>🎡 Колесо фортуны</h3>
 
     <!-- Стрелка -->
-    <div id="arrow" style="
-      width: 0;
-      height: 0;
-      border-left: 20px solid transparent;
-      border-right: 20px solid transparent;
-      border-bottom: 30px solid #ff0000;
-      margin: 0 auto -10px auto;
-      z-index: 2;
-      position: relative;
+    <div style="
+      width:0;
+      height:0;
+      border-left:20px solid transparent;
+      border-right:20px solid transparent;
+      border-bottom:30px solid #ff0000;
+      margin:0 auto -10px auto;
     "></div>
 
     <!-- Колесо -->
     <img id="wheel" src="wheel.JPG" style="
-      width: 300px;
-      height: 300px;
-      display: block;
-      margin: 0 auto;
-      border-radius: 50%;
+      width:300px;
+      height:300px;
+      display:block;
+      margin:0 auto;
+      border-radius:50%;
       transition: transform 4s cubic-bezier(.17,.67,.14,1);
     ">
 
@@ -172,99 +171,57 @@
 </div>
 
 <script>
-  const tg = window.Telegram.WebApp;
-tg.ready();
-  tg.expand(); // разворачивает mini app на весь экран
-const CURRENCY_ICON = "🪙";
-const CURRENCY_NAME = "₽";
-
-// элементы интерфейса
 const usernameEl = document.getElementById("username");
 const balanceEl = document.querySelector(".balance");
 const bonusBtn = document.getElementById("bonusBtn");
 const bonusModal = document.getElementById("bonusModal");
+const closeBonus = document.getElementById("closeBonus");
 const wheel = document.getElementById("wheel");
 const spinBtn = document.getElementById("spinBtn");
 const bonusInfo = document.getElementById("bonusInfo");
+const spinSound = document.getElementById("spinSound");
 
-// пользователь
-let userId = "guest";
-if (tg.initDataUnsafe?.user) {
-  userId = tg.initDataUnsafe.user.id;
-  usernameEl.innerText = tg.initDataUnsafe.user.first_name;
-}
+const CURRENCY_ICON = "🪙";
+const CURRENCY_NAME = "₽";
+let balance = 1250;
 
-// ключи хранилища
-const balanceKey = "balance_" + userId;
-const bonusTimeKey = "bonus_time_" + userId;
-
-// баланс
-let balance = localStorage.getItem(balanceKey);
-if (!balance) {
-  balance = 1000;
-  localStorage.setItem(balanceKey, balance);
-}
-balance = parseInt(balance);
-balanceEl.innerText = CURRENCY_ICON + " " + balance + " " + CURRENCY_NAME;
-
-// бонус
-const BONUS_COOLDOWN = 24 * 60 * 60 * 1000; // 24 часа
-const rewards = [5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000];
-
-function formatTime(ms) {
-  const h = Math.floor(ms / 3600000);
-  const m = Math.floor((ms % 3600000) / 60000);
-  return `${h} ч ${m} мин`;
-}
-
-bonusBtn.addEventListener("click", () => {
-  const lastBonus = localStorage.getItem(bonusTimeKey);
-  const now = Date.now();
-
-  // Проверка cooldown — можно закомментить для теста
-  // if (lastBonus && now - lastBonus < BONUS_COOLDOWN) {
-  //   const left = BONUS_COOLDOWN - (now - lastBonus);
-  //   alert("⏳ Ежедневный бонус будет доступен через " + formatTime(left));
-  //   return;
-  // }
-
+// Кнопка открытия бонуса
+bonusBtn.onclick = () => {
   bonusModal.style.display = "flex";
   bonusInfo.innerText = "Крути колесо и получи приз!";
-});
+};
 
-spinBtn.addEventListener("click", () => {
+// Кнопка закрытия бонуса
+closeBonus.onclick = () => bonusModal.style.display = "none";
+
+// Кнопка спина
+spinBtn.onclick = () => {
   spinBtn.disabled = true;
-
-  // звук
-  const spinSound = document.getElementById("spinSound");
   spinSound.currentTime = 0;
   spinSound.play();
 
-  // СБРОС ПОВОРОТА
+  // Сбрасываем колесо
   wheel.style.transition = "none";
   wheel.style.transform = "rotate(0deg)";
 
-  const reward = rewards[Math.floor(Math.random() * rewards.length)];
-  const spins = Math.floor(Math.random() * 4) + 4;
-  const deg = spins * 360 + Math.floor(Math.random() * 360);
-
-  // ЗАПУСК ВРАЩЕНИЯ
+  // Немного ждем и запускаем вращение
   setTimeout(() => {
     wheel.style.transition = "transform 4s cubic-bezier(.17,.67,.14,1)";
+    const spins = Math.floor(Math.random() * 4) + 4;
+    const deg = spins * 360 + Math.floor(Math.random() * 360);
     wheel.style.transform = `rotate(${deg}deg)`;
+
+    // После анимации обновляем баланс
+    setTimeout(() => {
+      const reward = [5,10,25,50,100,250,500,1000][Math.floor(Math.random()*8)];
+      balance += reward;
+      balanceEl.innerText = `${CURRENCY_ICON} ${balance} ${CURRENCY_NAME}`;
+      bonusInfo.innerText = `🎉 Ты выиграл ${reward} ${CURRENCY_NAME}`;
+      spinBtn.disabled = false;
+    }, 4000);
   }, 50);
-
-  setTimeout(() => {
-    balance += reward;
-    localStorage.setItem(balanceKey, balance);
-    localStorage.setItem(bonusTimeKey, Date.now());
-
-    balanceEl.innerText = CURRENCY_ICON + " " + balance + " " + CURRENCY_NAME;
-    bonusInfo.innerText = `🎉 Ты выиграл ${reward} ${CURRENCY_NAME}`;
-    spinBtn.disabled = false;
-  }, 4000);
-});
+};
 </script>
-  
+
 </body>
 </html>
