@@ -111,8 +111,25 @@
   <div>👤 Профиль</div>
 </div>
 
+<!-- Модальное окно бонуса -->
 <div id="bonusModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.8); z-index:10; align-items:center; justify-content:center;">
   <div style="background:#12121a; padding:20px; border-radius:16px; text-align:center; width:320px; position:relative;">
+    
+    <!-- Кнопка закрыть -->
+    <button id="closeBonus" style="
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #ff0000;
+      border: none;
+      color: #fff;
+      font-weight: bold;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+    ">X</button>
+
     <h3>🎡 Колесо фортуны</h3>
 
     <!-- Стрелка -->
@@ -127,15 +144,15 @@
       position: relative;
     "></div>
 
-    <!-- Колесо (твоя картинка) -->
-    <img id="wheel.JPG" src="wheel.JPG" style="
-  width: 300px;
-  height: 300px;
-  display: block;
-  margin: 0 auto;
-  border-radius: 50%;
-  transition: transform 4s cubic-bezier(.17,.67,.14,1);
-">
+    <!-- Колесо -->
+    <img id="wheel" src="wheel.jpg" style="
+      width: 300px;
+      height: 300px;
+      display: block;
+      margin: 0 auto;
+      border-radius: 50%;
+      transition: transform 4s cubic-bezier(.17,.67,.14,1);
+    ">
 
     <button id="spinBtn" style="
       padding:10px 20px;
