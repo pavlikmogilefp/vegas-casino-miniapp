@@ -18,9 +18,15 @@
 
 body {
   margin: 0;
-  background: radial-gradient(circle at top, #1b0f33, #05030a);
-  color: var(--text-main);
-  font-family: 'Segoe UI', Arial, sans-serif;
+  background: radial-gradient(
+    circle at top,
+    #2a003f,
+    #120018,
+    #050008
+  );
+  color: #fff;
+  font-family: Arial, sans-serif;
+  overflow-x: hidden;
 }
 
 /* ---------- TOP ---------- */
@@ -88,6 +94,9 @@ body {
     inset 0 0 10px rgba(176, 38, 255, 0.15);
   transition: transform .2s, box-shadow .2s;
   animation: floatCard 4s ease-in-out infinite;
+  backdrop-filter: blur(6px);
+border: 1px solid rgba(176, 38, 255, 0.25);
+box-shadow: 0 0 25px rgba(176, 38, 255, 0.15);
 }
 
 .game:hover {
@@ -173,6 +182,29 @@ button:hover {
   }
   100% {
     text-shadow: 0 0 6px rgba(176, 38, 255, 0.6);
+  }
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: -50%;
+  background: linear-gradient(
+    120deg,
+    rgba(176, 38, 255, 0.12),
+    rgba(90, 0, 140, 0.08),
+    rgba(176, 38, 255, 0.12)
+  );
+  animation: neonMove 18s linear infinite;
+  z-index: -1;
+}
+
+@keyframes neonMove {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
 
