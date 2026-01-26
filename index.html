@@ -145,20 +145,21 @@ body {
       position: relative;
     "></div>
 
-    <!-- Контейнер колеса -->
+    <!-- Контейнер колеса с обрезкой -->
 <div style="
-  width: 280px;       /* чуть меньше, чем картинка */
+  width: 280px;      /* размер контейнера */
   height: 280px;
   border-radius: 50%; 
-  overflow: hidden;   /* прячет края */
+  overflow: hidden;  /* обрезаем края картинки */
   margin: 0 auto;
-  background: #12121a;
   position: relative;
+  background: #12121a;
 ">
   <img id="wheel" src="wheel.JPG" style="
-    width: 100%;
-    height: 100%;
+    width: 300px;      /* чуть больше контейнера, чтобы края точно обрезались */
+    height: 300px;
     display: block;
+    margin: -10px 0 0 -10px;  /* смещаем картинку в контейнер */
     transition: transform 4s cubic-bezier(.17,.67,.14,1);
   ">
 </div>
