@@ -176,14 +176,15 @@ bonusBtn.addEventListener("click", () => {
 });
 
 spinBtn.addEventListener("click", () => {
-  spinBtn.disabled = true;
+  spinBtn.disabled = true; // блокируем кнопку, пока крутится колесо
 
-  const reward = rewards[Math.floor(Math.random() * rewards.length)];
+  const reward = rewards[Math.floor(Math.random() * rewards.length)]; // случайный приз
   const spins = Math.floor(Math.random() * 4) + 4; // 4–7 оборотов
-  const deg = spins * 360 + Math.floor(Math.random() * 360);
+  const deg = spins * 360 + Math.floor(Math.random() * 360); // случайный угол поворота
 
-  wheel.style.transform = `rotate(${deg}deg)`;
+  wheel.style.transform = `rotate(${deg}deg)`; // крутим колесо
 
+  // через 4 секунды показываем результат
   setTimeout(() => {
     balance += reward;
     localStorage.setItem(balanceKey, balance);
@@ -192,18 +193,10 @@ spinBtn.addEventListener("click", () => {
     balanceEl.innerText = CURRENCY_ICON + " " + balance + " " + CURRENCY_NAME;
 
     bonusInfo.innerText = `🎉 Ты выиграл ${reward} ${CURRENCY_NAME}`;
-    spinBtn.disabled = false;
+    spinBtn.disabled = false; // разблокируем кнопку
   }, 4000);
 });
 
-    const reward = Math.floor(Math.random() * 200) + 50; // 50–250
-    balance += reward;
-
-    localStorage.setItem(balanceKey, balance);
-    localStorage.setItem(bonusTimeKey, now);
-
-    balanceEl.innerText = "💎 " + balance;
-    alert("🎉 Ты получил +" + reward + " " + CURRENCY_NAME);
   });
 </script>
 <div id="bonusModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.8); z-index:10; align-items:center; justify-content:center;">
