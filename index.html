@@ -111,6 +111,40 @@
   <div>👤 Профиль</div>
 </div>
 
+<div id="bonusModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.8); z-index:10; align-items:center; justify-content:center;">
+  <div style="background:#12121a; padding:20px; border-radius:16px; text-align:center; width:300px;">
+    <h3>🎡 Колесо фортуны</h3>
+
+    <div id="wheel" style="
+      width:200px;
+      height:200px;
+      margin:20px auto;
+      border-radius:50%;
+      border:8px solid #333;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:22px;
+      transition: transform 4s cubic-bezier(.17,.67,.14,1);
+    ">
+      🪙
+    </div>
+
+    <button id="spinBtn" style="
+      padding:10px 20px;
+      border:none;
+      border-radius:10px;
+      background:#ffb703;
+      font-weight:bold;
+      cursor:pointer;
+    ">
+      Крутить
+    </button>
+
+    <div id="bonusInfo" style="margin-top:10px; font-size:14px; opacity:.8;"></div>
+  </div>
+</div>
+
 <script>
   const tg = window.Telegram.WebApp;
 tg.ready();
@@ -190,38 +224,6 @@ spinBtn.addEventListener("click", () => {
   }, 4000);
 });
 </script>
-<div id="bonusModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.8); z-index:10; align-items:center; justify-content:center;">
-  <div style="background:#12121a; padding:20px; border-radius:16px; text-align:center; width:300px;">
-    <h3>🎡 Колесо фортуны</h3>
-
-    <div id="wheel" style="
-      width:200px;
-      height:200px;
-      margin:20px auto;
-      border-radius:50%;
-      border:8px solid #333;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:22px;
-      transition: transform 4s cubic-bezier(.17,.67,.14,1);
-    ">
-      🪙
-    </div>
-
-    <button id="spinBtn" style="
-      padding:10px 20px;
-      border:none;
-      border-radius:10px;
-      background:#ffb703;
-      font-weight:bold;
-      cursor:pointer;
-    ">
-      Крутить
-    </button>
-
-    <div id="bonusInfo" style="margin-top:10px; font-size:14px; opacity:.8;"></div>
-  </div>
-</div>
+  
 </body>
 </html>
