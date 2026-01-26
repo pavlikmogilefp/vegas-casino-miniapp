@@ -171,6 +171,10 @@ body {
 </div>
 
 <script>
+const tg = window.Telegram.WebApp;
+tg.ready();
+tg.expand();
+
 const usernameEl = document.getElementById("username");
 const balanceEl = document.querySelector(".balance");
 const bonusBtn = document.getElementById("bonusBtn");
@@ -183,43 +187,65 @@ const spinSound = document.getElementById("spinSound");
 
 const CURRENCY_ICON = "🪙";
 const CURRENCY_NAME = "₽";
-let balance = 1250;
 
-// Кнопка открытия бонуса
+// Получаем ID пользователя
+let userId = "guest";
+if (tg.initDataUnsafe?.user) {
+    userId = tg.initDataUnsafe.user.id;
+    usernameEl.innerText = tg.initDataUnsafe.user.first_name;
+}
+
+// Ключи в localStorage с привязкой к пользователю
+const balanceKey = "balance_" + userId;
+
+// Загружаем баланс
+let balance = localStorage.getItem(balanceKey);
+if (!balance) {
+    balance = 1000; // стартовый баланс
+    localStorage.setItem(balanceKey, balance);
+}
+balance = parseInt(balance);
+balanceEl.innerText = `${CURRENCY_ICON} ${balance} ${CURRENCY_NAME}`;
+
+// Открытие бонуса
 bonusBtn.onclick = () => {
-  bonusModal.style.display = "flex";
-  bonusInfo.innerText = "Крути колесо и получи приз!";
+    bonusModal.style.display = "flex";
+    bonusInfo.innerText = "Крути колесо и получи приз!";
 };
 
-// Кнопка закрытия бонуса
+// Закрытие бонуса
 closeBonus.onclick = () => bonusModal.style.display = "none";
 
-// Кнопка спина
+// Крутилка
 spinBtn.onclick = () => {
-  spinBtn.disabled = true;
-  spinSound.currentTime = 0;
-  spinSound.play();
+    spinBtn.disabled = true;
+    spinSound.currentTime = 0;
+    spinSound.play();
 
-  // Сбрасываем колесо
-  wheel.style.transition = "none";
-  wheel.style.transform = "rotate(0deg)";
+    // Сбрасываем колесо
+    wheel.style.transition = "none";
+    wheel.style.transform = "rotate(0deg)";
 
-  // Немного ждем и запускаем вращение
-  setTimeout(() => {
-    wheel.style.transition = "transform 4s cubic-bezier(.17,.67,.14,1)";
-    const spins = Math.floor(Math.random() * 4) + 4;
-    const deg = spins * 360 + Math.floor(Math.random() * 360);
-    wheel.style.transform = `rotate(${deg}deg)`;
-
-    // После анимации обновляем баланс
     setTimeout(() => {
-      const reward = [5,10,25,50,100,250,500,1000][Math.floor(Math.random()*8)];
-      balance += reward;
-      balanceEl.innerText = `${CURRENCY_ICON} ${balance} ${CURRENCY_NAME}`;
-      bonusInfo.innerText = `🎉 Ты выиграл ${reward} ${CURRENCY_NAME}`;
-      spinBtn.disabled = false;
-    }, 4000);
-  }, 50);
+        wheel.style.transition = "transform 4s cubic-bezier(.17,.67,.14,1)";
+        const spins = Math.floor(Math.random() * 4) + 4;
+        const deg = spins * 360 + Math.floor(Math.random() * 360);
+        wheel.style.transform = `rotate(${deg}deg)`;
+
+        // После анимации начисляем выигрыш
+        setTimeout(() => {
+            const rewards = [5,10,25,50,100,250,500,1000];
+            const reward = rewards[Math.floor(Math.random() * rewards.length)];
+            balance += reward;
+            balanceEl.innerText = `${CURRENCY_ICON} ${balance} ${CURRENCY_NAME}`;
+
+            // сохраняем баланс для этого пользователя
+            localStorage.setItem(balanceKey, balance);
+
+            bonusInfo.innerText = `🎉 Ты выиграл ${reward} ${CURRENCY_NAME}`;
+            spinBtn.disabled = false;
+        }, 4000);
+    }, 50);
 };
 </script>
 
