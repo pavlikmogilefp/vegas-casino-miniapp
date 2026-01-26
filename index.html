@@ -133,6 +133,7 @@
   height: 300px;
   display: block;
   margin: 0 auto;
+  border-radius: 50%;
   transition: transform 4s cubic-bezier(.17,.67,.14,1);
 ">
 
@@ -200,18 +201,6 @@ function formatTime(ms) {
 }
 
 bonusBtn.addEventListener("click", () => {
-  bonusModal.style.display = "flex";
-  bonusInfo.innerText = "Крути колесо и получи приз!";
-});
-  const lastBonus = localStorage.getItem(bonusTimeKey);
-  const now = Date.now();
-
-  if (lastBonus && now - lastBonus < BONUS_COOLDOWN) {
-    const left = BONUS_COOLDOWN - (now - lastBonus);
-    alert("⏳ Ежедневный бонус будет доступен через " + formatTime(left));
-    return;
-  }
-
   bonusModal.style.display = "flex";
   bonusInfo.innerText = "Крути колесо и получи приз!";
 });
