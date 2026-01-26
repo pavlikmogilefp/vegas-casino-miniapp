@@ -102,7 +102,7 @@
   <div class="game"><span>🚀</span>Crash</div>
   <div class="game"><span>🎰</span>Slots</div>
   <div class="game"><span>🎲</span>Dice</div>
-  <div class="game"><span>🎁</span>Bonus</div>
+  <div class="game" id="bonusBtn"><span>🎁</span>Bonus</div>
 </div>
 
 <div class="bottom">
@@ -137,6 +137,31 @@
   }
 
   balanceEl.innerText = "💎 " + balance;
+
+  <script>
+  const bonusBtn = document.getElementById("bonusBtn");
+
+  const bonusTimeKey = "bonus_time_" + userId;
+
+  bonusBtn.addEventListener("click", () => {
+    const now = Date.now();
+    const lastBonus = localStorage.getItem(bonusTimeKey);
+
+    if (lastBonus && now - lastBonus < 24 * 60 * 60 * 1000) {
+      alert("⏳ Бонус уже получен. Приходи позже!");
+      return;
+    }
+
+    const reward = Math.floor(Math.random() * 200) + 50; // 50–250
+    balance = parseInt(balance) + reward;
+
+    localStorage.setItem(balanceKey, balance);
+    localStorage.setItem(bonusTimeKey, now);
+
+    balanceEl.innerText = "💎 " + balance;
+    alert("🎉 Ты получил +" + reward + " 💎");
+  });
+</script>
 </script>
 
 </body>
