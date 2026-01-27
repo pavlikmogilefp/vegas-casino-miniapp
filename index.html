@@ -480,11 +480,11 @@ button:active {
   height: 0;
   border-left: 15px solid transparent;
   border-right: 15px solid transparent;
-  border-bottom: 50px solid #ff0000; /* стрелка вниз */
+  border-top: 50px solid #ff0000; /* стрелка вниз */
   position: absolute;
-  top: -25px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 50%;   /* центр по вертикали контейнера */
+  left: 50%;  /* центр по горизонтали */
+  transform: translate(-50%, -50%); /* центрирование */
   z-index: 10;
   filter: drop-shadow(0 0 6px #ff0000);
 }
