@@ -956,71 +956,47 @@ drawWheel();
 const homeScreen = document.getElementById("homeScreen");
 const slotsScreen = document.getElementById("slotsScreen");
 const openSlots = document.getElementById("openSlots");
-
-// открыть слоты
-openSlots.onclick = () => {
-  homeScreen.style.display = "none";
-  slotsScreen.style.display = "block";
-};
-
-const backHome = document.getElementById("backHome");
-
-backHome.onclick = () => {
-  slotsScreen.style.display = "none";
-  homeScreen.style.display = "block";
-};
-
-
-betInput.addEventListener("input", () => {
-  slotBetEl.innerText = `Ставка: ${betInput.value} ₽`;
-});
-
-// Баланс пользователя
-let balance = parseInt(localStorage.getItem('balance')) || 1250;
-
-// Элементы
+const betInput = document.getElementById('betInput');
 const slotBalanceEl = document.getElementById('slotBalance');
 const slotResultEl = document.getElementById('slotResult');
-const betInput = document.getElementById('betInput');
 const reels = document.querySelectorAll(".reel");
 
-// Функция обновления баланса
+// обновление баланса
 function updateSlotBalance() {
   slotBalanceEl.textContent = `Баланс: ${balance} ₽`;
 }
 
-// Начальное отображение
+// начальное отображение
 updateSlotBalance();
 
-// Кнопка крутить
+betInput.addEventListener("input", () => {
+  // можно добавить отображение ставки
+});
+
+// Кнопка крутить слоты
 document.getElementById("spinSlot").addEventListener("click", () => {
   const bet = parseInt(betInput.value);
   if (isNaN(bet) || bet <= 0) return alert("Введите корректную ставку!");
   if (bet > balance) return alert("Недостаточно средств!");
 
-  balance -= bet; // списываем ставку
+  balance -= bet;
   updateSlotBalance();
-  localStorage.setItem('balance', balance);
+  localStorage.setItem(balanceKey, balance);
 
-  // Генерируем случайные символы
   const symbols = ["🍒","🍋","🍊","🍉","⭐","💎"];
   reels.forEach(reel => {
     const sym = symbols[Math.floor(Math.random() * symbols.length)];
     reel.textContent = sym;
   });
 
-  // Логика выигрыша
   let multiplier = 0;
-  if (reels[0].textContent === reels[1].textContent && reels[1].textContent === reels[2].textContent) {
-    multiplier = 5; // три одинаковых
-  } else if (reels[0].textContent === reels[1].textContent || reels[1].textContent === reels[2].textContent) {
-    multiplier = 2; // два одинаковых
-  }
+  if (reels[0].textContent === reels[1].textContent && reels[1].textContent === reels[2].textContent) multiplier = 5;
+  else if (reels[0].textContent === reels[1].textContent || reels[1].textContent === reels[2].textContent) multiplier = 2;
 
   const win = bet * multiplier;
   balance += win;
   updateSlotBalance();
-  localStorage.setItem('balance', balance);
+  localStorage.setItem(balanceKey, balance);
 
   slotResultEl.textContent = win > 0 ? `🎉 Вы выиграли ${win} ₽!` : "😢 Попробуйте еще раз!";
 });
