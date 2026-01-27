@@ -7,1037 +7,185 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
-:root {
-  --bg-main: #0b0715;
-  --bg-card: rgba(35, 18, 70, 0.55);
-  --neon: #b026ff;
-  --neon-soft: #7b2cff;
-  --text-main: #ffffff;
-  --text-dim: #bfa8ff;
-}
-
 body {
   margin: 0;
-  background: radial-gradient(
-    circle at top,
-    #2a003f,
-    #120018,
-    #050008
-  );
+  background: radial-gradient(circle at top, #2a003f, #120018, #050008);
   color: #fff;
   font-family: Arial, sans-serif;
-  overflow-x: hidden;
 }
 
-
-
-/* ---------- TOP ---------- */
 .top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px;
-  background: linear-gradient(180deg, #1a0f33, #0b0715);
-  border-bottom: 1px solid rgba(176, 38, 255, 0.25);
-}
-
-.user {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.avatar {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--neon), var(--neon-soft));
-  box-shadow: 0 0 12px var(--neon);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px;
+  background:#0b0715;
 }
 
 .balance {
-  background: rgba(176, 38, 255, 0.15);
-  padding: 6px 14px;
-  border-radius: 14px;
-  font-weight: bold;
-  box-shadow: 0 0 10px rgba(176, 38, 255, 0.5);
-  animation: neonPulse 3s infinite;
-  animation: glowText 3s ease-in-out infinite;
+  background:rgba(176,38,255,.2);
+  padding:6px 14px;
+  border-radius:14px;
+  font-weight:bold;
 }
 
-/* ---------- LIVE ---------- */
-.live {
-  margin: 10px;
-  padding: 10px;
-  background: rgba(176, 38, 255, 0.08);
-  border-radius: 12px;
-  font-size: 14px;
-  box-shadow: inset 0 0 12px rgba(176, 38, 255, 0.25);
-}
-
-/* ---------- GAMES ---------- */
 .games {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
-  padding: 14px;
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:14px;
+  padding:14px;
 }
 
 .game {
-  background: var(--bg-card);
-  backdrop-filter: blur(12px);
-  border-radius: 18px;
-  padding: 22px;
-  text-align: center;
-  font-size: 16px;
-  cursor: pointer;
-  border: 1px solid rgba(176, 38, 255, 0.3);
-  box-shadow:
-    0 0 12px rgba(176, 38, 255, 0.35),
-    inset 0 0 10px rgba(176, 38, 255, 0.15);
-  transition: transform .2s, box-shadow .2s;
-  animation: floatCard 4s ease-in-out infinite;
-  backdrop-filter: blur(6px);
-border: 1px solid rgba(176, 38, 255, 0.25);
-box-shadow: 0 0 25px rgba(176, 38, 255, 0.15);
-animation: floatCard 5s ease-in-out infinite;
+  background:rgba(35,18,70,.6);
+  border-radius:18px;
+  padding:20px;
+  text-align:center;
+  cursor:pointer;
 }
 
-.game:hover {
-  transform: translateY(-4px) scale(1.05) rotate(-1deg);
-  box-shadow:
-    0 0 25px rgba(176, 38, 255, 0.9),
-    0 0 50px rgba(176, 38, 255, 0.5),
-    inset 0 0 20px rgba(176, 38, 255, 0.25);
-}
-
-.game span {
-  font-size: 30px;
-  display: block;
-  margin-bottom: 8px;
-  text-shadow: 0 0 10px var(--neon);
-}
-
-/* ---------- BOTTOM ---------- */
-.bottom {
-  position: fixed;       /* фиксируем внизу */
-  bottom: 0;             /* у самого низа */
-  left: 0;
-  width: 100%;
-  display: flex;
-  justify-content: space-around; /* равномерно распределяем кнопки */
-  align-items: center;
-  padding: 12px 0;
-  background: linear-gradient(180deg, #0b0715, #05030a);
-  border-top: 1px solid rgba(176, 38, 255, 0.25);
-  box-shadow: 0 -2px 15px rgba(176,38,255,0.3);
-  z-index: 100;
-}
-
-.bottom button {
-  background: linear-gradient(135deg, var(--neon), var(--neon-soft));
-  border: none;
-  border-radius: 14px;
-  padding: 8px 16px;
-  color: #fff;
-  font-weight: bold;
-  font-size: 14px;
-  box-shadow: 0 0 12px rgba(176, 38, 255, 0.6),
-              0 0 25px rgba(176, 38, 255, 0.4);
-  cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
-}
-
-.bottom button:hover {
-  transform: scale(1.1);
-  box-shadow: 0 0 18px rgba(176, 38, 255, 1),
-              0 0 35px rgba(176, 38, 255, 0.7);
-}
-
-.bottom button:active {
-  transform: scale(0.95);
-  box-shadow: 0 0 10px rgba(176, 38, 255, 0.8);
-}
-
-/* ---------- BUTTONS ---------- */
-button {
-  background: linear-gradient(135deg, var(--neon), var(--neon-soft));
-  border: none;
-  border-radius: 14px;
-  color: white;
-  font-weight: bold;
-  box-shadow: 0 0 16px rgba(176, 38, 255, 0.8);
-  transition: transform .15s, box-shadow .15s;
-}
-
-button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 24px rgba(176, 38, 255, 1);
-}
-
-/* ---------- NEON ANIMATIONS ---------- */
-
-@keyframes neonPulse {
-  0% {
-    box-shadow: 0 0 10px rgba(176, 38, 255, 0.6);
-  }
-  50% {
-    box-shadow: 0 0 22px rgba(176, 38, 255, 1);
-  }
-  100% {
-    box-shadow: 0 0 10px rgba(176, 38, 255, 0.6);
-  }
-}
-
-@keyframes floatCard {
-  0% {
-    transform: translateY(0) rotate(0deg);
-  }
-  25% {
-    transform: translateY(-3px) rotate(1deg);
-  }
-  50% {
-    transform: translateY(-6px) rotate(-1deg);
-  }
-  75% {
-    transform: translateY(-3px) rotate(1deg);
-  }
-  100% {
-    transform: translateY(0) rotate(0deg);
-  }
-}
-
-.game {
-  animation: floatCard 6s ease-in-out infinite;
-}
-
-@keyframes glowText {
-  0% {
-    text-shadow: 0 0 6px rgba(176, 38, 255, 0.6);
-  }
-  50% {
-    text-shadow: 0 0 14px rgba(176, 38, 255, 1);
-  }
-  100% {
-    text-shadow: 0 0 6px rgba(176, 38, 255, 0.6);
-  }
-}
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: -50%;
-  background: linear-gradient(
-    120deg,
-    rgba(176, 38, 255, 0.12),
-    rgba(90, 0, 140, 0.08),
-    rgba(176, 38, 255, 0.12)
-  );
-  animation: neonMove 18s linear infinite;
-  z-index: -1;
-}
-
-@keyframes neonMove {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.game span {
-  font-size: 30px;
-  display: block;
-  margin-bottom: 8px;
-  text-shadow: 0 0 10px var(--neon);
-  animation: neonTextGlow 2s ease-in-out infinite;
-}
-
-@keyframes neonTextGlow {
-  0%, 100% { text-shadow: 0 0 8px var(--neon); }
-  50% { text-shadow: 0 0 20px var(--neon-soft); }
-}
-
-/* ---------- NEON BACKGROUND LINES ---------- */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: radial-gradient(circle at center, rgba(176,38,255,0.05) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: -2;
-}
-
-.neon-lines {
-  position: fixed;
-  inset: 0;
-  overflow: hidden;
-  z-index: -3;
-}
-
-.neon-lines span {
-  position: absolute;
-  display: block;
-  width: 2px;
-  height: 120%;
-  background: linear-gradient(to bottom, rgba(176,38,255,0.1), rgba(123,44,255,0.3), rgba(176,38,255,0.1));
-  animation: neonMoveLines linear infinite;
-}
-
-@keyframes neonMoveLines {
-  0% {
-    transform: translateY(-120%);
-  }
-  100% {
-    transform: translateY(120%);
-  }
-}
-
-/* ---------- Динамический неоновый фон ---------- */
-.neon-lines {
-  position: fixed;
-  inset: 0;
-  overflow: hidden;
-  z-index: -3;
-  pointer-events: none;
-}
-
-.neon-lines span {
-  position: absolute;
-  display: block;
-  width: 2px;
-  height: 120%;
-  background: linear-gradient(
-    to bottom,
-    rgba(176,38,255,0.1),
-    rgba(123,44,255,0.3),
-    rgba(176,38,255,0.1)
-  );
-  animation: neonMove 15s linear infinite, neonGlow 3s ease-in-out infinite alternate;
-}
-
-@keyframes neonMove {
-  0% {
-    transform: translateY(-120%) translateX(0) rotate(0deg);
-  }
-  100% {
-    transform: translateY(120%) translateX(50px) rotate(5deg);
-  }
-}
-
-@keyframes neonGlow {
-  0% {
-    opacity: 0.2;
-    box-shadow: 0 0 4px rgba(176,38,255,0.2);
-  }
-  50% {
-    opacity: 0.7;
-    box-shadow: 0 0 12px rgba(176,38,255,0.7);
-  }
-  100% {
-    opacity: 0.2;
-    box-shadow: 0 0 4px rgba(176,38,255,0.2);
-  }
-}
-
-/* ---------- Парящие неоновые круги ---------- */
-.neon-circles {
-  position: fixed;
-  inset: 0;
-  overflow: hidden;
-  z-index: -2;
-  pointer-events: none;
-}
-
-.neon-circles span {
-  position: absolute;
-  display: block;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  background: rgba(176,38,255,0.15);
-  box-shadow: 0 0 20px rgba(176,38,255,0.6), 0 0 40px rgba(123,44,255,0.4);
-  animation: floatUp linear infinite, pulse 3s ease-in-out infinite alternate;
-  opacity: 0.7;
-}
-
-@keyframes floatUp {
-  0% {
-    transform: translateY(120vh) translateX(0) scale(0.5);
-  }
-  100% {
-    transform: translateY(-20vh) translateX(50px) scale(1);
-  }
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(0.8);
-    opacity: 0.4;
-    box-shadow: 0 0 10px rgba(176,38,255,0.4);
-  }
-  50% {
-    transform: scale(1.2);
-    opacity: 0.8;
-    box-shadow: 0 0 30px rgba(176,38,255,0.8);
-  }
-  100% {
-    transform: scale(0.8);
-    opacity: 0.4;
-    box-shadow: 0 0 10px rgba(176,38,255,0.4);
-  }
-}
-
-/* ---------- Игровые карточки с неоном ---------- */
-.game {
-  position: relative;
-  background: linear-gradient(145deg, rgba(35,18,70,0.6), rgba(35,18,70,0.8));
-  border: 1px solid rgba(176,38,255,0.3);
-  box-shadow:
-    0 0 15px rgba(176,38,255,0.4),
-    inset 0 0 10px rgba(176,38,255,0.15);
-  border-radius: 18px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  cursor: pointer;
-  overflow: hidden;
-}
-
-.game::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(60deg, rgba(176,38,255,0.2), rgba(123,44,255,0.2));
-  opacity: 0.6;
-  transform: scale(1.2);
-  filter: blur(12px);
-  transition: opacity 0.3s ease;
-  z-index: 0;
-  border-radius: 18px;
-}
-
-.game:hover::before {
-  opacity: 1;
-}
-
-.game span {
-  position: relative;
-  z-index: 1;
-  font-size: 34px;
-  display: block;
-  margin-bottom: 8px;
-  text-shadow: 0 0 12px rgba(176,38,255,0.9);
-  
-  .reel.win {
-  animation: winGlow 1s ease-in-out infinite alternate;
-}
-
-@keyframes winGlow {
-  0% { box-shadow: 0 0 15px #ffea00, 0 0 25px #ffea00; }
-  100% { box-shadow: 0 0 30px #ffd700, 0 0 45px #ffd700; }
-}
-  
-}
-
-/* ---------- Кнопки ---------- */
-button {
-  position: relative;
-  background: linear-gradient(135deg, #b026ff, #7b2cff);
-  border-radius: 14px;
-  border: none;
-  color: #fff;
-  font-weight: bold;
-  padding: 10px 20px;
-  box-shadow: 0 0 15px rgba(176,38,255,0.6);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-button:hover {
-  transform: scale(1.08);
-  box-shadow: 0 0 30px rgba(176,38,255,1);
-}
-
-button:active {
-  transform: scale(0.95);
-  box-shadow: 0 0 10px rgba(176,38,255,0.8);
-}
-
-/* ---------- Анимация появления карточек ---------- */
-@keyframes floatCard {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
-  100% { transform: translateY(0); }
-}
-
-@keyframes fadeInUp {
-  0% { opacity: 0; transform: translateY(20px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-
-/* Применяем анимацию к карточкам игр */
-.games .game {
-  animation: fadeInUp 0.6s ease forwards, floatCard 4s ease-in-out infinite;
-  opacity: 0; /* сначала скрываем для эффекта появления */
-}
-
-/* Добавляем задержку для красивого поочередного появления */
-.games .game:nth-child(1) { animation-delay: 0.1s; }
-.games .game:nth-child(2) { animation-delay: 0.3s; }
-.games .game:nth-child(3) { animation-delay: 0.5s; }
-.games .game:nth-child(4) { animation-delay: 0.7s; }
-
-/* ---------- Стрелка ---------- */
-#arrow {
-  width: 0;
-  height: 0;
-  border-left: 15px solid transparent;
-  border-right: 15px solid transparent;
-  border-top: 50px solid #ff0000; /* стрелка вниз */
-  position: absolute;
-  top: -25px;      /* чуть выше верхнего края колеса */
-  left: 50%;       /* по центру горизонтально */
-  transform: translateX(-50%); /* только по X, не смещаем по Y */
-  z-index: 10;
-  filter: drop-shadow(0 0 6px #ff0000);
-}
-
-/* ---------- Свет вокруг колеса ---------- */
-#wheel {
-  box-shadow: 0 0 20px #b026ff, 0 0 40px #7b2cff, 0 0 60px #b026ff50;
-  border-radius: 50%;
-  transition: transform 4s cubic-bezier(.17,.67,.14,1), box-shadow 0.3s;
-}
-
-#wheel.spin-glow {
-  box-shadow: 0 0 35px #b026ff, 0 0 70px #7b2cff, 0 0 100px #b026ff80;
-}
-
-/* --- Колесо фортуны --- */
-    #wheelCanvas {
-      border-radius: 50%;
-      box-shadow: 0 0 25px #b026ff, 0 0 50px #7b2cff, 0 0 80px #b026ff50;
-    }
-
-    #arrow {
-      filter: drop-shadow(0 0 6px #ff0000) drop-shadow(0 0 12px #ff4d4d);
-    }
-
-    #spinBtn {
-      background: linear-gradient(135deg, #b026ff, #7b2cff);
-      box-shadow: 0 0 20px #b026ff, 0 0 40px #7b2cff, 0 0 60px #b026ff80;
-      color: #fff;
-      font-weight: bold;
-      padding: 12px 25px;
-      border-radius: 14px;
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    #spinBtn:hover {
-      transform: scale(1.1);
-      box-shadow: 0 0 30px #b026ff, 0 0 60px #7b2cff, 0 0 90px #b026ff80;
-    }
-
-/* 🎰 Слот — Рамка и фон */
 #slots {
-  background: linear-gradient(145deg, #15001f, #0a0014);
-  border: 4px solid #b026ff;
-  border-radius: 24px;
-  padding: 18px;
-  box-shadow:
-    0 0 40px rgba(176,38,255,0.6),
-    inset 0 0 20px rgba(123,44,255,0.3);
+  max-width:360px;
+  margin:20px auto;
+  background:#120018;
+  border-radius:20px;
+  padding:20px;
+  text-align:center;
 }
 
-/* Рамка барабанов */
 #reels {
-  background: #0b0016;
-  border: 3px solid #7b2cff;
-  border-radius: 18px;
-  padding: 14px;
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin:12px 0;
 }
 
-/* Символы */
 .reel {
-  width: 90px;
-  height: 90px;
-  margin: 0 8px;
-  background: radial-gradient(circle at 30% 30%, #2c004c, #100020);
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 50px;
-  text-shadow:
-    0 0 10px #ff00ff,
-    0 0 20px rgba(176,38,255,0.8);
-  box-shadow:
-    inset 0 0 15px rgba(176,38,255,0.6),
-    0 0 20px rgba(123,44,255,0.6);
+  width:90px;
+  height:90px;
+  background:#1a0033;
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:48px;
 }
 
-#spinSlot {
-  margin-top: 14px;
-  background: linear-gradient(135deg, #7b2cff, #4e00ff);
-  padding: 14px 32px;
-  font-size: 18px;
-  font-weight: bold;
-  color: #fff;
-  border-radius: 16px;
-  box-shadow: 0 0 25px rgba(176,38,255,0.9),
-              0 0 45px rgba(123,44,255,0.9);
-  transition: transform 0.15s, box-shadow 0.15s;
+button {
+  background:linear-gradient(135deg,#b026ff,#7b2cff);
+  border:none;
+  border-radius:14px;
+  padding:10px 20px;
+  color:#fff;
+  font-weight:bold;
+  cursor:pointer;
 }
-
-#spinSlot:hover {
-  transform: scale(1.08);
-  box-shadow: 0 0 35px rgba(176,38,255,1),
-              0 0 60px rgba(123,44,255,1);
-}
-
-/* 🎰 Слот — контейнер и фон */
-    #slots {
-      background: linear-gradient(145deg, #15001f, #0a0014);
-      border: 4px solid #b026ff;
-      border-radius: 24px;
-      padding: 18px;
-      box-shadow:
-        0 0 40px rgba(176,38,255,0.6),
-        inset 0 0 20px rgba(123,44,255,0.3);
-      width: 360px;
-      margin: 20px auto;
-      text-align: center;
-    }
-
-    /* Рамка барабанов */
-    #reels {
-      background: #0b0016;
-      border: 3px solid #7b2cff;
-      border-radius: 18px;
-      padding: 14px;
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    /* Символы */
-    .reel {
-      width: 90px;
-      height: 90px;
-      background: radial-gradient(circle at 30% 30%, #2c004c, #100020);
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 50px;
-      text-shadow:
-        0 0 10px #ff00ff,
-        0 0 20px rgba(176,38,255,0.8);
-      box-shadow:
-        inset 0 0 15px rgba(176,38,255,0.6),
-        0 0 20px rgba(123,44,255,0.6);
-    }
-
 </style>
 </head>
 
 <body>
 
-<div class="neon-lines">
-  <span style="left:5%; animation-duration:16s;"></span>
-  <span style="left:15%; animation-duration:22s;"></span>
-  <span style="left:30%; animation-duration:18s;"></span>
-  <span style="left:45%; animation-duration:20s;"></span>
-  <span style="left:60%; animation-duration:19s;"></span>
-  <span style="left:75%; animation-duration:21s;"></span>
-  <span style="left:90%; animation-duration:17s;"></span>
-</div>
-
-<div class="neon-lines">
-  <span style="left:10%; animation-duration:18s;"></span>
-  <span style="left:25%; animation-duration:22s;"></span>
-  <span style="left:40%; animation-duration:20s;"></span>
-  <span style="left:55%; animation-duration:24s;"></span>
-  <span style="left:70%; animation-duration:19s;"></span>
-  <span style="left:85%; animation-duration:21s;"></span>
-</div>
-
-<div class="neon-circles">
-  <span style="left:10%; width:50px; height:50px; animation-duration:18s;"></span>
-  <span style="left:25%; width:30px; height:30px; animation-duration:22s;"></span>
-  <span style="left:40%; width:60px; height:60px; animation-duration:20s;"></span>
-  <span style="left:55%; width:40px; height:40px; animation-duration:25s;"></span>
-  <span style="left:70%; width:35px; height:35px; animation-duration:19s;"></span>
-  <span style="left:85%; width:50px; height:50px; animation-duration:21s;"></span>
-</div>
-
 <div id="homeScreen">
-
-<div class="top">
-  <div class="user">
-    <div class="avatar"></div>
+  <div class="top">
     <div id="username">Player</div>
+    <div class="balance" id="mainBalance"></div>
   </div>
-  <div class="balance">🪙 1 250 ₽</div>
+
+  <div class="games">
+    <div class="game" id="openSlots">🎰 Slots</div>
+  </div>
 </div>
 
-<div class="live">🔥 Player123 выиграл 320 🪙 ₽</div>
-
-<div class="games">
-  <div class="game"><span>🚀</span>Crash</div>
-  <div class="game" id="openSlots"><span>🎰</span>Slots</div>
-  <div class="game"><span>🎲</span>Dice</div>
-  <div class="game" id="bonusBtn"><span>🎁</span>Bonus</div>
-</div>
-
-</div>
-
-<!-- ====== SLOTS ====== -->
 <div id="slotsScreen" style="display:none;">
-  <button id="backHome" style="margin-bottom:10px;">← Назад</button>
-  
-  <div id="slots" style="
-    margin: 20px auto;
-    padding: 20px;
-    background: rgba(35,18,70,0.6);
-    border-radius: 18px;
-    text-align: center;
-    box-shadow: 0 0 25px rgba(176,38,255,0.4);
-    max-width: 360px;
-  ">
-    <h2 style="margin-bottom:12px;">🎰 Слоты</h2>
+  <button id="backHome">← Назад</button>
 
-    <!-- Баланс сверху -->
-    <div id="slotBalance" style="margin-bottom:12px; font-weight:bold; text-align:left;"></div>
+  <div id="slots">
+    <h2>🎰 Слоты</h2>
+    <div id="slotBalance"></div>
 
-    <!-- Барабаны -->
-    <div id="reels" style="display:flex; justify-content:center; gap:10px; margin-bottom:12px;">
+    <div id="reels">
       <div class="reel">🍒</div>
-      <div class="reel">🍋</div>
-      <div class="reel">🍊</div>
+      <div class="reel">🍒</div>
+      <div class="reel">🍒</div>
     </div>
 
-    <!-- Поле для изменения ставки -->
-    <div style="margin-bottom:12px;">
+    <div>
       Ставка:
-      <input id="betInput" type="number" value="20" min="1" style="
-        width: 80px;
-        padding: 6px;
-        border-radius: 8px;
-        border: none;
-        text-align: center;
-        font-weight: bold;
-      "> ₽
+      <input id="betInput" type="number" value="20" min="1" style="width:80px;text-align:center;"> ₽
     </div>
 
-    <!-- Кнопка крутить -->
-    <button id="spinSlot" style="margin-bottom:12px; padding: 10px 20px;">Крутить 🎰</button>
-
-    <!-- Результат -->
-    <div id="slotResult" style="min-height:24px; font-weight:bold;"></div>
-  </div>
-</div>
-
-<!-- ====== /SLOTS ====== -->
-<div class="bottom">
-  <button>🏠 Главная</button>
-  <button>🎮 Игры</button>
-  <button>👤 Профиль</button>
-</div>
-
-<!-- Модальное окно бонуса -->
-<div id="bonusModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.8); z-index:10; align-items:center; justify-content:center;">
-  <div style="background:#12121a; padding:20px; border-radius:16px; text-align:center; width:320px; position:relative;">
-    
-    <!-- Кнопка закрыть -->
-    <button id="closeBonus" style="
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: #ff0000;
-      border: none;
-      color: #fff;
-      font-weight: bold;
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      cursor: pointer;
-    ">X</button>
-
-    <h3>🎡 Колесо фортуны</h3>
-
-<!-- КОНТЕЙНЕР КОЛЕСА -->
-<div id="wheelContainer" style="
-  position: relative;
-  width: 320px;
-  height: 320px;
-  margin: 20px auto;
-  background: #12121a;
-  border-radius: 16px;
-  box-shadow: 0 0 20px rgba(176,38,255,0.3);
-">
-  <!-- Canvas колесо -->
-  <canvas id="wheelCanvas" width="320" height="320" style="display:block;"></canvas>
-
-  <!-- Стрелка над колесом -->
-<div id="arrow"></div>
-
-<!-- Кнопка КРУТИТЬ -->
-<button id="spinBtn" style="
-  display: block;
-  margin: 10px auto;
-  padding: 10px 20px;
-  font-weight: bold;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #b026ff, #7b2cff);
-  color: #fff;
-  cursor: pointer;
-  box-shadow: 0 0 20px rgba(176,38,255,0.5);
-">Крутить</button>
-
-    <!-- Аудио -->
-    <audio id="spinSound" src="spin.mp3"></audio>
+    <button id="spinSlot">Крутить</button>
+    <div id="slotResult"></div>
   </div>
 </div>
 
 <script>
 const tg = window.Telegram.WebApp;
 tg.ready();
-tg.expand();
 
-// Элементы
-const homeScreen = document.getElementById("homeScreen");
-const slotsScreen = document.getElementById("slotsScreen");
-const openSlots = document.getElementById("openSlots");
+const CURRENCY = "₽";
+let balance = 1000;
 
-openSlots.addEventListener("click", () => {
-  homeScreen.style.display = "none";   // скрываем главный экран
-  slotsScreen.style.display = "block"; // показываем экран слотов
-});
+// элементы
+const mainBalance = document.getElementById("mainBalance");
+const slotBalance = document.getElementById("slotBalance");
+const reels = document.querySelectorAll(".reel");
+const resultEl = document.getElementById("slotResult");
 
-// кнопка "Назад" в слотах
-document.getElementById("backHome").addEventListener("click", () => {
-  slotsScreen.style.display = "none";  // скрываем экран слотов
-  homeScreen.style.display = "block";  // показываем главный экран
-});
-
-const usernameEl = document.getElementById("username");
-const balanceEl = document.querySelector(".balance");
-
-// ===== SLOTS ELEMENTS =====
-const slotBalanceEl = document.getElementById("slotBalance");
-const betInput = document.getElementById("betInput");
-const reels = document.querySelectorAll("#reels .reel");
-const slotResultEl = document.getElementById("slotResult");
-
-const bonusBtn = document.getElementById("bonusBtn");
-const bonusModal = document.getElementById("bonusModal");
-const closeBonus = document.getElementById("closeBonus");
-const spinBtn = document.getElementById("spinBtn");
-const bonusInfo = document.getElementById("bonusInfo");
-
-const wheelCanvas = document.getElementById("wheelCanvas");
-const ctx = wheelCanvas.getContext("2d");
-
-const CURRENCY_ICON = "🪙";
-const CURRENCY_NAME = "₽";
-
-// Пользователь
-let userId = "guest";
-if (tg.initDataUnsafe?.user) {
-    userId = tg.initDataUnsafe.user.id;
-    usernameEl.innerText = tg.initDataUnsafe.user.first_name;
-}
-
-// Баланс
-const balanceKey = "balance_" + userId;
-let balance = localStorage.getItem(balanceKey);
-if (!balance) {
-    balance = 1000;
-    localStorage.setItem(balanceKey, balance);
-}
-balance = parseInt(balance);
-balanceEl.innerText = `${CURRENCY_ICON} ${balance} ${CURRENCY_NAME}`;
-
-// Открытие/закрытие модалки
-bonusBtn.onclick = () => {
-    bonusModal.style.display = "flex";
-    bonusInfo.innerText = "Крути колесо и получи приз!";
+// экраны
+openSlots.onclick = () => {
+  homeScreen.style.display="none";
+  slotsScreen.style.display="block";
 };
-closeBonus.onclick = () => bonusModal.style.display = "none";
+backHome.onclick = () => {
+  slotsScreen.style.display="none";
+  homeScreen.style.display="block";
+};
 
-// Настройки колеса
-const sectors = [
-  { label: "5", color: "#b026ff" },
-  { label: "10", color: "#7b2cff" },
-  { label: "25", color: "#b026ff" },
-  { label: "50", color: "#7b2cff" },
-  { label: "100", color: "#b026ff" },
-  { label: "250", color: "#7b2cff" },
-  { label: "500", color: "#b026ff" },
-  { label: "1000", color: "#7b2cff" },
-];
-const sectorCount = sectors.length;
-const radius = wheelCanvas.width / 2 - 10; // радиус колеса
-let currentRotation = 0;
-
-// Рисуем колесо
-function drawWheel() {
-  ctx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
-  const centerX = wheelCanvas.width / 2;
-  const centerY = wheelCanvas.height / 2;
-
-  sectors.forEach((sector, i) => {
-    const startAngle = (i * 2 * Math.PI) / sectorCount;
-    const endAngle = ((i + 1) * 2 * Math.PI) / sectorCount;
-
-    // сектор
-    ctx.beginPath();
-    ctx.moveTo(centerX, centerY);
-    ctx.arc(centerX, centerY, radius, startAngle, endAngle);
-    ctx.closePath();
-    ctx.fillStyle = sector.color;
-    ctx.fill();
-
-    // тень
-    ctx.shadowColor = "rgba(176,38,255,0.6)";
-    ctx.shadowBlur = 10;
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = 0;
-    
-    // текст
-    ctx.save();
-ctx.translate(centerX, centerY); // смещаемся в центр колеса
-ctx.rotate((startAngle + endAngle) / 2); // поворот к середине сектора
-
-// создаем вертикальный градиент текста
-const gradient = ctx.createLinearGradient(0, -radius + 10, 0, radius - 10);
-gradient.addColorStop(0, "#b026ff");
-gradient.addColorStop(0.5, "#ff00ff");
-gradient.addColorStop(1, "#7b2cff");
-
-ctx.fillStyle = gradient;
-ctx.font = "bold 16px Arial";
-ctx.textAlign = "right";
-ctx.textBaseline = "middle"; // текст по вертикали в центре
-
-ctx.shadowColor = "rgba(255,0,255,0.7)";
-ctx.shadowBlur = 8;
-
-// добавляем ₽ к цифрам
-ctx.fillText(sector.label + " ₽", radius - 10, 0);
-
-ctx.restore();
-  });
+function updateBalanceUI() {
+  mainBalance.textContent = `🪙 ${balance} ${CURRENCY}`;
+  slotBalance.textContent = `Баланс: ${balance} ${CURRENCY}`;
 }
+updateBalanceUI();
 
-// Крутилка
-spinBtn.onclick = () => {
-  spinBtn.disabled = true;
-  let spinSound = new Audio("spin.mp3.mp3");
-  spinSound.play();
+// логика слотов
+const symbols = ["🍒","🍋","🍊","🍉","⭐","💎"];
 
-  const spins = Math.floor(Math.random() * 4) + 4;
-  const extraDeg = Math.floor(Math.random() * 360);
-  const targetRotation = currentRotation + spins * 360 + extraDeg;
-
-  const duration = 4000;
-  const start = performance.now();
-
-  function animate(time) {
-    const elapsed = time - start;
-    const progress = Math.min(elapsed / duration, 1);
-    const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
-    const angle = currentRotation + (targetRotation - currentRotation) * eased;
-
-    wheelCanvas.style.transform = `rotate(${angle}deg)`;
-
-    if (progress < 1) {
-      requestAnimationFrame(animate);
-    } else {
-      currentRotation = angle % 360;
-      const winningIndex = Math.floor(
-        ((360 - (currentRotation % 360)) / 360) * sectorCount
-      ) % sectorCount;
-      const reward = parseInt(sectors[winningIndex].label);
-      balance += reward;
-      balanceEl.innerText = `${CURRENCY_ICON} ${balance} ${CURRENCY_NAME}`;
-      localStorage.setItem(balanceKey, balance);
-      bonusInfo.innerText = `🎉 Ты выиграл ${reward} ${CURRENCY_NAME}`;
-      spinBtn.disabled = false;
-    }
+function getMultiplier(a,b,c){
+  if(a===b && b===c){
+    return { "🍒":3,"🍋":3,"🍊":3,"🍉":5,"⭐":10,"💎":25 }[a];
   }
-
-  requestAnimationFrame(animate);
-};
-
-// начальная отрисовка
-drawWheel();
-
-// слотыыыыыыыывввввыыыыыыыыыыыы
-
-// обновление баланса
-function updateSlotBalance() {
-  slotBalanceEl.textContent = `Баланс: ${balance} ₽`;
+  if(a===b || b===c || a===c){
+    return { "🍒":1.5,"🍋":1.5,"🍊":1.5,"🍉":2,"⭐":4,"💎":8 }[a===b?a:b===c?b:a];
+  }
+  return 0;
 }
 
-// начальное отображение
-updateSlotBalance();
-
-betInput.addEventListener("input", () => {
-  // можно добавить отображение ставки
-});
-
-// Кнопка крутить слоты
-document.getElementById("spinSlot").addEventListener("click", () => {
-  const bet = parseInt(betInput.value);
-  if (isNaN(bet) || bet <= 0) return alert("Введите корректную ставку!");
-  if (bet > balance) return alert("Недостаточно средств!");
+spinSlot.onclick = () => {
+  const bet = +betInput.value;
+  if(bet<=0 || bet>balance) return alert("Неверная ставка");
 
   balance -= bet;
-  updateSlotBalance();
-  localStorage.setItem(balanceKey, balance);
 
-  const symbols = ["🍒","🍋","🍊","🍉","⭐","💎"];
-  reels.forEach(reel => {
-    const sym = symbols[Math.floor(Math.random() * symbols.length)];
-    reel.textContent = sym;
+  reels.forEach(r=>{
+    r.textContent = symbols[Math.floor(Math.random()*symbols.length)];
   });
 
-function getMultiplier(r1, r2, r3) {
-  if (r1 === r2 && r2 === r3) { // все три одинаковые
-    switch(r1) {
-      case "🍒": case "🍋": case "🍊": return 3;
-      case "🍉": return 4;
-      case "⭐": return 8;
-      case "💎": return 20;
-    }
-  } else if (r1 === r2 || r2 === r3 || r1 === r3) { // две одинаковые
-    let symbol = r1 === r2 ? r1 : (r2 === r3 ? r2 : r1);
-    switch(symbol) {
-      case "🍒": case "🍋": case "🍊": return 1.5;
-      case "🍉": return 2;
-      case "⭐": return 4;
-      case "💎": return 10;
-    }
-  }
-  return 0; // все разные → проигрыш
-}
+  const m = getMultiplier(
+    reels[0].textContent,
+    reels[1].textContent,
+    reels[2].textContent
+  );
 
-const r1 = reels[0].textContent;
-const r2 = reels[1].textContent;
-const r3 = reels[2].textContent;
-
-const multiplier = getMultiplier(r1, r2, r3);
-
-  const win = bet * multiplier;
+  const win = Math.floor(bet*m);
   balance += win;
-  updateSlotBalance();
-  localStorage.setItem(balanceKey, balance);
 
-  slotResultEl.textContent = win > 0 ? `🎉 Вы выиграли ${win} ₽!` : "😢 Попробуйте еще раз!";
-});
+  resultEl.textContent = win
+    ? `🎉 Выигрыш ${win} ${CURRENCY} (x${m})`
+    : "😢 Без выигрыша";
 
+  updateBalanceUI();
+};
 </script>
 
 </body>
