@@ -1161,14 +1161,14 @@ updateSlotBalance();
 spinSlotBtn.onclick = () => {
   const bet = parseInt(betInput.value);
 
-  if (!bet || bet <= 0) {
-    alert("Введите ставку");
-    return;
+  if (!bet || bet <= 0) { 
+    alert("Введите ставку"); 
+    return; 
   }
 
-  if (bet > balance) {
-    alert("Недостаточно средств");
-    return;
+  if (bet > balance) { 
+    alert("Недостаточно средств"); 
+    return; 
   }
 
   // списываем ставку
@@ -1176,34 +1176,50 @@ spinSlotBtn.onclick = () => {
   localStorage.setItem(balanceKey, balance);
   updateSlotBalance();
   balanceEl.innerText = `${CURRENCY_ICON} ${balance} ${CURRENCY_NAME}`;
-
   slotResultEl.textContent = "";
 
-  // визуальная прокрутка
+  // включаем анимацию всех барабанов
   reels.forEach(reel => {
     reel.classList.add("spinning");
     reel.classList.remove("win");
   });
 
-  // через 1 секунду останавливаем и вычисляем результат
-  setTimeout(() => {
-    const results = [];
-    reels.forEach(reel => {
-      const sym = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
-      reel.textContent = sym;
-      results.push(sym);
-      reel.classList.remove("spinning");
+  // функция плавного спина конкретного барабана
+  function spinReel(reel, spinsCount = 15, intervalMs = 50) {
+    return new Promise(resolve => {
+      let spins = 0;
+      const spinInterval = setInterval(() => {
+        const sym = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+        reel.textContent = sym;
+        reel.style.transform = `translateY(-${Math.random()*10}px)`; // маленький визуальный сдвиг
+        spins++;
+        if (spins >= spinsCount) {
+          clearInterval(spinInterval);
+          reel.style.transform = `translateY(0)`; // возвращаем на место
+          resolve(sym);
+        }
+      }, intervalMs);
     });
+  }
 
-    // вычисляем множитель
+  // последовательный спин всех барабанов с задержкой
+  async function spinAllReels() {
+    const results = [];
+    for (let i = 0; i < reels.length; i++) {
+      const sym = await spinReel(reels[i], 20, 50); // 20 смен символов, каждые 50мс
+      results.push(sym);
+    }
+    return results;
+  }
+
+  // запускаем спин и обрабатываем результат
+  spinAllReels().then(results => {
     const multiplier = getMultiplier(...results);
     const winAmount = Math.floor(bet * multiplier);
 
     if (winAmount > 0) {
-      // подсветка выигравших символов
       reels.forEach(reel => reel.classList.add("win"));
 
-      // показываем BIG WIN если сильно выиграл
       if (winAmount >= bet * 5) {
         const bigWinEl = document.getElementById("bigWin");
         bigWinEl.style.display = "block";
@@ -1214,25 +1230,21 @@ spinSlotBtn.onclick = () => {
         }, 2000);
       }
 
-      // обновляем баланс
       balance += winAmount;
       localStorage.setItem(balanceKey, balance);
       updateSlotBalance();
       balanceEl.innerText = `${CURRENCY_ICON} ${balance} ${CURRENCY_NAME}`;
 
-      // добавляем в ленту
       const winFeedList = document.getElementById("winFeedList");
       const li = document.createElement("li");
       li.textContent = `🎰 Вы выиграли ${winAmount} ${CURRENCY_NAME} на ставке ${bet} ${CURRENCY_NAME}`;
       winFeedList.prepend(li);
-      // прокрутка вниз
-      const slotWinFeed = document.getElementById("slotWinFeed");
-      slotWinFeed.scrollTop = 0;
+      document.getElementById("slotWinFeed").scrollTop = 0;
+
     } else {
       slotResultEl.textContent = "Попробуй снова!";
     }
-
-  }, 1000); // время спина
+  });
 };
 
 function spawnConfetti() {
