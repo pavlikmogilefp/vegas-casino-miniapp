@@ -720,9 +720,9 @@ function drawWheel() {
     ctx.shadowBlur = 10;
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 0;
-
+    
     // текст
-    ctx.save();
+ctx.save();
 ctx.translate(centerX, centerY);
 ctx.rotate((startAngle + endAngle) / 2);
 
@@ -741,7 +741,6 @@ ctx.shadowBlur = 8;
 // добавляем ₽ к цифрам
 ctx.fillText(sector.label + " ₽", radius - 10, 5);
 ctx.restore();
-}
 
 // Крутилка
 spinBtn.onclick = () => {
