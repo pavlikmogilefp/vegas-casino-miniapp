@@ -387,6 +387,69 @@ body::after {
   }
 }
 
+/* ---------- Игровые карточки с неоном ---------- */
+.game {
+  position: relative;
+  background: linear-gradient(145deg, rgba(35,18,70,0.6), rgba(35,18,70,0.8));
+  border: 1px solid rgba(176,38,255,0.3);
+  box-shadow:
+    0 0 15px rgba(176,38,255,0.4),
+    inset 0 0 10px rgba(176,38,255,0.15);
+  border-radius: 18px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.game::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(60deg, rgba(176,38,255,0.2), rgba(123,44,255,0.2));
+  opacity: 0.6;
+  transform: scale(1.2);
+  filter: blur(12px);
+  transition: opacity 0.3s ease;
+  z-index: 0;
+  border-radius: 18px;
+}
+
+.game:hover::before {
+  opacity: 1;
+}
+
+.game span {
+  position: relative;
+  z-index: 1;
+  font-size: 34px;
+  display: block;
+  margin-bottom: 8px;
+  text-shadow: 0 0 12px rgba(176,38,255,0.9);
+}
+
+/* ---------- Кнопки ---------- */
+button {
+  position: relative;
+  background: linear-gradient(135deg, #b026ff, #7b2cff);
+  border-radius: 14px;
+  border: none;
+  color: #fff;
+  font-weight: bold;
+  padding: 10px 20px;
+  box-shadow: 0 0 15px rgba(176,38,255,0.6);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+button:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 30px rgba(176,38,255,1);
+}
+
+button:active {
+  transform: scale(0.95);
+  box-shadow: 0 0 10px rgba(176,38,255,0.8);
+}
+
 </style>
 </head>
 
