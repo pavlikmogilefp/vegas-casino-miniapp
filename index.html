@@ -655,6 +655,16 @@ button:active {
   }
 }
 
+/* 🎰 Анимация прокрутки барабана */
+.reel.spinning {
+  animation: reelSpin 0.1s linear infinite;
+}
+
+@keyframes reelSpin {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(-10px); }
+}
+
 </style>
 </head>
 
@@ -1014,6 +1024,21 @@ drawWheel();
 
 // элементы уже существуют
 const spinSlotBtn = document.getElementById("spinSlot");
+// 🎰 визуальная прокрутка барабанов
+reels.forEach((reel, index) => {
+  reel.classList.add("spinning");
+
+  const spinInterval = setInterval(() => {
+    reel.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+  }, 80);
+
+  // останавливаем каждый барабан по очереди
+  setTimeout(() => {
+    clearInterval(spinInterval);
+    reel.classList.remove("spinning");
+    reel.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+  }, 700 + index * 400);
+});
 
 // символы
 const SYMBOLS = ["🍒","🍋","🍊","🍉","⭐","💎"];
@@ -1073,27 +1098,23 @@ spinSlotBtn.onclick = () => {
     reel.classList.remove("win");
   });
 
+  setTimeout(() => {
   const r1 = reels[0].textContent;
   const r2 = reels[1].textContent;
   const r3 = reels[2].textContent;
 
   const multiplier = getMultiplier(r1, r2, r3);
-  const win = Math.floor(bet * multiplier);
+  const win = bet * multiplier;
 
-  if (win > 0) {
-    balance += win;
-    if (multiplier >= 4) {
-  reels.forEach(r => r.classList.add("win"));
-}
-    slotResultEl.textContent = `🎉 Вы выиграли ${win} ₽ (x${multiplier})`;
-  } else {
-    slotResultEl.textContent = "😢 Не повезло, попробуй ещё";
-  }
-
-  localStorage.setItem(balanceKey, balance);
-  balanceEl.innerText = `${CURRENCY_ICON} ${balance} ${CURRENCY_NAME}`;
+  balance += win;
   updateSlotBalance();
-};
+  localStorage.setItem(balanceKey, balance);
+
+  slotResultEl.textContent =
+    win > 0
+      ? `🎉 Вы выиграли ${win} ₽ (x${multiplier})`
+      : "😢 Попробуйте еще раз!";
+}, 1700);
 
 </script>
 
