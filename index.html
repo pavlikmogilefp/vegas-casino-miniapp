@@ -715,6 +715,17 @@ button:active {
     animation: bigWinAnim 2s ease-in-out forwards;
 }
 
+/* Анимация подсветки баланса при выигрыше */
+.balance.win-glow {
+  animation: glowBalance 1s ease-in-out 2;
+}
+
+@keyframes glowBalance {
+  0% { box-shadow: 0 0 10px rgba(255,255,0,0.6); }
+  50% { box-shadow: 0 0 30px rgba(255,255,0,1); }
+  100% { box-shadow: 0 0 10px rgba(255,255,0,0.6); }
+}
+
 </style>
 </head>
 
@@ -1222,13 +1233,36 @@ const win = bet * multiplier;
 
 // Обновляем баланс сразу
 if (win > 0) {
-  balance += win;
   reels.forEach(r => r.classList.add("win"));
-  addWinToFeed(win, multiplier);
+
+  // анимированное увеличение баланса
+  const startBalance = parseInt(balanceEl.dataset.prevBalance || balance);
+  const endBalance = startBalance + win;
+  const duration = 1000; // 1 секунда
+  const startTime = performance.now();
+
+  function animateBalance(time) {
+    const elapsed = time - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const current = Math.floor(startBalance + (endBalance - startBalance) * progress);
+    balanceEl.innerText = `${CURRENCY_ICON} ${current} ${CURRENCY_NAME}`;
+    if (progress < 1) {
+      requestAnimationFrame(animateBalance);
+    } else {
+      balanceEl.dataset.prevBalance = endBalance;
+    }
+  }
+  requestAnimationFrame(animateBalance);
+
+  // подсветка
+  balanceEl.classList.add("win-glow");
+  setTimeout(() => balanceEl.classList.remove("win-glow"), 1000);
+
+  balance = endBalance;
+  localStorage.setItem(balanceKey, balance);
+} else {
+  updateSlotBalance();
 }
-localStorage.setItem(balanceKey, balance);
-updateSlotBalance();
-balanceEl.innerText = `${CURRENCY_ICON} ${balance} ${CURRENCY_NAME}`;
 
 // Big / Mega Win
 const bigWinEl = document.getElementById("bigWin");
