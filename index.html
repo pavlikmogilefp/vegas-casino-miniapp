@@ -693,7 +693,6 @@ button:active {
 </div>
 
 <!-- ====== SLOTS ====== -->
-<!-- ====== SLOTS ====== -->
 <div id="slotsScreen" style="display:none;">
   <button id="backHome" style="margin-bottom:10px;">← Назад</button>
   
@@ -807,6 +806,21 @@ tg.ready();
 tg.expand();
 
 // Элементы
+const homeScreen = document.getElementById("homeScreen");
+const slotsScreen = document.getElementById("slotsScreen");
+const openSlots = document.getElementById("openSlots");
+
+openSlots.addEventListener("click", () => {
+  homeScreen.style.display = "none";   // скрываем главный экран
+  slotsScreen.style.display = "block"; // показываем экран слотов
+});
+
+// кнопка "Назад" в слотах
+document.getElementById("backHome").addEventListener("click", () => {
+  slotsScreen.style.display = "none";  // скрываем экран слотов
+  homeScreen.style.display = "block";  // показываем главный экран
+});
+
 const usernameEl = document.getElementById("username");
 const balanceEl = document.querySelector(".balance");
 const bonusBtn = document.getElementById("bonusBtn");
