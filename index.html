@@ -1186,21 +1186,36 @@ spinSlotBtn.onclick = () => {
 
   // функция плавного спина конкретного барабана
   function spinReel(reel, spinsCount = 15, intervalMs = 50) {
-    return new Promise(resolve => {
-      let spins = 0;
-      const spinInterval = setInterval(() => {
-        const sym = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
-        reel.textContent = sym;
-        reel.style.transform = `translateY(-${Math.random()*10}px)`; // маленький визуальный сдвиг
-        spins++;
-        if (spins >= spinsCount) {
-          clearInterval(spinInterval);
-          reel.style.transform = `translateY(0)`; // возвращаем на место
-          resolve(sym);
-        }
-      }, intervalMs);
-    });
-  }
+  return new Promise(resolve => {
+    let spins = 0;
+
+    // убираем все transition перед стартом
+    reel.style.transition = "none";
+
+    const spinInterval = setInterval(() => {
+      const sym = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+      reel.textContent = sym;
+
+      // небольшой визуальный сдвиг
+      reel.style.transform = `translateY(${Math.random() * 10 - 5}px)`; // +/-5px
+      spins++;
+
+      if (spins >= spinsCount) {
+        clearInterval(spinInterval);
+
+        // ставим финальный символ
+        const finalSym = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+        reel.textContent = finalSym;
+
+        // убираем дрожание
+        reel.style.transform = "translateY(0)";
+        reel.style.transition = "transform 0.2s ease-out"; // для плавного возврата, если хочешь
+
+        resolve(finalSym);
+      }
+    }, intervalMs);
+  });
+}
 
   // последовательный спин всех барабанов с задержкой
   async function spinAllReels() {
