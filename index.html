@@ -116,29 +116,44 @@ animation: floatCard 5s ease-in-out infinite;
 }
 
 /* ---------- BOTTOM ---------- */
-..bottom {
-  position: fixed;
-  bottom: 0;
+.bottom {
+  position: fixed;       /* фиксируем внизу */
+  bottom: 0;             /* у самого низа */
+  left: 0;
   width: 100%;
+  display: flex;
+  justify-content: space-around; /* равномерно распределяем кнопки */
+  align-items: center;
+  padding: 12px 0;
   background: linear-gradient(180deg, #0b0715, #05030a);
-  display: flex; /* Важно! */
-  justify-content: space-between; /* Распределяем кнопки */
-  align-items: center;           /* Выравниваем по вертикали */
-  padding: 0 20px;
   border-top: 1px solid rgba(176, 38, 255, 0.25);
-  animation: neonPulse 2.5s infinite;
-  z-index: 5;
+  box-shadow: 0 -2px 15px rgba(176,38,255,0.3);
+  z-index: 100;
 }
 
-button:active {
-  transform: scale(0.95);
-  box-shadow:
-    0 0 6px rgba(176, 38, 255, 0.9);
-}
-
-.bottom div {
+.bottom button {
+  background: linear-gradient(135deg, var(--neon), var(--neon-soft));
+  border: none;
+  border-radius: 14px;
+  padding: 8px 16px;
+  color: #fff;
+  font-weight: bold;
   font-size: 14px;
-  color: var(--text-dim);
+  box-shadow: 0 0 12px rgba(176, 38, 255, 0.6),
+              0 0 25px rgba(176, 38, 255, 0.4);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.bottom button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 18px rgba(176, 38, 255, 1),
+              0 0 35px rgba(176, 38, 255, 0.7);
+}
+
+.bottom button:active {
+  transform: scale(0.95);
+  box-shadow: 0 0 10px rgba(176, 38, 255, 0.8);
 }
 
 /* ---------- BUTTONS ---------- */
@@ -241,9 +256,9 @@ body::before {
 </div>
 
 <div class="bottom">
-  <div>🏠 Главная</div>
-  <div>🎮 Игры</div>
-  <div>👤 Профиль</div>
+  <button>🏠 Главная</button>
+  <button>🎮 Игры</button>
+  <button>👤 Профиль</button>
 </div>
 
 <!-- Модальное окно бонуса -->
