@@ -581,31 +581,19 @@ button:active {
       height: 0;
       border-left: 15px solid transparent;
       border-right: 15px solid transparent;
-      border-top: 50px solid #ff0000; /* длиннее */
+      border-top: 50px solid #ff0000;
       margin: 0 auto -25px auto;
+      position: absolute;
+      top: -25px;
+      left: 50%;
+      transform: translateX(-50%);
       z-index: 2;
-      position: relative;
     "></div>
 
-    <!-- Контейнер колеса (умеренная обрезка) -->
-<div style="
-  width: 300px;
-  height: 300px;
-  border-radius: 50%;
-  overflow: hidden;
-  margin: 0 auto;
-  position: relative;
-  background: #12121a;
-">
-  <img id="wheel" src="wheel.jpeg" style="
-  width: 300px;
-  height: 300px;
-  display: block;
-  object-fit: cover;
-  clip-path: circle(48% at 50% 50%);
-  transition: transform 4s cubic-bezier(.17,.67,.14,1);
-">
-</div>
+    <!-- Контейнер колеса -->
+    <div style="width: 300px; height: 300px; margin: 0 auto; position: relative;">
+      <canvas id="wheelCanvas" width="300" height="300" style="border-radius:50%; display:block;"></canvas>
+    </div>
 
     <button id="spinBtn" style="
       padding:10px 20px;
@@ -620,7 +608,7 @@ button:active {
     <div id="bonusInfo" style="margin-top:10px; font-size:14px; opacity:.8;"></div>
 
     <!-- Аудио -->
-    <audio id="spinSound" src="spin.mp3.mp3"></audio>
+    <audio id="spinSound" src="spin.mp3"></audio>
   </div>
 </div>
 
@@ -629,80 +617,131 @@ const tg = window.Telegram.WebApp;
 tg.ready();
 tg.expand();
 
+// Элементы
 const usernameEl = document.getElementById("username");
 const balanceEl = document.querySelector(".balance");
 const bonusBtn = document.getElementById("bonusBtn");
 const bonusModal = document.getElementById("bonusModal");
 const closeBonus = document.getElementById("closeBonus");
-const wheel = document.getElementById("wheel");
 const spinBtn = document.getElementById("spinBtn");
 const bonusInfo = document.getElementById("bonusInfo");
-const spinSound = document.getElementById("spinSound");
 
-const CURRENCY_ICON = "🪙";
-const CURRENCY_NAME = "₽";
+// Пользователь
+let userId = tg.initDataUnsafe?.user?.id || "guest";
+usernameEl.innerText = tg.initDataUnsafe?.user?.first_name || "Player";
 
-// Получаем ID пользователя
-let userId = "guest";
-if (tg.initDataUnsafe?.user) {
-    userId = tg.initDataUnsafe.user.id;
-    usernameEl.innerText = tg.initDataUnsafe.user.first_name;
-}
-
-// Ключи в localStorage с привязкой к пользователю
+// Баланс
 const balanceKey = "balance_" + userId;
+let balance = parseInt(localStorage.getItem(balanceKey)) || 1000;
+balanceEl.innerText = `🪙 ${balance} ₽`;
 
-// Загружаем баланс
-let balance = localStorage.getItem(balanceKey);
-if (!balance) {
-    balance = 1000; // стартовый баланс
-    localStorage.setItem(balanceKey, balance);
-}
-balance = parseInt(balance);
-balanceEl.innerText = `${CURRENCY_ICON} ${balance} ${CURRENCY_NAME}`;
-
-// Открытие бонуса
-bonusBtn.onclick = () => {
-    bonusModal.style.display = "flex";
-    bonusInfo.innerText = "Крути колесо и получи приз!";
-};
-
-// Закрытие бонуса
+// Открытие/закрытие бонуса
+bonusBtn.onclick = () => { bonusModal.style.display = "flex"; bonusInfo.innerText = "Крути колесо и получи приз!"; };
 closeBonus.onclick = () => bonusModal.style.display = "none";
 
-// Крутилка
+// ---------- Колесо фортуны ----------
+const canvas = document.createElement("canvas");
+canvas.width = 300;
+canvas.height = 300;
+canvas.style.display = "block";
+canvas.style.margin = "0 auto";
+canvas.style.borderRadius = "50%";
+canvas.style.background = "#12121a";
+document.querySelector("#bonusModal > div").insertBefore(canvas, spinBtn);
+
+const ctx = canvas.getContext("2d");
+
+const sectors = [
+  { label: "5 ₽", value: 5, color: "#b026ff" },
+  { label: "10 ₽", value: 10, color: "#7b2cff" },
+  { label: "25 ₽", value: 25, color: "#ff0080" },
+  { label: "50 ₽", value: 50, color: "#ff44aa" },
+  { label: "100 ₽", value: 100, color: "#ff66cc" },
+  { label: "250 ₽", value: 250, color: "#ff88ee" },
+  { label: "500 ₽", value: 500, color: "#ff00ff" },
+  { label: "1000 ₽", value: 1000, color: "#cc00ff" },
+];
+
+const centerX = canvas.width/2;
+const centerY = canvas.height/2;
+const radius = canvas.width/2 - 5;
+
+function drawWheel(rotation=0) {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  const sectorAngle = (2*Math.PI)/sectors.length;
+
+  sectors.forEach((sector,i)=>{
+    const start = i*sectorAngle + rotation;
+    const end = start + sectorAngle;
+
+    // сектор
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY);
+    ctx.arc(centerX, centerY, radius, start, end);
+    ctx.closePath();
+    ctx.fillStyle = sector.color;
+    ctx.fill();
+    ctx.strokeStyle = "#12121a";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // текст
+    ctx.save();
+    ctx.translate(centerX, centerY);
+    ctx.rotate(start + sectorAngle/2);
+    ctx.textAlign = "right";
+    ctx.fillStyle = "#fff";
+    ctx.font = "bold 14px Arial";
+    ctx.fillText(sector.label, radius-10, 5);
+    ctx.restore();
+  });
+
+  // стрелка сверху
+  ctx.beginPath();
+  ctx.moveTo(centerX-10, 5);
+  ctx.lineTo(centerX+10, 5);
+  ctx.lineTo(centerX, 25);
+  ctx.closePath();
+  ctx.fillStyle = "#ff0000";
+  ctx.fill();
+}
+
+let currentRotation = 0;
+drawWheel(currentRotation);
+
 spinBtn.onclick = () => {
-    spinBtn.disabled = true;
-    spinSound.currentTime = 0;
-    spinSound.play();
+  spinBtn.disabled = true;
 
-    // Добавляем эффект glow
-    wheel.classList.add('spin-glow');
+  const spins = Math.floor(Math.random()*4)+4;
+  const randomDeg = Math.floor(Math.random()*360);
+  const totalRotation = spins*360 + randomDeg;
+  const duration = 4000; // 4 сек
 
-    // Сбрасываем колесо
-    wheel.style.transition = "none";
-    wheel.style.transform = "rotate(0deg)";
+  const start = performance.now();
 
-    setTimeout(() => {
-        wheel.style.transition = "transform 4s cubic-bezier(.17,.67,.14,1)";
-        const spins = Math.floor(Math.random() * 4) + 4;
-        const deg = spins * 360 + Math.floor(Math.random() * 360);
-        wheel.style.transform = `rotate(${deg}deg)`;
+  function animate(time){
+    const elapsed = time - start;
+    const progress = Math.min(elapsed/duration,1);
+    const ease = 1 - Math.pow(1-progress,3); // easing out cubic
+    currentRotation = (totalRotation*ease)*(Math.PI/180);
+    drawWheel(currentRotation);
 
-        // После анимации начисляем выигрыш
-        setTimeout(() => {
-            wheel.classList.remove('spin-glow'); // убираем glow
+    if(progress<1){
+      requestAnimationFrame(animate);
+    } else {
+      // вычисляем выигрыш
+      const finalDeg = (totalRotation%360);
+      const sectorIndex = Math.floor(sectors.length - (finalDeg/(360/sectors.length))) % sectors.length;
+      const reward = sectors[sectorIndex].value;
+      balance += reward;
+      balanceEl.innerText = `🪙 ${balance} ₽`;
+      localStorage.setItem(balanceKey,balance);
+      bonusInfo.innerText = `🎉 Ты выиграл ${reward} ₽`;
+      spinBtn.disabled = false;
+    }
+  }
 
-            const rewards = [5,10,25,50,100,250,500,1000];
-            const reward = rewards[Math.floor(Math.random() * rewards.length)];
-            balance += reward;
-            balanceEl.innerText = `${CURRENCY_ICON} ${balance} ${CURRENCY_NAME}`;
-
-            localStorage.setItem(balanceKey, balance);
-            bonusInfo.innerText = `🎉 Ты выиграл ${reward} ${CURRENCY_NAME}`;
-            spinBtn.disabled = false;
-        }, 4000);
-    }, 50);
+  requestAnimationFrame(animate);
 };
 </script>
 
