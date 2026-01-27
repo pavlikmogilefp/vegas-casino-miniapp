@@ -474,6 +474,30 @@ button:active {
 .games .game:nth-child(3) { animation-delay: 0.5s; }
 .games .game:nth-child(4) { animation-delay: 0.7s; }
 
+/* ---------- Стрелка ---------- */
+#arrow {
+  width: 0;
+  height: 0;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-top: 60px solid #ff0000; /* чуть длиннее */
+  margin: 0 auto -30px auto;
+  position: relative;
+  z-index: 2;
+  filter: drop-shadow(0 0 6px #ff0000);
+}
+
+/* ---------- Свет вокруг колеса ---------- */
+#wheel {
+  box-shadow: 0 0 20px #b026ff, 0 0 40px #7b2cff, 0 0 60px #b026ff50;
+  border-radius: 50%;
+  transition: transform 4s cubic-bezier(.17,.67,.14,1), box-shadow 0.3s;
+}
+
+#wheel.spin-glow {
+  box-shadow: 0 0 35px #b026ff, 0 0 70px #7b2cff, 0 0 100px #b026ff80;
+}
+
 </style>
 </head>
 
@@ -652,6 +676,9 @@ spinBtn.onclick = () => {
     spinSound.currentTime = 0;
     spinSound.play();
 
+    // Добавляем эффект glow
+    wheel.classList.add('spin-glow');
+
     // Сбрасываем колесо
     wheel.style.transition = "none";
     wheel.style.transform = "rotate(0deg)";
@@ -664,14 +691,14 @@ spinBtn.onclick = () => {
 
         // После анимации начисляем выигрыш
         setTimeout(() => {
+            wheel.classList.remove('spin-glow'); // убираем glow
+
             const rewards = [5,10,25,50,100,250,500,1000];
             const reward = rewards[Math.floor(Math.random() * rewards.length)];
             balance += reward;
             balanceEl.innerText = `${CURRENCY_ICON} ${balance} ${CURRENCY_NAME}`;
 
-            // сохраняем баланс для этого пользователя
             localStorage.setItem(balanceKey, balance);
-
             bonusInfo.innerText = `🎉 Ты выиграл ${reward} ${CURRENCY_NAME}`;
             spinBtn.disabled = false;
         }, 4000);
