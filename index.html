@@ -427,6 +427,16 @@ body::after {
   display: block;
   margin-bottom: 8px;
   text-shadow: 0 0 12px rgba(176,38,255,0.9);
+  
+  .reel.win {
+  animation: winGlow 1s ease-in-out infinite alternate;
+}
+
+@keyframes winGlow {
+  0% { box-shadow: 0 0 15px #ffea00, 0 0 25px #ffea00; }
+  100% { box-shadow: 0 0 30px #ffd700, 0 0 45px #ffd700; }
+}
+  
 }
 
 /* ---------- Кнопки ---------- */
@@ -528,6 +538,62 @@ button:active {
       box-shadow: 0 0 30px #b026ff, 0 0 60px #7b2cff, 0 0 90px #b026ff80;
     }
 
+/* 🎰 Слот — Рамка и фон */
+#slots {
+  background: linear-gradient(145deg, #15001f, #0a0014);
+  border: 4px solid #b026ff;
+  border-radius: 24px;
+  padding: 18px;
+  box-shadow:
+    0 0 40px rgba(176,38,255,0.6),
+    inset 0 0 20px rgba(123,44,255,0.3);
+}
+
+/* Рамка барабанов */
+#reels {
+  background: #0b0016;
+  border: 3px solid #7b2cff;
+  border-radius: 18px;
+  padding: 14px;
+}
+
+/* Символы */
+.reel {
+  width: 90px;
+  height: 90px;
+  margin: 0 8px;
+  background: radial-gradient(circle at 30% 30%, #2c004c, #100020);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 50px;
+  text-shadow:
+    0 0 10px #ff00ff,
+    0 0 20px rgba(176,38,255,0.8);
+  box-shadow:
+    inset 0 0 15px rgba(176,38,255,0.6),
+    0 0 20px rgba(123,44,255,0.6);
+}
+
+#spinSlot {
+  margin-top: 14px;
+  background: linear-gradient(135deg, #7b2cff, #4e00ff);
+  padding: 14px 32px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 0 25px rgba(176,38,255,0.9),
+              0 0 45px rgba(123,44,255,0.9);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+#spinSlot:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 35px rgba(176,38,255,1),
+              0 0 60px rgba(123,44,255,1);
+}
 
 </style>
 </head>
