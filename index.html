@@ -617,131 +617,143 @@ const tg = window.Telegram.WebApp;
 tg.ready();
 tg.expand();
 
-// Элементы
 const usernameEl = document.getElementById("username");
 const balanceEl = document.querySelector(".balance");
 const bonusBtn = document.getElementById("bonusBtn");
 const bonusModal = document.getElementById("bonusModal");
 const closeBonus = document.getElementById("closeBonus");
+const wheelImg = document.getElementById("wheel");
 const spinBtn = document.getElementById("spinBtn");
 const bonusInfo = document.getElementById("bonusInfo");
+const spinSound = document.getElementById("spinSound");
 
-// Пользователь
-let userId = tg.initDataUnsafe?.user?.id || "guest";
-usernameEl.innerText = tg.initDataUnsafe?.user?.first_name || "Player";
+const CURRENCY_ICON = "🪙";
+const CURRENCY_NAME = "₽";
 
-// Баланс
-const balanceKey = "balance_" + userId;
-let balance = parseInt(localStorage.getItem(balanceKey)) || 1000;
-balanceEl.innerText = `🪙 ${balance} ₽`;
-
-// Открытие/закрытие бонуса
-bonusBtn.onclick = () => { bonusModal.style.display = "flex"; bonusInfo.innerText = "Крути колесо и получи приз!"; };
-closeBonus.onclick = () => bonusModal.style.display = "none";
-
-// ---------- Колесо фортуны ----------
-const canvas = document.createElement("canvas");
-canvas.width = 300;
-canvas.height = 300;
-canvas.style.display = "block";
-canvas.style.margin = "0 auto";
-canvas.style.borderRadius = "50%";
-canvas.style.background = "#12121a";
-document.querySelector("#bonusModal > div").insertBefore(canvas, spinBtn);
-
-const ctx = canvas.getContext("2d");
-
-const sectors = [
-  { label: "5 ₽", value: 5, color: "#b026ff" },
-  { label: "10 ₽", value: 10, color: "#7b2cff" },
-  { label: "25 ₽", value: 25, color: "#ff0080" },
-  { label: "50 ₽", value: 50, color: "#ff44aa" },
-  { label: "100 ₽", value: 100, color: "#ff66cc" },
-  { label: "250 ₽", value: 250, color: "#ff88ee" },
-  { label: "500 ₽", value: 500, color: "#ff00ff" },
-  { label: "1000 ₽", value: 1000, color: "#cc00ff" },
-];
-
-const centerX = canvas.width/2;
-const centerY = canvas.height/2;
-const radius = canvas.width/2 - 5;
-
-function drawWheel(rotation=0) {
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  const sectorAngle = (2*Math.PI)/sectors.length;
-
-  sectors.forEach((sector,i)=>{
-    const start = i*sectorAngle + rotation;
-    const end = start + sectorAngle;
-
-    // сектор
-    ctx.beginPath();
-    ctx.moveTo(centerX, centerY);
-    ctx.arc(centerX, centerY, radius, start, end);
-    ctx.closePath();
-    ctx.fillStyle = sector.color;
-    ctx.fill();
-    ctx.strokeStyle = "#12121a";
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    // текст
-    ctx.save();
-    ctx.translate(centerX, centerY);
-    ctx.rotate(start + sectorAngle/2);
-    ctx.textAlign = "right";
-    ctx.fillStyle = "#fff";
-    ctx.font = "bold 14px Arial";
-    ctx.fillText(sector.label, radius-10, 5);
-    ctx.restore();
-  });
-
-  // стрелка сверху
-  ctx.beginPath();
-  ctx.moveTo(centerX-10, 5);
-  ctx.lineTo(centerX+10, 5);
-  ctx.lineTo(centerX, 25);
-  ctx.closePath();
-  ctx.fillStyle = "#ff0000";
-  ctx.fill();
+// ---------- USER & BALANCE ----------
+let userId = "guest";
+if (tg.initDataUnsafe?.user) {
+    userId = tg.initDataUnsafe.user.id;
+    usernameEl.innerText = tg.initDataUnsafe.user.first_name;
 }
 
+const balanceKey = "balance_" + userId;
+let balance = localStorage.getItem(balanceKey);
+if (!balance) {
+    balance = 1000;
+    localStorage.setItem(balanceKey, balance);
+}
+balance = parseInt(balance);
+balanceEl.innerText = `${CURRENCY_ICON} ${balance} ${CURRENCY_NAME}`;
+
+// ---------- BONUS MODAL ----------
+bonusBtn.onclick = () => {
+    bonusModal.style.display = "flex";
+    bonusInfo.innerText = "Крути колесо и получи приз!";
+};
+
+closeBonus.onclick = () => bonusModal.style.display = "none";
+
+// ---------- CANVAS & SECTORS ----------
+const wheelContainer = wheelImg.parentElement;
+const canvas = document.createElement("canvas");
+canvas.width = wheelImg.offsetWidth;
+canvas.height = wheelImg.offsetHeight;
+canvas.style.position = "absolute";
+canvas.style.top = wheelImg.offsetTop + "px";
+canvas.style.left = wheelImg.offsetLeft + "px";
+canvas.style.pointerEvents = "none"; // чтобы не мешал кликам
+wheelContainer.appendChild(canvas);
+
+const ctx = canvas.getContext("2d");
+const sectors = [
+    { label: "5", color: "#ff0044" },
+    { label: "10", color: "#ff6600" },
+    { label: "25", color: "#ffaa00" },
+    { label: "50", color: "#aaff00" },
+    { label: "100", color: "#00ff88" },
+    { label: "250", color: "#00aaff" },
+    { label: "500", color: "#aa00ff" },
+    { label: "1000", color: "#ff00aa" }
+];
+const sectorCount = sectors.length;
+
+// Рисуем сектора
+function drawSectors(rotation = 0) {
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+    const radius = canvas.width / 2;
+    const angleStep = (2 * Math.PI) / sectorCount;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (let i = 0; i < sectorCount; i++) {
+        const start = i * angleStep + rotation;
+        const end = start + angleStep;
+
+        // сектор
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, radius, start, end);
+        ctx.closePath();
+        ctx.fillStyle = sectors[i].color;
+        ctx.fill();
+
+        // текст
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(start + angleStep / 2);
+        ctx.fillStyle = "#fff";
+        ctx.font = "bold 18px Arial";
+        ctx.textAlign = "right";
+        ctx.fillText(sectors[i].label, radius - 10, 5);
+        ctx.restore();
+    }
+}
+
+// начальная отрисовка
+drawSectors(0);
+
+// ---------- SPIN ----------
 let currentRotation = 0;
-drawWheel(currentRotation);
 
 spinBtn.onclick = () => {
-  spinBtn.disabled = true;
+    spinBtn.disabled = true;
+    spinSound.currentTime = 0;
+    spinSound.play();
 
-  const spins = Math.floor(Math.random()*4)+4;
-  const randomDeg = Math.floor(Math.random()*360);
-  const totalRotation = spins*360 + randomDeg;
-  const duration = 4000; // 4 сек
+    const spins = Math.floor(Math.random() * 4) + 4;
+    const randomSector = Math.floor(Math.random() * sectorCount);
+    const anglePerSector = 360 / sectorCount;
+    const targetRotation = spins * 360 + randomSector * anglePerSector + anglePerSector/2;
 
-  const start = performance.now();
+    const duration = 4000;
+    const start = performance.now();
+    const startRotation = currentRotation;
 
-  function animate(time){
-    const elapsed = time - start;
-    const progress = Math.min(elapsed/duration,1);
-    const ease = 1 - Math.pow(1-progress,3); // easing out cubic
-    currentRotation = (totalRotation*ease)*(Math.PI/180);
-    drawWheel(currentRotation);
+    function animate(time) {
+        const elapsed = time - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+        const rot = startRotation + (targetRotation - startRotation) * eased;
 
-    if(progress<1){
-      requestAnimationFrame(animate);
-    } else {
-      // вычисляем выигрыш
-      const finalDeg = (totalRotation%360);
-      const sectorIndex = Math.floor(sectors.length - (finalDeg/(360/sectors.length))) % sectors.length;
-      const reward = sectors[sectorIndex].value;
-      balance += reward;
-      balanceEl.innerText = `🪙 ${balance} ₽`;
-      localStorage.setItem(balanceKey,balance);
-      bonusInfo.innerText = `🎉 Ты выиграл ${reward} ₽`;
-      spinBtn.disabled = false;
+        wheelImg.style.transform = `rotate(${rot}deg)`;
+        drawSectors(rot * Math.PI / 180);
+
+        if (progress < 1) {
+            requestAnimationFrame(animate);
+        } else {
+            currentRotation = rot % 360;
+            const reward = parseInt(sectors[randomSector].label);
+            balance += reward;
+            balanceEl.innerText = `${CURRENCY_ICON} ${balance} ${CURRENCY_NAME}`;
+            localStorage.setItem(balanceKey, balance);
+            bonusInfo.innerText = `🎉 Ты выиграл ${reward} ${CURRENCY_NAME}`;
+            spinBtn.disabled = false;
+        }
     }
-  }
 
-  requestAnimationFrame(animate);
+    requestAnimationFrame(animate);
 };
 </script>
 
