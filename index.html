@@ -978,20 +978,21 @@ betInput.addEventListener("input", () => {
 });
 
 const slotBalanceEl = document.getElementById("slotBalance");
-function updateSlotBalance() {
-    slotBalanceEl.innerText = `${CURRENCY_ICON} ${balance} ${CURRENCY_NAME}`;
-}
-updateSlotBalance(); // начальное отображение
-
-const slotBalanceEl = document.getElementById("slotBalance");
 const betInput = document.getElementById("betInput");
 
+// Функция обновления баланса в слотах
 function updateSlotBalance() {
     slotBalanceEl.innerText = `${CURRENCY_ICON} ${balance} ${CURRENCY_NAME}`;
 }
 updateSlotBalance(); // начальное отображение
 
-// ---- Сюда вставляем обработчик кнопки Крутить 🎰 ----
+// Обновление текста ставки при изменении
+const slotBetEl = document.getElementById("slotBet");
+betInput.addEventListener("input", () => {
+  slotBetEl.innerText = `Ставка: ${betInput.value} ₽`;
+});
+
+// Обработчик кнопки "Крутить 🎰"
 document.getElementById("spinSlot").onclick = () => {
     const bet = parseInt(betInput.value);
     if (isNaN(bet) || bet <= 0) return alert("Введите корректную ставку!");
@@ -1028,7 +1029,6 @@ document.getElementById("spinSlot").onclick = () => {
     document.getElementById("slotResult").innerText =
         win > 0 ? `🎉 Вы выиграли ${win} ${CURRENCY_NAME}!` : "😢 Попробуйте еще раз!";
 };
-
 </script>
 
 </body>
