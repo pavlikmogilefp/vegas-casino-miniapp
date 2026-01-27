@@ -1169,9 +1169,13 @@ spinSlotBtn.onclick = () => {
 
   // расчёт выигрыша
   setTimeout(() => {
-    const r1 = reels[0].textContent;
-    const r2 = reels[1].textContent;
-    const r3 = reels[2].textContent;
+    //const r1 = reels[0].textContent;
+    //const r2 = reels[1].textContent;
+    //const r3 = reels[2].textContent;
+// 🔴 ТЕСТ: ПРИНУДИТЕЛЬНЫЙ MEGA WIN
+const r1 = "💎";
+const r2 = "💎";
+const r3 = "💎";
 
     const multiplier = getMultiplier(r1, r2, r3);
     const win = bet * multiplier;
