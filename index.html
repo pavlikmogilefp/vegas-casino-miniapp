@@ -696,39 +696,33 @@ button:active {
 <div id="slotsScreen" style="display:none;">
   <button id="backHome" style="margin-bottom:10px;">← Назад</button>
 <div id="slots" style="
-  margin: 20px;
+  margin: 20px auto;
   padding: 20px;
   background: rgba(35,18,70,0.6);
   border-radius: 18px;
   text-align: center;
   box-shadow: 0 0 25px rgba(176,38,255,0.4);
+  max-width: 360px;
 ">
+  <h2 style="margin-bottom:12px;">🎰 Слоты</h2>
 
-  <h2 style="margin-bottom: 12px;">🎰 Слоты</h2>
+  <!-- Табло баланса и ставки -->
+  <div id="slotInfo" style="display:flex; justify-content:space-between; margin-bottom:12px;">
+    <div id="slotBalance">🪙 1000 ₽</div>
+    <div id="slotBet">Ставка: 20 ₽</div>
+  </div>
 
-<!-- Слот -->
-  <div id="slots">
-    <!-- Табло баланса и ставки -->
-    <div id="slotInfo" style="display:flex; justify-content:space-between; margin-bottom:12px;">
-      <div id="slotBalance">🪙 Баланс: 1000 ₽</div>
-      <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
-  <div id="slotBalance">🪙 Баланс: 1000 ₽</div>
-  <div id="slotBet">Ставка: 50 ₽</div> <!-- совпадает с картинкой -->
-</div>
-    </div>
+  <!-- Барабаны -->
+  <div id="reels" style="display:flex; justify-content:center; gap:10px;">
+    <div class="reel">🍒</div>
+    <div class="reel">🍋</div>
+    <div class="reel">🍊</div>
+  </div>
 
-    <!-- Барабаны -->
-    <div id="reels" style="display:flex; justify-content:center; gap:10px;">
-      <div class="reel">🍒</div>
-      <div class="reel">🍋</div>
-      <div class="reel">🍊</div>
-    </div>
-</div>
-
-  <!-- Ставка -->
-  <div style="margin-bottom: 10px;">
+  <!-- Поле для изменения ставки -->
+  <div style="margin-top:10px;">
     Ставка:
-    <input id="betInput" type="number" value="10" min="1" style="
+    <input id="betInput" type="number" value="20" min="1" style="
       width: 80px;
       padding: 6px;
       border-radius: 8px;
@@ -739,22 +733,10 @@ button:active {
   </div>
 
   <!-- Кнопка -->
-  <button id="spinSlot" style="
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 12px;
-    cursor: pointer;
-  ">
-    Крутить 🎰
-  </button>
+  <button id="spinSlot" style="margin-top:14px; padding: 10px 20px;">Крутить 🎰</button>
 
   <!-- Результат -->
-  <div id="slotResult" style="
-    margin-top: 12px;
-    min-height: 24px;
-    font-weight: bold;
-  "></div>
-
+  <div id="slotResult" style="margin-top:12px; min-height:24px; font-weight:bold;"></div>
 </div>
 
 <!-- ====== /SLOTS ====== -->
@@ -987,6 +969,13 @@ backHome.onclick = () => {
   slotsScreen.style.display = "none";
   homeScreen.style.display = "block";
 };
+
+const slotBetEl = document.getElementById("slotBet");
+const betInput = document.getElementById("betInput");
+
+betInput.addEventListener("input", () => {
+  slotBetEl.innerText = `Ставка: ${betInput.value} ₽`;
+});
 
 </script>
 
