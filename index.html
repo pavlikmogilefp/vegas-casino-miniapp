@@ -970,8 +970,6 @@ backHome.onclick = () => {
   homeScreen.style.display = "block";
 };
 
-const slotBetEl = document.getElementById("slotBet");
-const betInput = document.getElementById("betInput");
 
 betInput.addEventListener("input", () => {
   slotBetEl.innerText = `Ставка: ${betInput.value} ₽`;
