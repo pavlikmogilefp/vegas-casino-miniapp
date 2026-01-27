@@ -427,16 +427,15 @@ body::after {
   display: block;
   margin-bottom: 8px;
   text-shadow: 0 0 12px rgba(176,38,255,0.9);
-  
-  .reel.win {
+}
+
+.reel.win {
   animation: winGlow 1s ease-in-out infinite alternate;
 }
 
 @keyframes winGlow {
   0% { box-shadow: 0 0 15px #ffea00, 0 0 25px #ffea00; }
   100% { box-shadow: 0 0 30px #ffd700, 0 0 45px #ffd700; }
-}
-  
 }
 
 /* ---------- Кнопки ---------- */
@@ -1280,6 +1279,7 @@ if (win > 0) {
       win > 0
         ? `🎉 Вы выиграли ${win} ₽ (x${multiplier})`
         : "😢 Попробуйте ещё раз!";
+  }, 1800);
 
 </script>
 
