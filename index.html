@@ -708,7 +708,7 @@ button:active {
 
   <!-- Табло баланса и ставки -->
   <div id="slotInfo" style="display:flex; justify-content:space-between; margin-bottom:12px;">
-    <div id="slotBalance">🪙 1000 ₽</div>
+    <div id="slotBalance"></div>
     <div id="slotBet">Ставка: 20 ₽</div>
   </div>
 
@@ -976,6 +976,58 @@ const betInput = document.getElementById("betInput");
 betInput.addEventListener("input", () => {
   slotBetEl.innerText = `Ставка: ${betInput.value} ₽`;
 });
+
+const slotBalanceEl = document.getElementById("slotBalance");
+function updateSlotBalance() {
+    slotBalanceEl.innerText = `${CURRENCY_ICON} ${balance} ${CURRENCY_NAME}`;
+}
+updateSlotBalance(); // начальное отображение
+
+const slotBalanceEl = document.getElementById("slotBalance");
+const betInput = document.getElementById("betInput");
+
+function updateSlotBalance() {
+    slotBalanceEl.innerText = `${CURRENCY_ICON} ${balance} ${CURRENCY_NAME}`;
+}
+updateSlotBalance(); // начальное отображение
+
+// ---- Сюда вставляем обработчик кнопки Крутить 🎰 ----
+document.getElementById("spinSlot").onclick = () => {
+    const bet = parseInt(betInput.value);
+    if (isNaN(bet) || bet <= 0) return alert("Введите корректную ставку!");
+    if (bet > balance) return alert("Недостаточно средств!");
+
+    balance -= bet; // списываем ставку
+    updateSlotBalance();
+    balanceEl.innerText = `${CURRENCY_ICON} ${balance} ${CURRENCY_NAME}`;
+    localStorage.setItem(balanceKey, balance);
+
+    // Генерируем случайный результат
+    const symbols = ["🍒","🍋","🍊","🍉","⭐","💎"];
+    const reels = document.querySelectorAll(".reel");
+    let multiplier = 0;
+
+    reels.forEach(reel => {
+        const sym = symbols[Math.floor(Math.random()*symbols.length)];
+        reel.innerText = sym;
+    });
+
+    // Простейшая логика выигрыша
+    if (reels[0].innerText === reels[1].innerText && reels[1].innerText === reels[2].innerText) {
+        multiplier = 5; // x5 к ставке
+    } else if (reels[0].innerText === reels[1].innerText || reels[1].innerText === reels[2].innerText) {
+        multiplier = 2; // два одинаковых
+    }
+
+    const win = bet * multiplier;
+    balance += win; // прибавляем выигрыш
+    updateSlotBalance();
+    balanceEl.innerText = `${CURRENCY_ICON} ${balance} ${CURRENCY_NAME}`;
+    localStorage.setItem(balanceKey, balance);
+
+    document.getElementById("slotResult").innerText =
+        win > 0 ? `🎉 Вы выиграли ${win} ${CURRENCY_NAME}!` : "😢 Попробуйте еще раз!";
+};
 
 </script>
 
