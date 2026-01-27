@@ -257,10 +257,168 @@ body::before {
   50% { text-shadow: 0 0 20px var(--neon-soft); }
 }
 
+/* ---------- NEON BACKGROUND LINES ---------- */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(176,38,255,0.05) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: -2;
+}
+
+.neon-lines {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  z-index: -3;
+}
+
+.neon-lines span {
+  position: absolute;
+  display: block;
+  width: 2px;
+  height: 120%;
+  background: linear-gradient(to bottom, rgba(176,38,255,0.1), rgba(123,44,255,0.3), rgba(176,38,255,0.1));
+  animation: neonMoveLines linear infinite;
+}
+
+@keyframes neonMoveLines {
+  0% {
+    transform: translateY(-120%);
+  }
+  100% {
+    transform: translateY(120%);
+  }
+}
+
+/* ---------- Динамический неоновый фон ---------- */
+.neon-lines {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  z-index: -3;
+  pointer-events: none;
+}
+
+.neon-lines span {
+  position: absolute;
+  display: block;
+  width: 2px;
+  height: 120%;
+  background: linear-gradient(
+    to bottom,
+    rgba(176,38,255,0.1),
+    rgba(123,44,255,0.3),
+    rgba(176,38,255,0.1)
+  );
+  animation: neonMove 15s linear infinite, neonGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes neonMove {
+  0% {
+    transform: translateY(-120%) translateX(0) rotate(0deg);
+  }
+  100% {
+    transform: translateY(120%) translateX(50px) rotate(5deg);
+  }
+}
+
+@keyframes neonGlow {
+  0% {
+    opacity: 0.2;
+    box-shadow: 0 0 4px rgba(176,38,255,0.2);
+  }
+  50% {
+    opacity: 0.7;
+    box-shadow: 0 0 12px rgba(176,38,255,0.7);
+  }
+  100% {
+    opacity: 0.2;
+    box-shadow: 0 0 4px rgba(176,38,255,0.2);
+  }
+}
+
+/* ---------- Парящие неоновые круги ---------- */
+.neon-circles {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  z-index: -2;
+  pointer-events: none;
+}
+
+.neon-circles span {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  background: rgba(176,38,255,0.15);
+  box-shadow: 0 0 20px rgba(176,38,255,0.6), 0 0 40px rgba(123,44,255,0.4);
+  animation: floatUp linear infinite, pulse 3s ease-in-out infinite alternate;
+  opacity: 0.7;
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(120vh) translateX(0) scale(0.5);
+  }
+  100% {
+    transform: translateY(-20vh) translateX(50px) scale(1);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.4;
+    box-shadow: 0 0 10px rgba(176,38,255,0.4);
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+    box-shadow: 0 0 30px rgba(176,38,255,0.8);
+  }
+  100% {
+    transform: scale(0.8);
+    opacity: 0.4;
+    box-shadow: 0 0 10px rgba(176,38,255,0.4);
+  }
+}
+
 </style>
 </head>
 
 <body>
+
+<div class="neon-lines">
+  <span style="left:5%; animation-duration:16s;"></span>
+  <span style="left:15%; animation-duration:22s;"></span>
+  <span style="left:30%; animation-duration:18s;"></span>
+  <span style="left:45%; animation-duration:20s;"></span>
+  <span style="left:60%; animation-duration:19s;"></span>
+  <span style="left:75%; animation-duration:21s;"></span>
+  <span style="left:90%; animation-duration:17s;"></span>
+</div>
+
+<div class="neon-lines">
+  <span style="left:10%; animation-duration:18s;"></span>
+  <span style="left:25%; animation-duration:22s;"></span>
+  <span style="left:40%; animation-duration:20s;"></span>
+  <span style="left:55%; animation-duration:24s;"></span>
+  <span style="left:70%; animation-duration:19s;"></span>
+  <span style="left:85%; animation-duration:21s;"></span>
+</div>
+
+<div class="neon-circles">
+  <span style="left:10%; width:50px; height:50px; animation-duration:18s;"></span>
+  <span style="left:25%; width:30px; height:30px; animation-duration:22s;"></span>
+  <span style="left:40%; width:60px; height:60px; animation-duration:20s;"></span>
+  <span style="left:55%; width:40px; height:40px; animation-duration:25s;"></span>
+  <span style="left:70%; width:35px; height:35px; animation-duration:19s;"></span>
+  <span style="left:85%; width:50px; height:50px; animation-duration:21s;"></span>
+</div>
 
 <div class="top">
   <div class="user">
