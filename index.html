@@ -665,51 +665,73 @@ button:active {
   100% { transform: translateY(-10px); }
 }
 
-/* ===== BIG WIN EFFECTS ===== */
+/* ===== ULTRA BIG / MEGA WIN ===== */
 
-@keyframes screenShake {
-  0% { transform: translate(0, 0); }
-  20% { transform: translate(-6px, 4px); }
-  40% { transform: translate(6px, -4px); }
-  60% { transform: translate(-4px, -6px); }
-  80% { transform: translate(4px, 6px); }
-  100% { transform: translate(0, 0); }
+@keyframes brutalShake {
+  0% { transform: translate(0,0) rotate(0deg); }
+  15% { transform: translate(-12px, 8px) rotate(-1deg); }
+  30% { transform: translate(12px, -8px) rotate(1deg); }
+  45% { transform: translate(-10px, -10px) rotate(-1deg); }
+  60% { transform: translate(10px, 10px) rotate(1deg); }
+  75% { transform: translate(-6px, 4px) rotate(0deg); }
+  100% { transform: translate(0,0) rotate(0deg); }
 }
 
-body.big-win {
-  animation: screenShake 0.6s ease-in-out;
+body.mega-win {
+  animation: brutalShake 0.8s ease-in-out;
 }
 
-.big-win-overlay {
+.win-overlay {
   position: fixed;
   inset: 0;
-  background: radial-gradient(circle, rgba(255,215,0,0.35), rgba(176,38,255,0.15), transparent 70%);
+  background:
+    radial-gradient(circle at center,
+      rgba(255,215,0,0.45),
+      rgba(176,38,255,0.35),
+      rgba(0,0,0,0.95)
+    );
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
-  animation: fadeIn 0.3s ease;
+  z-index: 99999;
 }
 
-.big-win-text {
-  font-size: 48px;
-  font-weight: bold;
+.win-box {
+  text-align: center;
+  animation: zoomIn 0.4s ease;
+}
+
+.win-title {
+  font-size: 82px;
+  font-weight: 900;
+  text-transform: uppercase;
   color: #ffd700;
   text-shadow:
     0 0 20px #ffd700,
     0 0 40px #ffea00,
-    0 0 80px #ff00ff;
-  animation: popScale 0.6s ease infinite alternate;
+    0 0 80px #ff00ff,
+    0 0 120px #ff00ff;
+  animation: pulse 0.6s infinite alternate;
 }
 
-@keyframes popScale {
+.win-amount {
+  margin-top: 20px;
+  font-size: 48px;
+  font-weight: bold;
+  color: #ffffff;
+  text-shadow:
+    0 0 15px #b026ff,
+    0 0 30px #b026ff;
+}
+
+@keyframes zoomIn {
+  from { transform: scale(0.6); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes pulse {
   from { transform: scale(1); }
-  to { transform: scale(1.15); }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  to { transform: scale(1.12); }
 }
 
 </style>
@@ -1103,27 +1125,33 @@ function getMultiplier(a, b, c) {
 }
 
 function showBigWin(type, amount) {
-  document.body.classList.add("big-win");
+  document.body.classList.add("mega-win");
 
   const overlay = document.createElement("div");
-  overlay.className = "big-win-overlay";
+  overlay.className = "win-overlay";
 
-  const text = document.createElement("div");
-  text.className = "big-win-text";
+  const box = document.createElement("div");
+  box.className = "win-box";
 
-  if (type === "mega") {
-    text.textContent = `💎 MEGA WIN 💎\n${amount} ₽`;
-  } else {
-    text.textContent = `🔥 BIG WIN 🔥\n${amount} ₽`;
-  }
+  const title = document.createElement("div");
+  title.className = "win-title";
 
-  overlay.appendChild(text);
+  title.textContent =
+    type === "mega" ? "💎 MEGA WIN 💎" : "🔥 BIG WIN 🔥";
+
+  const sum = document.createElement("div");
+  sum.className = "win-amount";
+  sum.textContent = `+${amount} ₽`;
+
+  box.appendChild(title);
+  box.appendChild(sum);
+  overlay.appendChild(box);
   document.body.appendChild(overlay);
 
   setTimeout(() => {
     overlay.remove();
-    document.body.classList.remove("big-win");
-  }, 2500);
+    document.body.classList.remove("mega-win");
+  }, 2800);
 }
 
 // стартовое обновление
@@ -1172,7 +1200,6 @@ spinSlotBtn.onclick = () => {
     //const r1 = reels[0].textContent;
     //const r2 = reels[1].textContent;
     //const r3 = reels[2].textContent;
-// 🔴 ТЕСТ: ПРИНУДИТЕЛЬНЫЙ MEGA WIN
 const r1 = "💎";
 const r2 = "💎";
 const r3 = "💎";
