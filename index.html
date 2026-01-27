@@ -114,16 +114,22 @@ box-shadow: 0 0 25px rgba(176, 38, 255, 0.15);
 }
 
 /* ---------- BOTTOM ---------- */
-.bottom {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  background: linear-gradient(180deg, #0b0715, #05030a);
-  display: flex;
-  justify-content: space-around;
-  padding: 12px 0;
-  border-top: 1px solid rgba(176, 38, 255, 0.25);
-  animation: neonPulse 2.5s infinite;
+.button {
+  background: linear-gradient(135deg, var(--neon), var(--neon-soft));
+  border: none;
+  border-radius: 14px;
+  color: white;
+  font-weight: bold;
+  box-shadow:
+    0 0 12px rgba(176, 38, 255, 0.6),
+    0 0 25px rgba(176, 38, 255, 0.4);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+button:active {
+  transform: scale(0.95);
+  box-shadow:
+    0 0 6px rgba(176, 38, 255, 0.9);
 }
 
 .bottom div {
