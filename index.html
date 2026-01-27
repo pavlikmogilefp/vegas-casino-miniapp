@@ -848,6 +848,21 @@ body.mega-win {
   <div>💎 — <b>x20</b> / <b>x10</b></div>
 </div>
   </div>
+  
+  <!-- Лайв-лента спинов -->
+<div id="slotLiveFeed" style="
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(176,38,255,0.08);
+  border: 1px solid rgba(176,38,255,0.25);
+  box-shadow: inset 0 0 12px rgba(176,38,255,0.25);
+  font-size: 13px;
+  text-align: left;
+">
+  <div style="font-weight:bold; margin-bottom:6px; color:#cfa7ff;">
+    🎰 История спинов
+  </div>
 </div>
 
 <!-- ====== /SLOTS ====== -->
@@ -1091,6 +1106,35 @@ drawWheel();
 // обновление баланса
 // ===== SLOTS LOGIC (АККУРАТНО И ЧИСТО) =====
 
+// ===== LIVE FEED FOR SLOTS =====
+const slotLiveFeed = document.getElementById("slotLiveFeed");
+
+function addSlotFeed(text, win = false) {
+  if (!slotLiveFeed) return;
+
+  const item = document.createElement("div");
+  item.style.marginBottom = "6px";
+  item.style.padding = "6px 8px";
+  item.style.borderRadius = "10px";
+  item.style.background = win
+    ? "rgba(255,215,0,0.15)"
+    : "rgba(176,38,255,0.12)";
+  item.style.boxShadow = win
+    ? "0 0 10px rgba(255,215,0,0.6)"
+    : "0 0 10px rgba(176,38,255,0.25)";
+  item.style.color = win ? "#ffd86b" : "#aaa";
+
+  item.textContent = text;
+
+  // добавляем сверху
+  slotLiveFeed.insertBefore(item, slotLiveFeed.children[1]);
+
+  // максимум 6 записей
+  if (slotLiveFeed.children.length > 7) {
+    slotLiveFeed.removeChild(slotLiveFeed.lastChild);
+  }
+}
+
 // элементы уже существуют
 const spinSlotBtn = document.getElementById("spinSlot");
 
@@ -1226,7 +1270,19 @@ const r3 = "💎";
       win > 0
         ? `🎉 Вы выиграли ${win} ₽ (x${multiplier})`
         : "😢 Попробуйте ещё раз!";
+        
   }, 1800);
+  if (win > 0) {
+  addSlotFeed(
+    `🎉 ${r1} ${r2} ${r3} → +${win} ₽ (x${multiplier})`,
+    true
+  );
+} else {
+  addSlotFeed(
+    `😢 ${r1} ${r2} ${r3} → проигрыш`,
+    false
+  );
+}
 };
 
 </script>
