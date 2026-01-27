@@ -693,8 +693,10 @@ button:active {
 </div>
 
 <!-- ====== SLOTS ====== -->
+<!-- ====== SLOTS ====== -->
 <div id="slotsScreen" style="display:none;">
   <button id="backHome" style="margin-bottom:10px;">← Назад</button>
+  
   <div id="slots" style="
     margin: 20px auto;
     padding: 20px;
@@ -706,20 +708,18 @@ button:active {
   ">
     <h2 style="margin-bottom:12px;">🎰 Слоты</h2>
 
-    <!-- Табло баланса (ставка убрана) -->
-    <div id="slotInfo" style="display:flex; justify-content:flex-start; margin-bottom:12px;">
-      <div id="slotBalance"></div>
-    </div>
+    <!-- Баланс сверху -->
+    <div id="slotBalance" style="margin-bottom:12px; font-weight:bold; text-align:left;"></div>
 
     <!-- Барабаны -->
-    <div id="reels" style="display:flex; justify-content:center; gap:10px;">
+    <div id="reels" style="display:flex; justify-content:center; gap:10px; margin-bottom:12px;">
       <div class="reel">🍒</div>
       <div class="reel">🍋</div>
       <div class="reel">🍊</div>
     </div>
 
     <!-- Поле для изменения ставки -->
-    <div style="margin-top:10px;">
+    <div style="margin-bottom:12px;">
       Ставка:
       <input id="betInput" type="number" value="20" min="1" style="
         width: 80px;
@@ -731,11 +731,11 @@ button:active {
       "> ₽
     </div>
 
-    <!-- Кнопка -->
-    <button id="spinSlot" style="margin-top:14px; padding: 10px 20px;">Крутить 🎰</button>
+    <!-- Кнопка крутить -->
+    <button id="spinSlot" style="margin-bottom:12px; padding: 10px 20px;">Крутить 🎰</button>
 
     <!-- Результат -->
-    <div id="slotResult" style="margin-top:12px; min-height:24px; font-weight:bold;"></div>
+    <div id="slotResult" style="min-height:24px; font-weight:bold;"></div>
   </div>
 </div>
 
@@ -975,63 +975,56 @@ betInput.addEventListener("input", () => {
   slotBetEl.innerText = `Ставка: ${betInput.value} ₽`;
 });
 
-// Функция обновления баланса в слотах
+// Баланс пользователя
+let balance = parseInt(localStorage.getItem('balance')) || 1250;
+
+// Элементы
+const slotBalanceEl = document.getElementById('slotBalance');
+const slotResultEl = document.getElementById('slotResult');
+const betInput = document.getElementById('betInput');
+const reels = document.querySelectorAll(".reel");
+
+// Функция обновления баланса
 function updateSlotBalance() {
-    slotBalanceEl.innerText = `${CURRENCY_ICON} ${balance} ${CURRENCY_NAME}`;
-}
-updateSlotBalance(); // начальное отображение
-
-// Обновление текста ставки при изменении
-const slotBalanceEl = document.getElementById("slotBalance");
-const slotBetEl = document.getElementById("slotBet");
-
-// Функция обновления баланса и ставки
-function updateSlotDisplay() {
-    slotBalanceEl.innerText = `${CURRENCY_ICON} ${balance} ${CURRENCY_NAME}`;
-    slotBetEl.innerText = `Ставка: ${betInput.value} ${CURRENCY_NAME}`;
+  slotBalanceEl.textContent = `Баланс: ${balance} ₽`;
 }
 
-// начальное отображение
-updateSlotDisplay();
+// Начальное отображение
+updateSlotBalance();
 
-// Обновляем при изменении input
-betInput.addEventListener("input", updateSlotDisplay);
+// Кнопка крутить
+document.getElementById("spinSlot").addEventListener("click", () => {
+  const bet = parseInt(betInput.value);
+  if (isNaN(bet) || bet <= 0) return alert("Введите корректную ставку!");
+  if (bet > balance) return alert("Недостаточно средств!");
 
-// Обработчик кнопки "Крутить 🎰"
-document.getElementById("spinSlot").onclick = () => {
-    const bet = parseInt(betInput.value);
-    if (isNaN(bet) || bet <= 0) return alert("Введите корректную ставку!");
-    if (bet > balance) return alert("Недостаточно средств!");
+  balance -= bet; // списываем ставку
+  updateSlotBalance();
+  localStorage.setItem('balance', balance);
 
-    balance -= bet; // списываем ставку
-    updateSlotDisplay();
-    localStorage.setItem(balanceKey, balance);
+  // Генерируем случайные символы
+  const symbols = ["🍒","🍋","🍊","🍉","⭐","💎"];
+  reels.forEach(reel => {
+    const sym = symbols[Math.floor(Math.random() * symbols.length)];
+    reel.textContent = sym;
+  });
 
-    // Генерируем случайный результат
-    const symbols = ["🍒","🍋","🍊","🍉","⭐","💎"];
-    const reels = document.querySelectorAll(".reel");
-    let multiplier = 0;
+  // Логика выигрыша
+  let multiplier = 0;
+  if (reels[0].textContent === reels[1].textContent && reels[1].textContent === reels[2].textContent) {
+    multiplier = 5; // три одинаковых
+  } else if (reels[0].textContent === reels[1].textContent || reels[1].textContent === reels[2].textContent) {
+    multiplier = 2; // два одинаковых
+  }
 
-    reels.forEach(reel => {
-        const sym = symbols[Math.floor(Math.random()*symbols.length)];
-        reel.innerText = sym;
-    });
+  const win = bet * multiplier;
+  balance += win;
+  updateSlotBalance();
+  localStorage.setItem('balance', balance);
 
-    // Простейшая логика выигрыша
-    if (reels[0].innerText === reels[1].innerText && reels[1].innerText === reels[2].innerText) {
-        multiplier = 5; // x5 к ставке
-    } else if (reels[0].innerText === reels[1].innerText || reels[1].innerText === reels[2].innerText) {
-        multiplier = 2; // два одинаковых
-    }
+  slotResultEl.textContent = win > 0 ? `🎉 Вы выиграли ${win} ₽!` : "😢 Попробуйте еще раз!";
+});
 
-    const win = bet * multiplier;
-    balance += win; // прибавляем выигрыш
-    updateSlotDisplay();
-    localStorage.setItem(balanceKey, balance);
-
-    document.getElementById("slotResult").innerText =
-        win > 0 ? `🎉 Вы выиграли ${win} ${CURRENCY_NAME}!` : "😢 Попробуйте еще раз!";
-};
 </script>
 
 </body>
