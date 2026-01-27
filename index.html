@@ -1232,36 +1232,36 @@ const multiplier = getMultiplier(r1, r2, r3);
 const win = bet * multiplier;
 
 // Обновляем баланс сразу
-if (win > 0) {
-  reels.forEach(r => r.classList.add("win"));
-
-  // анимированное увеличение баланса
-  const startBalance = parseInt(balanceEl.dataset.prevBalance || balance);
-  const endBalance = startBalance + win;
-  const duration = 1000; // 1 секунда
+function animateWin(winAmount) {
+  const startBalance = parseInt(balanceEl.dataset.prevBalance) || 0;
+  const endBalance = startBalance + winAmount;
+  const duration = 1000; // миллисекунды
   const startTime = performance.now();
 
-  function animateBalance(time) {
+  function animate(time) {
     const elapsed = time - startTime;
     const progress = Math.min(elapsed / duration, 1);
     const current = Math.floor(startBalance + (endBalance - startBalance) * progress);
-    balanceEl.innerText = `${CURRENCY_ICON} ${current} ${CURRENCY_NAME}`;
+    balanceEl.innerText = `🪙 ${current} ₽`;
     if (progress < 1) {
-      requestAnimationFrame(animateBalance);
+      requestAnimationFrame(animate);
     } else {
       balanceEl.dataset.prevBalance = endBalance;
     }
   }
-  requestAnimationFrame(animateBalance);
 
-  // подсветка
+  // подсветка при выигрыше
   balanceEl.classList.add("win-glow");
-  setTimeout(() => balanceEl.classList.remove("win-glow"), 1000);
+  setTimeout(() => balanceEl.classList.remove("win-glow"), duration);
 
-  balance = endBalance;
+  requestAnimationFrame(animate);
+  return endBalance;
+}
+
+// Использование после выигрыша:
+if (win > 0) {
+  balance = animateWin(win); // баланс увеличивается с анимацией
   localStorage.setItem(balanceKey, balance);
-} else {
-  updateSlotBalance();
 }
 
 // Big / Mega Win
