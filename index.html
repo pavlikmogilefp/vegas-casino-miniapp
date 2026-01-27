@@ -805,6 +805,22 @@ button:active {
         text-align: center;
         font-weight: bold;
       "> ₽
+      
+      <!-- Лента личных выигрышей -->
+<div id="slotWinFeed" style="
+    margin-top: 12px;
+    padding: 10px;
+    height: 120px;
+    overflow-y: auto;
+    border-radius: 12px;
+    background: rgba(176,38,255,0.08);
+    border: 1px solid rgba(176,38,255,0.25);
+    font-size: 14px;
+    font-weight: bold;
+">
+    <div style="text-align:center; margin-bottom:6px;">🎰 Мои выигрыши:</div>
+    <ul id="winFeedList" style="margin:0; padding:0; list-style:none;"></ul>
+</div>
     </div>
 
     <!-- Кнопка крутить -->
@@ -1168,6 +1184,33 @@ spinSlotBtn.onclick = () => {
     }, 700 + index * 400);
   });
 
+function addWinToFeed(winAmount, multiplier) {
+    const feed = document.getElementById("winFeedList");
+    
+    const li = document.createElement("li");
+    li.textContent = `🎉 Вы выиграли ${winAmount} ₽ (x${multiplier})`;
+    
+    // анимация появления
+    li.style.opacity = 0;
+    li.style.transform = "translateY(10px)";
+    li.style.transition = "all 0.4s ease";
+    
+    feed.prepend(li); // добавляем сверху
+    
+    requestAnimationFrame(() => {
+        li.style.opacity = 1;
+        li.style.transform = "translateY(0)";
+    });
+    
+    // лимит ленты (максимум 10 записей)
+    if (feed.children.length > 10) {
+        feed.removeChild(feed.lastChild);
+    }
+    
+    // скролл вниз, если нужно
+    feed.scrollTop = feed.scrollHeight;
+}
+
   // расчёт выигрыша
   setTimeout(() => {
     const r1 = reels[0].textContent;
@@ -1181,6 +1224,7 @@ const win = bet * multiplier;
 if (win > 0) {
   balance += win;
   reels.forEach(r => r.classList.add("win"));
+  addWinToFeed(win, multiplier);
 }
 localStorage.setItem(balanceKey, balance);
 updateSlotBalance();
