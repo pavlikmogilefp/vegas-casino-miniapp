@@ -29,6 +29,8 @@ body {
   overflow-x: hidden;
 }
 
+
+
 /* ---------- TOP ---------- */
 .top {
   display: flex;
@@ -560,6 +562,8 @@ button:active {
   <span style="left:85%; width:50px; height:50px; animation-duration:21s;"></span>
 </div>
 
+<div id="homeScreen">
+
 <div class="top">
   <div class="user">
     <div class="avatar"></div>
@@ -572,12 +576,16 @@ button:active {
 
 <div class="games">
   <div class="game"><span>🚀</span>Crash</div>
-  <div class="game"><span>🎰</span>Slots</div>
+  <div class="game" id="openSlots"><span>🎰</span>Slots</div>
   <div class="game"><span>🎲</span>Dice</div>
   <div class="game" id="bonusBtn"><span>🎁</span>Bonus</div>
 </div>
 
+</div>
+
 <!-- ====== SLOTS ====== -->
+<div id="slotsScreen" style="display:none;">
+  <button id="backHome" style="margin-bottom:10px;">← Назад</button>
 <div id="slots" style="
   margin: 20px;
   padding: 20px;
@@ -601,6 +609,7 @@ button:active {
     <div class="reel">❔</div>
     <div class="reel">❔</div>
   </div>
+</div>
 
   <!-- Ставка -->
   <div style="margin-bottom: 10px;">
@@ -847,6 +856,24 @@ spinBtn.onclick = () => {
 
 // начальная отрисовка
 drawWheel();
+
+const homeScreen = document.getElementById("homeScreen");
+const slotsScreen = document.getElementById("slotsScreen");
+const openSlots = document.getElementById("openSlots");
+
+// открыть слоты
+openSlots.onclick = () => {
+  homeScreen.style.display = "none";
+  slotsScreen.style.display = "block";
+};
+
+const backHome = document.getElementById("backHome");
+
+backHome.onclick = () => {
+  slotsScreen.style.display = "none";
+  homeScreen.style.display = "block";
+};
+
 </script>
 
 </body>
