@@ -480,10 +480,12 @@ button:active {
   height: 0;
   border-left: 15px solid transparent;
   border-right: 15px solid transparent;
-  border-top: 60px solid #ff0000; /* чуть длиннее */
-  margin: 0 auto -30px auto;
-  position: relative;
-  z-index: 2;
+  border-bottom: 50px solid #ff0000; /* стрелка вниз */
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
   filter: drop-shadow(0 0 6px #ff0000);
 }
 
@@ -589,18 +591,7 @@ button:active {
   <canvas id="wheelCanvas" width="320" height="320" style="display:block;"></canvas>
 
   <!-- Стрелка над колесом -->
-<div id="arrow" style="
-  width: 0;
-  height: 0;
-  border-left: 15px solid transparent;
-  border-right: 15px solid transparent;
-  border-bottom: 50px solid #ff0000; /* стрелка вниз */
-  position: absolute;
-  top: -25px; /* немного выше центра */
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
-"></div>
+<div id="arrow"></div>
 
 <!-- Кнопка КРУТИТЬ -->
 <button id="spinBtn" style="
