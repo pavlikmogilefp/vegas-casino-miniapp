@@ -116,16 +116,18 @@ animation: floatCard 5s ease-in-out infinite;
 }
 
 /* ---------- BOTTOM ---------- */
-.button {
-  background: linear-gradient(135deg, var(--neon), var(--neon-soft));
-  border: none;
-  border-radius: 14px;
-  color: white;
-  font-weight: bold;
-  box-shadow:
-    0 0 12px rgba(176, 38, 255, 0.6),
-    0 0 25px rgba(176, 38, 255, 0.4);
-  transition: transform .2s ease, box-shadow .2s ease;
+..bottom {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: linear-gradient(180deg, #0b0715, #05030a);
+  display: flex; /* Важно! */
+  justify-content: space-between; /* Распределяем кнопки */
+  align-items: center;           /* Выравниваем по вертикали */
+  padding: 0 20px;
+  border-top: 1px solid rgba(176, 38, 255, 0.25);
+  animation: neonPulse 2.5s infinite;
+  z-index: 5;
 }
 
 button:active {
