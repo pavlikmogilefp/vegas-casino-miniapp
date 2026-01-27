@@ -722,12 +722,12 @@ function drawWheel() {
     ctx.shadowOffsetY = 0;
     
     // текст
-ctx.save();
-ctx.translate(centerX, centerY);
-ctx.rotate((startAngle + endAngle) / 2);
+    ctx.save();
+ctx.translate(centerX, centerY); // смещаемся в центр колеса
+ctx.rotate((startAngle + endAngle) / 2); // поворот к середине сектора
 
-// градиент для текста
-const gradient = ctx.createLinearGradient(0, -radius, 0, radius);
+// создаем вертикальный градиент текста
+const gradient = ctx.createLinearGradient(0, -radius + 10, 0, radius - 10);
 gradient.addColorStop(0, "#b026ff");
 gradient.addColorStop(0.5, "#ff00ff");
 gradient.addColorStop(1, "#7b2cff");
@@ -735,12 +735,17 @@ gradient.addColorStop(1, "#7b2cff");
 ctx.fillStyle = gradient;
 ctx.font = "bold 16px Arial";
 ctx.textAlign = "right";
+ctx.textBaseline = "middle"; // текст по вертикали в центре
+
 ctx.shadowColor = "rgba(255,0,255,0.7)";
 ctx.shadowBlur = 8;
 
 // добавляем ₽ к цифрам
-ctx.fillText(sector.label + " ₽", radius - 10, 5);
+ctx.fillText(sector.label + " ₽", radius - 10, 0);
+
 ctx.restore();
+  });
+}
 
 // Крутилка
 spinBtn.onclick = () => {
