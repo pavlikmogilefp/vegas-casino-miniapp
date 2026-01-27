@@ -823,6 +823,13 @@ document.getElementById("backHome").addEventListener("click", () => {
 
 const usernameEl = document.getElementById("username");
 const balanceEl = document.querySelector(".balance");
+
+// ===== SLOTS ELEMENTS =====
+const slotBalanceEl = document.getElementById("slotBalance");
+const betInput = document.getElementById("betInput");
+const reels = document.querySelectorAll("#reels .reel");
+const slotResultEl = document.getElementById("slotResult");
+
 const bonusBtn = document.getElementById("bonusBtn");
 const bonusModal = document.getElementById("bonusModal");
 const closeBonus = document.getElementById("closeBonus");
@@ -1017,9 +1024,11 @@ function getMultiplier(r1, r2, r3) {
   return 0; // все разные → проигрыш
 }
 
-  let multiplier = 0;
-  if (reels[0].textContent === reels[1].textContent && reels[1].textContent === reels[2].textContent) multiplier = 5;
-  else if (reels[0].textContent === reels[1].textContent || reels[1].textContent === reels[2].textContent) multiplier = 2;
+const r1 = reels[0].textContent;
+const r2 = reels[1].textContent;
+const r3 = reels[2].textContent;
+
+const multiplier = getMultiplier(r1, r2, r3);
 
   const win = bet * multiplier;
   balance += win;
