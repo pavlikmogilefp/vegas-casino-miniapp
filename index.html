@@ -613,6 +613,7 @@ button:active {
 </div>
 
 <script>
+// ---------- TELEGRAM INIT ----------
 const tg = window.Telegram.WebApp;
 tg.ready();
 tg.expand();
@@ -622,15 +623,13 @@ const balanceEl = document.querySelector(".balance");
 const bonusBtn = document.getElementById("bonusBtn");
 const bonusModal = document.getElementById("bonusModal");
 const closeBonus = document.getElementById("closeBonus");
-const wheelImg = document.getElementById("wheel");
 const spinBtn = document.getElementById("spinBtn");
 const bonusInfo = document.getElementById("bonusInfo");
-const spinSound = document.getElementById("spinSound");
 
+// ---------- CURRENCY & BALANCE ----------
 const CURRENCY_ICON = "🪙";
 const CURRENCY_NAME = "₽";
 
-// ---------- USER & BALANCE ----------
 let userId = "guest";
 if (tg.initDataUnsafe?.user) {
     userId = tg.initDataUnsafe.user.id;
@@ -654,100 +653,129 @@ bonusBtn.onclick = () => {
 
 closeBonus.onclick = () => bonusModal.style.display = "none";
 
-// ---------- CANVAS & SECTORS ----------
-const wheelContainer = wheelImg.parentElement;
-const canvas = document.createElement("canvas");
-canvas.width = wheelImg.offsetWidth;
-canvas.height = wheelImg.offsetHeight;
-canvas.style.position = "absolute";
-canvas.style.top = wheelImg.offsetTop + "px";
-canvas.style.left = wheelImg.offsetLeft + "px";
-canvas.style.pointerEvents = "none"; // чтобы не мешал кликам
-wheelContainer.appendChild(canvas);
+// ---------- CANVAS ----------
+const wheelContainer = document.createElement("div");
+wheelContainer.style.position = "relative";
+wheelContainer.style.width = "320px";
+wheelContainer.style.height = "320px";
+wheelContainer.style.margin = "0 auto 20px auto";
+bonusModal.querySelector("h3").after(wheelContainer);
 
+const canvas = document.createElement("canvas");
+canvas.width = 320;
+canvas.height = 320;
+canvas.style.display = "block";
+wheelContainer.appendChild(canvas);
 const ctx = canvas.getContext("2d");
+
+// ---------- SECTORS ----------
 const sectors = [
-    { label: "5", color: "#ff0044" },
-    { label: "10", color: "#ff6600" },
-    { label: "25", color: "#ffaa00" },
-    { label: "50", color: "#aaff00" },
-    { label: "100", color: "#00ff88" },
-    { label: "250", color: "#00aaff" },
-    { label: "500", color: "#aa00ff" },
-    { label: "1000", color: "#ff00aa" }
+    { label: "5", color: "#b026ff" },
+    { label: "10", color: "#7b2cff" },
+    { label: "25", color: "#b026ff" },
+    { label: "50", color: "#7b2cff" },
+    { label: "100", color: "#b026ff" },
+    { label: "250", color: "#7b2cff" },
+    { label: "500", color: "#b026ff" },
+    { label: "1000", color: "#7b2cff" }
 ];
 const sectorCount = sectors.length;
+let currentRotation = 0;
 
-// Рисуем сектора
-function drawSectors(rotation = 0) {
-    const cx = canvas.width / 2;
-    const cy = canvas.height / 2;
-    const radius = canvas.width / 2;
-    const angleStep = (2 * Math.PI) / sectorCount;
+// ---------- DRAW WHEEL ----------
+function drawWheel(rotation = 0) {
+    const cx = canvas.width/2;
+    const cy = canvas.height/2;
+    const radius = canvas.width/2 - 10;
+    const angleStep = (2*Math.PI)/sectorCount;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0,0,canvas.width,canvas.height);
 
+    // тень
+    ctx.save();
+    ctx.shadowColor = "#b026ff";
+    ctx.shadowBlur = 20;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+
+    // секторы
     for (let i = 0; i < sectorCount; i++) {
-        const start = i * angleStep + rotation;
+        const start = i*angleStep + rotation;
         const end = start + angleStep;
 
-        // сектор
         ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.arc(cx, cy, radius, start, end);
+        ctx.moveTo(cx,cy);
+        ctx.arc(cx,cy,radius,start,end);
         ctx.closePath();
         ctx.fillStyle = sectors[i].color;
         ctx.fill();
 
         // текст
         ctx.save();
-        ctx.translate(cx, cy);
-        ctx.rotate(start + angleStep / 2);
+        ctx.translate(cx,cy);
+        ctx.rotate(start + angleStep/2);
         ctx.fillStyle = "#fff";
-        ctx.font = "bold 18px Arial";
+        ctx.font = "bold 20px Arial";
         ctx.textAlign = "right";
-        ctx.fillText(sectors[i].label, radius - 10, 5);
+        ctx.fillText(sectors[i].label, radius-10, 6);
         ctx.restore();
     }
+    ctx.restore();
+
+    // центр круга
+    ctx.beginPath();
+    ctx.arc(cx,cy,30,0,2*Math.PI);
+    ctx.fillStyle = "#0b0715";
+    ctx.fill();
 }
 
-// начальная отрисовка
-drawSectors(0);
+// ---------- DRAW ARROW ----------
+const arrow = document.createElement("div");
+arrow.style.width = "0";
+arrow.style.height = "0";
+arrow.style.borderLeft = "15px solid transparent";
+arrow.style.borderRight = "15px solid transparent";
+arrow.style.borderBottom = "40px solid #ff0044";
+arrow.style.position = "absolute";
+arrow.style.top = "-40px";
+arrow.style.left = "50%";
+arrow.style.transform = "translateX(-50%)";
+wheelContainer.appendChild(arrow);
 
 // ---------- SPIN ----------
-let currentRotation = 0;
+const spinSound = document.createElement("audio");
+spinSound.src = "spin.mp3.mp3"; // укажите ваш файл
+wheelContainer.appendChild(spinSound);
 
 spinBtn.onclick = () => {
     spinBtn.disabled = true;
     spinSound.currentTime = 0;
     spinSound.play();
 
-    const spins = Math.floor(Math.random() * 4) + 4;
-    const randomSector = Math.floor(Math.random() * sectorCount);
-    const anglePerSector = 360 / sectorCount;
-    const targetRotation = spins * 360 + randomSector * anglePerSector + anglePerSector/2;
-
+    const spins = Math.floor(Math.random()*4)+4;
+    const randomSector = Math.floor(Math.random()*sectorCount);
+    const anglePerSector = 360/sectorCount;
+    const targetRotation = spins*360 + randomSector*anglePerSector + anglePerSector/2;
     const duration = 4000;
     const start = performance.now();
     const startRotation = currentRotation;
 
-    function animate(time) {
-        const elapsed = time - start;
-        const progress = Math.min(elapsed / duration, 1);
-        const eased = 1 - Math.pow(1 - progress, 3); // easeOutCubic
-        const rot = startRotation + (targetRotation - startRotation) * eased;
+    function animate(time){
+        const elapsed = time-start;
+        const progress = Math.min(elapsed/duration,1);
+        const eased = 1 - Math.pow(1-progress,3);
+        const rot = startRotation + (targetRotation-startRotation)*eased;
 
-        wheelImg.style.transform = `rotate(${rot}deg)`;
-        drawSectors(rot * Math.PI / 180);
+        drawWheel(rot*Math.PI/180);
 
-        if (progress < 1) {
+        if(progress<1){
             requestAnimationFrame(animate);
         } else {
-            currentRotation = rot % 360;
+            currentRotation = rot%360;
             const reward = parseInt(sectors[randomSector].label);
             balance += reward;
             balanceEl.innerText = `${CURRENCY_ICON} ${balance} ${CURRENCY_NAME}`;
-            localStorage.setItem(balanceKey, balance);
+            localStorage.setItem(balanceKey,balance);
             bonusInfo.innerText = `🎉 Ты выиграл ${reward} ${CURRENCY_NAME}`;
             spinBtn.disabled = false;
         }
@@ -755,6 +783,9 @@ spinBtn.onclick = () => {
 
     requestAnimationFrame(animate);
 };
+
+// ---------- INITIAL DRAW ----------
+drawWheel();
 </script>
 
 </body>
