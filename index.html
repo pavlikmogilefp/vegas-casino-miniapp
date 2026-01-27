@@ -723,14 +723,24 @@ function drawWheel() {
 
     // текст
     ctx.save();
-    ctx.translate(centerX, centerY);
-    ctx.rotate((startAngle + endAngle) / 2);
-    ctx.fillStyle = "#fff";
-    ctx.font = "bold 16px Arial";
-    ctx.textAlign = "right";
-    ctx.fillText(sector.label, radius - 10, 5);
-    ctx.restore();
-  });
+ctx.translate(centerX, centerY);
+ctx.rotate((startAngle + endAngle) / 2);
+
+// градиент для текста
+const gradient = ctx.createLinearGradient(0, -radius, 0, radius);
+gradient.addColorStop(0, "#b026ff");
+gradient.addColorStop(0.5, "#ff00ff");
+gradient.addColorStop(1, "#7b2cff");
+
+ctx.fillStyle = gradient;
+ctx.font = "bold 16px Arial";
+ctx.textAlign = "right";
+ctx.shadowColor = "rgba(255,0,255,0.7)";
+ctx.shadowBlur = 8;
+
+// добавляем ₽ к цифрам
+ctx.fillText(sector.label + " ₽", radius - 10, 5);
+ctx.restore();
 }
 
 // Крутилка
