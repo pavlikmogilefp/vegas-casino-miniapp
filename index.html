@@ -577,6 +577,64 @@ button:active {
   <div class="game" id="bonusBtn"><span>🎁</span>Bonus</div>
 </div>
 
+<!-- ====== SLOTS ====== -->
+<div id="slots" style="
+  margin: 20px;
+  padding: 20px;
+  background: rgba(35,18,70,0.6);
+  border-radius: 18px;
+  text-align: center;
+  box-shadow: 0 0 25px rgba(176,38,255,0.4);
+">
+
+  <h2 style="margin-bottom: 12px;">🎰 Слоты</h2>
+
+  <!-- Барабаны -->
+  <div id="reels" style="
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    font-size: 48px;
+    margin-bottom: 15px;
+  ">
+    <div class="reel">❔</div>
+    <div class="reel">❔</div>
+    <div class="reel">❔</div>
+  </div>
+
+  <!-- Ставка -->
+  <div style="margin-bottom: 10px;">
+    Ставка:
+    <input id="betInput" type="number" value="10" min="1" style="
+      width: 80px;
+      padding: 6px;
+      border-radius: 8px;
+      border: none;
+      text-align: center;
+      font-weight: bold;
+    "> ₽
+  </div>
+
+  <!-- Кнопка -->
+  <button id="spinSlot" style="
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 12px;
+    cursor: pointer;
+  ">
+    Крутить 🎰
+  </button>
+
+  <!-- Результат -->
+  <div id="slotResult" style="
+    margin-top: 12px;
+    min-height: 24px;
+    font-weight: bold;
+  "></div>
+
+</div>
+
+<!-- ====== /SLOTS ====== -->
 <div class="bottom">
   <button>🏠 Главная</button>
   <button>🎮 Игры</button>
