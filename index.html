@@ -977,9 +977,6 @@ betInput.addEventListener("input", () => {
   slotBetEl.innerText = `Ставка: ${betInput.value} ₽`;
 });
 
-const slotBalanceEl = document.getElementById("slotBalance");
-const betInput = document.getElementById("betInput");
-
 // Функция обновления баланса в слотах
 function updateSlotBalance() {
     slotBalanceEl.innerText = `${CURRENCY_ICON} ${balance} ${CURRENCY_NAME}`;
