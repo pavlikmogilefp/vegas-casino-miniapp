@@ -997,6 +997,26 @@ document.getElementById("spinSlot").addEventListener("click", () => {
     reel.textContent = sym;
   });
 
+function getMultiplier(r1, r2, r3) {
+  if (r1 === r2 && r2 === r3) { // все три одинаковые
+    switch(r1) {
+      case "🍒": case "🍋": case "🍊": return 3;
+      case "🍉": return 4;
+      case "⭐": return 8;
+      case "💎": return 20;
+    }
+  } else if (r1 === r2 || r2 === r3 || r1 === r3) { // две одинаковые
+    let symbol = r1 === r2 ? r1 : (r2 === r3 ? r2 : r1);
+    switch(symbol) {
+      case "🍒": case "🍋": case "🍊": return 1.5;
+      case "🍉": return 2;
+      case "⭐": return 4;
+      case "💎": return 10;
+    }
+  }
+  return 0; // все разные → проигрыш
+}
+
   let multiplier = 0;
   if (reels[0].textContent === reels[1].textContent && reels[1].textContent === reels[2].textContent) multiplier = 5;
   else if (reels[0].textContent === reels[1].textContent || reels[1].textContent === reels[2].textContent) multiplier = 2;
