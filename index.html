@@ -1249,6 +1249,18 @@ spinSlotBtn.onclick = () => {
     const multiplier = getMultiplier(r1, r2, r3);
     const win = bet * multiplier;
 
+if (win > 0) {
+  addSlotFeed(
+    `🎉 ${r1} ${r2} ${r3} → +${win} ₽ (x${multiplier})`,
+    true
+  );
+} else {
+  addSlotFeed(
+    `😢 ${r1} ${r2} ${r3} → проигрыш`,
+    false
+  );
+}
+
     if (win > 0) {
   balance += win;
   reels.forEach(r => r.classList.add("win"));
@@ -1268,20 +1280,6 @@ spinSlotBtn.onclick = () => {
       win > 0
         ? `🎉 Вы выиграли ${win} ₽ (x${multiplier})`
         : "😢 Попробуйте ещё раз!";
-        
-  }, 1800);
-  if (win > 0) {
-  addSlotFeed(
-    `🎉 ${r1} ${r2} ${r3} → +${win} ₽ (x${multiplier})`,
-    true
-  );
-} else {
-  addSlotFeed(
-    `😢 ${r1} ${r2} ${r3} → проигрыш`,
-    false
-  );
-}
-};
 
 </script>
 
