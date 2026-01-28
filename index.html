@@ -187,11 +187,10 @@
   <!-- HOME SCREEN -->
 <div id="screen-home" class="screen active space-y-4">
 
-  <div class="card p-5 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 neon neon-animate">
-    <div id="go-mines" class="card p-5 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 neon neon-animate">
-    <h2 class="text-xl font-bold neon-text">Mines</h2>
-    <p class="text-sm opacity-80">Найдите алмазы, избегая мин</p>
-  </div>
+  <div id="go-mines" class="card p-5 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 neon neon-animate">
+  <h2 class="text-xl font-bold neon-text">Mines</h2>
+  <p class="text-sm opacity-80">Найдите алмазы, избегая мин</p>
+</div>
 
   <div class="grid grid-cols-2 gap-4">
     <div class="card p-4 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 neon neon-animate">
@@ -520,7 +519,7 @@
 
   function setActive(name) {
     Object.entries(screens).forEach(([key, el]) => {
-      el.classList.toggle('active', key === name);
+if (el) el.classList.toggle('active', key === name);
     });
 
     Object.entries(tabs).forEach(([key, btn]) => {
