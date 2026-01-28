@@ -92,6 +92,58 @@
 
   <!-- HOME SCREEN -->
   <div id="screen-home" class="screen active space-y-4">
+    
+    <!-- COINFLIP GAME SCREEN -->
+<div id="screen-coinflip" class="screen space-y-4">
+  <div class="text-xl font-bold neon-text mb-2">🪙 Орёл или Решка</div>
+
+  <div class="card p-5 rounded-2xl bg-white/5 border border-white/10">
+    <div class="text-sm text-white/70 mb-2">Выберите сторону</div>
+
+    <div class="grid grid-cols-2 gap-3">
+      <button id="cf-heads" class="py-4 rounded-2xl bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold neon active:scale-[0.98] transition">
+        ОРЁЛ · 1.96x
+      </button>
+      <button id="cf-tails" class="py-4 rounded-2xl bg-gradient-to-r from-cyan-400 to-purple-600 text-black font-bold neon active:scale-[0.98] transition">
+        РЕШКА · 1.96x
+      </button>
+    </div>
+
+    <div class="mt-4">
+      <div class="text-sm text-white/70 mb-2">Ставка</div>
+
+      <div class="flex items-center gap-3">
+        <button id="cf-minus" class="w-12 h-12 rounded-xl bg-black/40 border border-white/10 text-xl">−</button>
+
+        <div class="flex-1 text-center">
+          <div id="cf-bet" class="text-2xl font-extrabold">10 ₽</div>
+          <div class="text-xs text-white/50">min 10 ₽</div>
+        </div>
+
+        <button id="cf-plus" class="w-12 h-12 rounded-xl bg-black/40 border border-white/10 text-xl">+</button>
+      </div>
+
+      <div class="grid grid-cols-5 gap-2 mt-3">
+        <button class="cf-quick py-2 rounded-xl bg-black/40 border border-white/10 text-sm" data-v="10">10</button>
+        <button class="cf-quick py-2 rounded-xl bg-black/40 border border-white/10 text-sm" data-v="50">50</button>
+        <button class="cf-quick py-2 rounded-xl bg-black/40 border border-white/10 text-sm" data-v="100">100</button>
+        <button class="cf-quick py-2 rounded-xl bg-black/40 border border-white/10 text-sm" data-v="250">250</button>
+        <button class="cf-quick py-2 rounded-xl bg-black/40 border border-white/10 text-sm" data-v="MAX">MAX</button>
+      </div>
+
+      <button id="cf-play" class="mt-4 w-full py-4 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-700 neon neon-animate font-extrabold active:scale-[0.98] transition">
+        ПОДБРОСИТЬ МОНЕТУ
+      </button>
+    </div>
+  </div>
+
+  <div id="cf-message" class="text-sm text-white/60">Выбери сторону и сделай ставку.</div>
+
+  <button id="cf-back" class="w-full py-3 rounded-2xl bg-black/40 border border-white/10">
+    ← Назад на главную
+  </button>
+</div>
+    
     <!-- твои карточки игр — остаются внутри -->
     <!-- Mines -->
     <div class="card p-5 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 neon neon-animate">
@@ -111,9 +163,9 @@
       </div>
     </div>
 
-    <div class="card p-4 rounded-2xl bg-gradient-to-r from-yellow-400 to-orange-500 neon text-black font-bold">
-      Орёл или Решка
-    </div>
+<div id="go-coinflip" class="card p-4 rounded-2xl bg-gradient-to-r from-yellow-400 to-orange-500 neon text-black font-bold">
+  Орёл или Решка
+</div>
   </div>
 
   <!-- SLOTS SCREEN -->
@@ -226,6 +278,7 @@
     slots: document.getElementById('screen-slots'),
     wallet: document.getElementById('screen-wallet'),
     bonuses: document.getElementById('screen-bonuses'),
+    coinflip: document.getElementById('screen-coinflip'), // ← добавь
   };
 
   const tabs = {
@@ -371,6 +424,13 @@
       }
     });
   }
+  
+  // ===== Coinflip navigation =====
+const goCoinflip = document.getElementById('go-coinflip');
+const cfBack = document.getElementById('cf-back');
+
+if (goCoinflip) goCoinflip.addEventListener('click', () => setActive('coinflip'));
+if (cfBack) cfBack.addEventListener('click', () => setActive('home'));
   
 </script>
 
