@@ -30,25 +30,32 @@
   </style>
 </head>
 
-<body class="min-h-screen p-4">
+<body class="min-h-screen bg-black text-white">
 
-  <!-- HEADER -->
-  <div class="flex items-center justify-between mb-6">
+<!-- FIXED HEADER -->
+<div class="fixed top-0 left-0 right-0 z-50 px-4 py-3
+            bg-black/70 backdrop-blur-xl border-b border-white/10">
+
+  <div class="flex items-center justify-between">
     <div class="flex items-center gap-3">
-      <div class="w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 neon"></div>
+      <div class="w-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 neon"></div>
       <div>
-        <div class="font-bold">Игрок</div>
-        <div class="text-sm text-purple-300">LVL 1 · 0 XP</div>
+        <div class="text-sm font-bold leading-none">Игрок</div>
+        <div class="text-xs text-purple-300">LVL 1 · 0 XP</div>
       </div>
     </div>
 
-    <div class="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-purple-600 neon font-bold">
+    <div class="px-4 py-1.5 rounded-xl
+                bg-gradient-to-r from-cyan-400 to-purple-600
+                neon font-bold text-sm">
       5 000 ₽
     </div>
   </div>
 
+</div>
+
   <!-- GAMES -->
-  <div class="space-y-4">
+<div class="pt-24 px-4 space-y-4">
 
     <div class="p-5 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 neon">
       <h2 class="text-xl font-bold neon-text">Mines</h2>
@@ -73,13 +80,33 @@
 
   </div>
 
-  <!-- BOTTOM MENU -->
-  <div class="fixed bottom-0 left-0 right-0 bg-black/80 backdrop-blur p-3 flex justify-around">
-    <div class="neon-text text-cyan-400">🏠</div>
-    <div class="text-gray-500">🎰</div>
-    <div class="text-gray-500">💼</div>
-    <div class="text-gray-500">🎁</div>
+<!-- BOTTOM MENU -->
+<div class="fixed bottom-0 left-0 right-0 z-50
+            bg-black/80 backdrop-blur-xl
+            border-t border-white/10
+            flex justify-around py-3">
+
+  <div class="flex flex-col items-center text-cyan-400 neon-text text-sm">
+    🏠
+    <span class="text-xs">Главная</span>
   </div>
+
+  <div class="flex flex-col items-center text-gray-500 text-sm">
+    🎰
+    <span class="text-xs">Слоты</span>
+  </div>
+
+  <div class="flex flex-col items-center text-gray-500 text-sm">
+    💼
+    <span class="text-xs">Кошелёк</span>
+  </div>
+
+  <div class="flex flex-col items-center text-gray-500 text-sm">
+    🎁
+    <span class="text-xs">Бонусы</span>
+  </div>
+
+</div>
 
 <script>
   const tg = window.Telegram.WebApp;
