@@ -185,6 +185,42 @@
   box-shadow: 0 0 22px rgba(255,60,120,0.22);
 }
 
+/* Mines FX */
+@keyframes gemPop {
+  0%   { transform: scale(.85); filter: brightness(1); }
+  40%  { transform: scale(1.15); filter: brightness(1.35); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+.gem-pop { animation: gemPop .22s ease-out; }
+
+@keyframes mineBoom {
+  0%   { transform: scale(1); filter: brightness(1); }
+  20%  { transform: scale(1.08); filter: brightness(1.3); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+.mine-boom { animation: mineBoom .25s ease-out; }
+
+@keyframes screenRedFlash {
+  0% { opacity: 0; }
+  20% { opacity: .45; }
+  100% { opacity: 0; }
+}
+.mines-flash { animation: screenRedFlash .35s ease-out; }
+
+@keyframes screenBlueFlash {
+  0% { opacity: 0; }
+  25% { opacity: .35; }
+  100% { opacity: 0; }
+}
+.mines-flash-win { animation: screenBlueFlash .35s ease-out; }
+
+.mines-pulse-layer{
+  pointer-events:none;
+  position: fixed;
+  inset: 0;
+  opacity: 0;
+}
+
   </style>
 </head>
 
@@ -328,7 +364,8 @@
 
 <!-- MINES SCREEN -->
 <div id="screen-mines" class="screen space-y-4">
-  <div class="text-xl font-bold neon-text mb-2">💎 Mines</div>
+<div class="text-xl font-bold neon-text mb-2">💎 Mines</div>
+<div id="mines-pulse" class="mines-pulse-layer"></div>
 
   <div class="card p-5 rounded-2xl bg-white/5 border border-white/10 space-y-4">
     <div class="grid grid-cols-2 gap-3">
@@ -661,6 +698,7 @@ if (minesBack) minesBack.addEventListener('click', () => setActive('home'));
   // ===== MINES GAME =====
 const minesGrid = document.getElementById('mines-grid');
 const minesMsg = document.getElementById('mines-msg');
+const minesPulse = document.getElementById('mines-pulse');
 
 const minesBetEl = document.getElementById('mines-bet');
 const minesBetMinus = document.getElementById('mines-bet-minus');
@@ -689,6 +727,25 @@ function minesFormat() {
   if (minesCountEl) minesCountEl.textContent = String(minesCount);
 }
 
+function minesFlash(isWin) {
+  if (!minesPulse) return;
+
+  minesPulse.className = 'mines-pulse-layer';
+  minesPulse.style.background = isWin
+    ? 'radial-gradient(circle at 50% 35%, rgba(0,210,255,.22), rgba(0,0,0,0) 55%)'
+    : 'radial-gradient(circle at 50% 35%, rgba(255,60,120,.22), rgba(0,0,0,0) 55%)';
+
+  void minesPulse.offsetWidth; // restart
+  minesPulse.classList.add(isWin ? 'mines-flash-win' : 'mines-flash');
+}
+
+function popAnim(el, cls) {
+  if (!el) return;
+  el.classList.remove(cls);
+  void el.offsetWidth;
+  el.classList.add(cls);
+}
+
 function minesSetMultiplier() {
   // простая модель: чем больше открыто и чем больше мин — тем выше
   const safeCells = GRID_SIZE - minesCount;
@@ -707,8 +764,18 @@ function minesSetMultiplier() {
 
 function minesEnableCashout(enable) {
   if (!minesCashout) return;
+
   minesCashout.disabled = !enable;
   minesCashout.classList.toggle('opacity-60', !enable);
+
+  if (enable) {
+    minesCashout.classList.add('neon','neon-animate');
+    minesCashout.classList.remove('bg-black/40');
+    minesCashout.classList.add('bg-gradient-to-r','from-cyan-400','to-purple-600','text-black');
+  } else {
+    minesCashout.classList.remove('neon','neon-animate','bg-gradient-to-r','from-cyan-400','to-purple-600','text-black');
+    minesCashout.classList.add('bg-black/40');
+  }
 }
 
 function minesResetUI() {
@@ -813,6 +880,8 @@ function minesOpenCell(i, cellEl) {
 
     cellEl.classList.add('mine', 'open');
     cellEl.textContent = '💣';
+    popAnim(cellEl, 'mine-boom');
+minesFlash(false);
 
     minesRevealAll();
 
@@ -832,6 +901,7 @@ function minesOpenCell(i, cellEl) {
   minesOpened++;
   cellEl.classList.add('safe', 'open');
   cellEl.textContent = '💎';
+  popAnim(cellEl, 'gem-pop');
 
   const mult = minesSetMultiplier();
 
@@ -856,6 +926,7 @@ function minesCashoutNow() {
   const payout = Math.floor(minesBaseBet * mult);
 
   setBalance(getBalance() + payout);
+  minesFlash(true);
 
   if (minesMsg) minesMsg.textContent = `✅ Ты забрал: +${payout.toLocaleString('ru-RU')} ₽ (${mult.toFixed(2)}x)`;
 
