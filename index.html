@@ -139,6 +139,20 @@
 .pulse-win { animation: screenPulseWin .55s ease-out; }
 .pulse-lose { animation: screenPulseLose .35s ease-out; }
 
+.particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  opacity: 0.95;
+  filter: blur(.2px);
+}
+
+@keyframes particleFly {
+  0%   { transform: translate(0,0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) scale(.2); opacity: 0; }
+}
+
   </style>
 </head>
 
@@ -202,6 +216,7 @@
 
 <!-- screen pulse overlay -->
 <div id="cf-pulse" class="pointer-events-none fixed inset-0 opacity-0"></div>
+<div id="cf-particles" class="pointer-events-none fixed inset-0"></div>
 
 <!-- Coin display -->
 <div class="card p-5 rounded-2xl bg-black/30 border border-white/10">
@@ -792,6 +807,7 @@ if (coinImg) {
         if (cfMsg) cfMsg.textContent = `✅ Победа! Выпало: ${result === 'heads' ? 'Орёл' : 'Решка'} · +${payout} ₽`;
         showFloat(`+${(payout - cfBet).toLocaleString('ru-RU')} ₽`, true);
         pulseScreen(true);
+        spawnWinParticles();
 if (coinImg) {
   coinImg.classList.remove('win-pop');
   void coinImg.offsetWidth;
@@ -839,6 +855,56 @@ if (window.Telegram?.WebApp?.HapticFeedback) {
       renderBalance();
     }, 900);
   });
+}
+  
+  const cfParticles = document.getElementById('cf-particles');
+
+function spawnWinParticles() {
+  if (!cfParticles) return;
+
+  // центр экрана (примерно там где монета)
+  const cx = window.innerWidth / 2;
+  const cy = window.innerHeight * 0.33;
+
+  const count = 22;
+
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+
+    // случайный неон-цвет (розовый/фиолетовый/голубой/зелёный)
+    const colors = [
+      'rgba(255,0,255,0.95)',
+      'rgba(160,80,255,0.95)',
+      'rgba(0,210,255,0.95)',
+      'rgba(80,255,170,0.95)'
+    ];
+    const c = colors[Math.floor(Math.random() * colors.length)];
+    p.style.background = c;
+    p.style.boxShadow = `0 0 10px ${c}, 0 0 22px ${c}`;
+
+    // стартовая позиция
+    p.style.left = cx + 'px';
+    p.style.top = cy + 'px';
+
+    // траектория
+    const angle = (Math.PI * 2) * (i / count) + (Math.random() * 0.25);
+    const dist = 120 + Math.random() * 110;
+    const dx = Math.cos(angle) * dist;
+    const dy = Math.sin(angle) * dist + (Math.random() * 40);
+
+    p.style.setProperty('--dx', dx.toFixed(0) + 'px');
+    p.style.setProperty('--dy', dy.toFixed(0) + 'px');
+
+    // анимация
+    const dur = 520 + Math.random() * 260;
+    p.style.animation = `particleFly ${dur}ms ease-out forwards`;
+
+    cfParticles.appendChild(p);
+
+    // удаляем после
+    setTimeout(() => p.remove(), dur + 50);
+  }
 }
   
 </script>
