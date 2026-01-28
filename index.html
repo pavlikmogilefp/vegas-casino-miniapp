@@ -255,6 +255,14 @@
 }
 .slots-win { animation: slotsWinPop .45s ease-out; }
 
+/* приятная остановка барабана */
+@keyframes reelStopBounce {
+  0%   { transform: scale(1); filter: blur(0); }
+  35%  { transform: scale(1.08); filter: blur(.2px); }
+  100% { transform: scale(1); filter: blur(0); }
+}
+.reel-stop { animation: reelStopBounce .22s ease-out; }
+
   </style>
 </head>
 
@@ -540,6 +548,20 @@
     <div id="slots-msg" class="text-sm text-white/60">Нажми «КРУТИТЬ».</div>
   </div>
 
+<!-- PAYTABLE -->
+<div class="card p-5 rounded-2xl bg-black/30 border border-white/10 space-y-3">
+  <div class="flex items-center justify-between">
+    <div class="font-bold">Таблица выплат</div>
+    <div class="text-xs text-white/50">3 одинаковых по линии</div>
+  </div>
+
+  <div id="slots-paytable" class="space-y-2"></div>
+
+  <div class="text-xs text-white/50 pt-2 border-t border-white/10">
+    Выплата = ставка × коэффициент
+  </div>
+</div>
+
   <button id="slots-classic-back" class="w-full py-3 rounded-2xl bg-black/40 border border-white/10">
     ← Назад к выбору
   </button>
@@ -720,16 +742,6 @@ Object.entries(tabs).forEach(([key, btn]) => {
     btn.classList.add('text-gray-500');
   }
 });
-
-    Object.entries(tabs).forEach(([key, btn]) => {
-      if (key === name) {
-        btn.classList.remove('text-gray-500');
-        btn.classList.add('text-cyan-400', 'neon-text');
-      } else {
-        btn.classList.remove('text-cyan-400', 'neon-text');
-        btn.classList.add('text-gray-500');
-      }
-    });
 
 if (name === 'mines' && typeof minesResetUI === 'function') {
   minesResetUI();
@@ -1570,6 +1582,29 @@ function pop(el, cls){
   el.classList.add(cls);
 }
 
+// paytable
+function slotsRenderPaytable(){
+  const box = document.getElementById('slots-paytable');
+  if (!box) return;
+
+  const rows = Object.entries(SLOTS.pays)
+    .sort((a,b) => b[1] - a[1])
+    .map(([sym, mult]) => `
+      <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-white/5 border border-white/10">
+        <div class="flex items-center gap-2">
+          <div class="text-2xl">${sym}</div>
+          <div class="text-sm text-white/70">×3 по линии</div>
+        </div>
+        <div class="font-extrabold neon-text">${mult}x</div>
+      </div>
+    `);
+
+  box.innerHTML = rows.join('');
+}
+
+// рисуем при запуске
+slotsRenderPaytable();
+
 if (slotsMinus) slotsMinus.addEventListener('click', () => {
   if (slotsSpinning) return;
   slotsBet = Math.max(10, slotsBet - 10);
@@ -1610,68 +1645,93 @@ if (slotsSpin) {
     slotsSetSpinning(true);
     if (slotsMsg) slotsMsg.textContent = 'Крутим барабаны...';
 
-    // анимация + "мигание" символов
+    // мигание символов во время прокрутки (по отдельному таймеру на барабан)
     const tempTimer = [];
     for (let i = 0; i < 3; i++){
       const el = slotsSymbols[i];
       if (!el) continue;
+
       el.classList.remove('reel-spin');
       void el.offsetWidth;
       el.classList.add('reel-spin');
 
-      // пока крутится — подменяем символы
-      const t = setInterval(() => { el.textContent = SLOTS.symbols[Math.floor(Math.random()*SLOTS.symbols.length)]; }, 70);
-      tempTimer.push(t);
+      const t = setInterval(() => {
+        el.textContent = SLOTS.symbols[Math.floor(Math.random()*SLOTS.symbols.length)];
+      }, 60);
+
+      tempTimer[i] = t;
     }
 
     // финальный результат
     const result = [weightedPick(), weightedPick(), weightedPick()];
 
-    setTimeout(() => {
-      // стоп мигание
-      tempTimer.forEach(t => clearInterval(t));
+    // поочередная остановка
+    const stops = [650, 900, 1150]; // 1-й, 2-й, 3-й
 
-      // ставим финальные символы
-      for (let i = 0; i < 3; i++){
-        if (slotsSymbols[i]) slotsSymbols[i].textContent = result[i];
-      }
+    stops.forEach((ms, idx) => {
+      setTimeout(() => {
+        // остановить мигание только этого барабана
+        if (tempTimer[idx]) clearInterval(tempTimer[idx]);
 
-      const win = (result[0] === result[1] && result[1] === result[2]);
-      if (win) {
-        const mult = SLOTS.pays[result[0]] || 0;
-        const payout = Math.floor(slotsBet * mult);
-
-        setBalance(getBalance() + payout);
-
-        for (let i = 0; i < 3; i++) pop(slotsSymbols[i], 'slots-win');
-
-        if (slotsMsg) slotsMsg.textContent = `✅ WIN! ${result[0]} ${result[1]} ${result[2]} · +${payout.toLocaleString('ru-RU')} ₽ (${mult}x)`;
-
-        addHistory({
-          game: 'Слоты',
-          bet: slotsBet,
-          delta: payout - slotsBet,
-          time: new Date().toLocaleString('ru-RU'),
-        });
-
-        if (window.Telegram?.WebApp?.HapticFeedback) {
-          Telegram.WebApp.HapticFeedback.notificationOccurred('success');
-          Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
+        // зафиксировать символ
+        if (slotsSymbols[idx]) {
+          slotsSymbols[idx].textContent = result[idx];
+          slotsSymbols[idx].classList.remove('reel-stop');
+          void slotsSymbols[idx].offsetWidth;
+          slotsSymbols[idx].classList.add('reel-stop');
         }
-      } else {
-        if (slotsMsg) slotsMsg.textContent = `❌ Мимо: ${result.join(' ')}`;
-        addHistory({
-          game: 'Слоты',
-          bet: slotsBet,
-          delta: -slotsBet,
-          time: new Date().toLocaleString('ru-RU'),
-        });
-        if (window.Telegram?.WebApp?.HapticFeedback) Telegram.WebApp.HapticFeedback.notificationOccurred('error');
-      }
 
-      slotsSetSpinning(false);
-      renderBalance();
-    }, 650);
+        // вибрация на каждом стопе
+        if (window.Telegram?.WebApp?.HapticFeedback) {
+          Telegram.WebApp.HapticFeedback.impactOccurred('light');
+        }
+
+        // после 3-го барабана — считаем итог
+        if (idx === 2) {
+          const win = (result[0] === result[1] && result[1] === result[2]);
+
+          if (win) {
+            const mult = SLOTS.pays[result[0]] || 0;
+            const payout = Math.floor(slotsBet * mult);
+
+            setBalance(getBalance() + payout);
+
+            for (let i = 0; i < 3; i++) pop(slotsSymbols[i], 'slots-win');
+
+            if (slotsMsg) slotsMsg.textContent =
+              `✅ WIN! ${result.join(' ')} · +${payout.toLocaleString('ru-RU')} ₽ (${mult}x)`;
+
+            addHistory({
+              game: 'Слоты',
+              bet: slotsBet,
+              delta: payout - slotsBet,
+              time: new Date().toLocaleString('ru-RU'),
+            });
+
+            if (window.Telegram?.WebApp?.HapticFeedback) {
+              Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+              Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
+            }
+          } else {
+            if (slotsMsg) slotsMsg.textContent = `❌ Мимо: ${result.join(' ')}`;
+
+            addHistory({
+              game: 'Слоты',
+              bet: slotsBet,
+              delta: -slotsBet,
+              time: new Date().toLocaleString('ru-RU'),
+            });
+
+            if (window.Telegram?.WebApp?.HapticFeedback) {
+              Telegram.WebApp.HapticFeedback.notificationOccurred('error');
+            }
+          }
+
+          slotsSetSpinning(false);
+          renderBalance();
+        }
+      }, ms);
+    });
   });
 }
   
