@@ -49,6 +49,16 @@
 .card:active {
   transform: scale(0.97);
 }
+
+/* Screens */
+.screen { display: none; }
+.screen.active { display: block; animation: screenIn .18s ease-out; }
+
+@keyframes screenIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
   </style>
 </head>
 
@@ -77,24 +87,94 @@
 </div>
 
   <!-- GAMES -->
-<div class="pt-24 px-4 pb-32 space-y-4">
+<<!-- SCREENS WRAPPER -->
+<div class="pt-24 px-4 pb-32">
 
-<div class="card p-5 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 neon neon-animate">
+  <!-- HOME SCREEN -->
+  <div id="screen-home" class="screen active space-y-4">
+    <!-- твои карточки игр — остаются внутри -->
+    <!-- Mines -->
+    <div class="card p-5 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 neon neon-animate">
       <h2 class="text-xl font-bold neon-text">Mines</h2>
       <p class="text-sm opacity-80">Найдите алмазы, избегая мин</p>
     </div>
 
     <div class="grid grid-cols-2 gap-4">
-<div class="card p-4 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 neon neon-animate">
+      <div class="card p-4 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 neon neon-animate">
         <h3 class="font-bold">Слоты</h3>
         <p class="text-sm opacity-80">До 100x</p>
       </div>
 
-      <div class="p-4 rounded-2xl bg-gradient-to-br from-pink-500 to-purple-700 neon">
+      <div class="card p-4 rounded-2xl bg-gradient-to-br from-pink-500 to-purple-700 neon neon-animate">
         <h3 class="font-bold">Кейсы</h3>
         <p class="text-sm opacity-80">Призы</p>
       </div>
     </div>
+
+    <div class="card p-4 rounded-2xl bg-gradient-to-r from-yellow-400 to-orange-500 neon text-black font-bold">
+      Орёл или Решка
+    </div>
+  </div>
+
+  <!-- SLOTS SCREEN -->
+  <div id="screen-slots" class="screen space-y-4">
+    <div class="text-xl font-bold neon-text mb-2">🎰 Слоты</div>
+
+    <div class="card p-5 rounded-2xl bg-gradient-to-r from-cyan-500 to-purple-600 neon neon-animate">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="font-bold text-lg">Классические</div>
+          <div class="text-sm opacity-80">3 барабана · быстрые спины</div>
+        </div>
+        <div class="text-sm opacity-80">до 100x</div>
+      </div>
+    </div>
+
+    <div class="card p-5 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 neon neon-animate">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="font-bold text-lg">Мега-слоты</div>
+          <div class="text-sm opacity-80">больше линий · выше шанс</div>
+        </div>
+        <div class="text-sm opacity-80">до 250x</div>
+      </div>
+    </div>
+
+    <div class="text-sm text-white/60">Скоро добавим настоящие слоты.</div>
+  </div>
+
+  <!-- WALLET SCREEN -->
+  <div id="screen-wallet" class="screen space-y-4">
+    <div class="text-xl font-bold neon-text mb-2">💼 Кошелёк</div>
+
+    <div class="card p-5 rounded-2xl bg-gradient-to-r from-purple-600 to-cyan-500 neon neon-animate">
+      <div class="text-sm text-white/70">Баланс</div>
+      <div class="text-3xl font-extrabold">5 000 ₽</div>
+      <div class="text-xs text-white/60 mt-1">Игровая валюта · без вывода</div>
+    </div>
+
+    <div class="card p-4 rounded-2xl bg-white/5 border border-white/10">
+      <div class="font-bold mb-2">История</div>
+      <div class="text-sm text-white/70">Пока пусто — сыграй первую игру 🙂</div>
+    </div>
+  </div>
+
+  <!-- BONUSES SCREEN -->
+  <div id="screen-bonuses" class="screen space-y-4">
+    <div class="text-xl font-bold neon-text mb-2">🎁 Бонусы</div>
+
+    <div class="card p-5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-700 neon neon-animate">
+      <div class="font-bold text-lg">Ежедневный бонус</div>
+      <div class="text-sm opacity-80">Забирай каждый день и увеличивай серию</div>
+      <button class="mt-4 w-full py-3 rounded-xl bg-black/40 border border-white/10 font-bold">
+        Забрать +250 ₽
+      </button>
+    </div>
+
+    <div class="text-sm text-white/60">Скоро: промокоды, квесты, рейтинг.</div>
+  </div>
+
+</div>
 
     <div class="p-4 rounded-2xl bg-gradient-to-r from-yellow-400 to-orange-500 neon text-black font-bold">
       Орёл или Решка
@@ -108,25 +188,21 @@
             border-t border-white/10
             flex justify-around py-3">
 
-  <div class="flex flex-col items-center text-cyan-400 neon-text text-sm">
-    🏠
-    <span class="text-xs">Главная</span>
-  </div>
+  <button id="tab-home" class="tab flex flex-col items-center text-cyan-400 neon-text text-sm">
+    🏠 <span class="text-xs">Главная</span>
+  </button>
 
-  <div class="flex flex-col items-center text-gray-500 text-sm">
-    🎰
-    <span class="text-xs">Слоты</span>
-  </div>
+  <button id="tab-slots" class="tab flex flex-col items-center text-gray-500 text-sm">
+    🎰 <span class="text-xs">Слоты</span>
+  </button>
 
-  <div class="flex flex-col items-center text-gray-500 text-sm">
-    💼
-    <span class="text-xs">Кошелёк</span>
-  </div>
+  <button id="tab-wallet" class="tab flex flex-col items-center text-gray-500 text-sm">
+    💼 <span class="text-xs">Кошелёк</span>
+  </button>
 
-  <div class="flex flex-col items-center text-gray-500 text-sm">
-    🎁
-    <span class="text-xs">Бонусы</span>
-  </div>
+  <button id="tab-bonuses" class="tab flex flex-col items-center text-gray-500 text-sm">
+    🎁 <span class="text-xs">Бонусы</span>
+  </button>
 
 </div>
 
@@ -134,6 +210,47 @@
   const tg = window.Telegram.WebApp;
   tg.ready();
   tg.expand(); // растягиваем на весь экран
+
+  // Navigation
+  const screens = {
+    home: document.getElementById('screen-home'),
+    slots: document.getElementById('screen-slots'),
+    wallet: document.getElementById('screen-wallet'),
+    bonuses: document.getElementById('screen-bonuses'),
+  };
+
+  const tabs = {
+    home: document.getElementById('tab-home'),
+    slots: document.getElementById('tab-slots'),
+    wallet: document.getElementById('tab-wallet'),
+    bonuses: document.getElementById('tab-bonuses'),
+  };
+
+  function setActive(name) {
+    Object.entries(screens).forEach(([key, el]) => {
+      el.classList.toggle('active', key === name);
+    });
+
+    Object.entries(tabs).forEach(([key, btn]) => {
+      if (key === name) {
+        btn.classList.remove('text-gray-500');
+        btn.classList.add('text-cyan-400', 'neon-text');
+      } else {
+        btn.classList.remove('text-cyan-400', 'neon-text');
+        btn.classList.add('text-gray-500');
+      }
+    });
+
+    // лёгкая вибрация
+    if (window.Telegram?.WebApp?.HapticFeedback) {
+      Telegram.WebApp.HapticFeedback.impactOccurred('light');
+    }
+  }
+
+  tabs.home.addEventListener('click', () => setActive('home'));
+  tabs.slots.addEventListener('click', () => setActive('slots'));
+  tabs.wallet.addEventListener('click', () => setActive('wallet'));
+  tabs.bonuses.addEventListener('click', () => setActive('bonuses'));
 
   // отключаем случайное выделение
   document.body.style.userSelect = 'none';
