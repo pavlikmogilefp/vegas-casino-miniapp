@@ -104,6 +104,41 @@
 
 .pick:active { transform: scale(.98); }
 
+@keyframes winGlow {
+  0%   { transform: scale(1); filter: brightness(1) saturate(1); box-shadow: 0 0 0 rgba(0,0,0,0); }
+  25%  { transform: scale(1.08); filter: brightness(1.35) saturate(1.4); box-shadow: 0 0 24px rgba(80,255,170,.65), 0 0 60px rgba(0,200,255,.35); }
+  60%  { transform: scale(1.03); filter: brightness(1.2) saturate(1.25); box-shadow: 0 0 18px rgba(80,255,170,.5), 0 0 44px rgba(255,0,255,.25); }
+  100% { transform: scale(1); filter: brightness(1) saturate(1); box-shadow: 0 0 0 rgba(0,0,0,0); }
+}
+
+@keyframes loseShake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+  100% { transform: translateX(0); }
+}
+
+.win-pop { animation: winGlow .55s ease-out; }
+.lose-shake { animation: loseShake .35s ease-in-out; }
+
+/* Screen flash */
+@keyframes screenPulseWin {
+  0% { opacity: 0; transform: scale(1); }
+  15% { opacity: .55; transform: scale(1.02); }
+  100% { opacity: 0; transform: scale(1.06); }
+}
+
+@keyframes screenPulseLose {
+  0% { opacity: 0; }
+  20% { opacity: .35; }
+  100% { opacity: 0; }
+}
+
+.pulse-win { animation: screenPulseWin .55s ease-out; }
+.pulse-lose { animation: screenPulseLose .35s ease-out; }
+
   </style>
 </head>
 
@@ -164,6 +199,9 @@
 <!-- COINFLIP GAME SCREEN -->
 <div id="screen-coinflip" class="screen space-y-4">
   <div class="text-xl font-bold neon-text mb-2">🪙 Орёл или Решка</div>
+
+<!-- screen pulse overlay -->
+<div id="cf-pulse" class="pointer-events-none fixed inset-0 opacity-0"></div>
 
 <!-- Coin display -->
 <div class="card p-5 rounded-2xl bg-black/30 border border-white/10">
@@ -682,6 +720,21 @@ function showFloat(text, isWin) {
   }, 1100);
 }
 
+const cfPulse = document.getElementById('cf-pulse');
+
+function pulseScreen(isWin) {
+  if (!cfPulse) return;
+
+  cfPulse.className = 'pointer-events-none fixed inset-0 opacity-0';
+  cfPulse.style.background = isWin
+    ? 'radial-gradient(circle at 50% 40%, rgba(80,255,170,.22), rgba(0,0,0,0) 55%)'
+    : 'radial-gradient(circle at 50% 40%, rgba(255,80,120,.18), rgba(0,0,0,0) 55%)';
+
+  // перезапуск анимации
+  void cfPulse.offsetWidth;
+  cfPulse.classList.add(isWin ? 'pulse-win' : 'pulse-lose');
+}
+
 // сам бросок
 if (cfPlay) {
   cfPlay.addEventListener('click', () => {
@@ -738,6 +791,16 @@ if (coinImg) {
 
         if (cfMsg) cfMsg.textContent = `✅ Победа! Выпало: ${result === 'heads' ? 'Орёл' : 'Решка'} · +${payout} ₽`;
         showFloat(`+${(payout - cfBet).toLocaleString('ru-RU')} ₽`, true);
+        pulseScreen(true);
+if (coinImg) {
+  coinImg.classList.remove('win-pop');
+  void coinImg.offsetWidth;
+  coinImg.classList.add('win-pop');
+}
+if (window.Telegram?.WebApp?.HapticFeedback) {
+  Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+  Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
+}
         addHistory({
           game: 'Орёл / Решка',
           bet: cfBet,
@@ -751,7 +814,16 @@ if (coinImg) {
       } else {
         if (cfMsg) cfMsg.textContent = `❌ Проигрыш. Выпало: ${result === 'heads' ? 'Орёл' : 'Решка'}`;
         showFloat(`−${cfBet.toLocaleString('ru-RU')} ₽`, false);
-        addHistory({
+       pulseScreen(false);
+if (coinImg) {
+  coinImg.classList.remove('lose-shake');
+  void coinImg.offsetWidth;
+  coinImg.classList.add('lose-shake');
+}
+if (window.Telegram?.WebApp?.HapticFeedback) {
+  Telegram.WebApp.HapticFeedback.notificationOccurred('error');
+}
+         addHistory({
           game: 'Орёл / Решка',
           bet: cfBet,
           delta: -cfBet,
