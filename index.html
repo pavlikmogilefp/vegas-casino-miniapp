@@ -1341,7 +1341,7 @@ return JSON.parse(localStorage.getItem(k('history')) || '[]');
 function addHistory(item) {
   const list = getHistory();
   list.unshift(item); // новое сверху
-localStorage.setItem(k('history'), JSON.stringify(...));
+localStorage.setItem(k('history'), JSON.stringify(list.slice(0, 30)));
   renderHistory();
 }
 
