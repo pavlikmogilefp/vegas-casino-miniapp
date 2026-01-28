@@ -147,12 +147,13 @@
   <div class="text-sm text-white/60 mb-3">Результат</div>
 
   <div class="flex items-center justify-center">
-    <div id="coin"
-         class="w-28 h-28 rounded-full flex items-center justify-center text-3xl font-extrabold select-none
-                bg-gradient-to-br from-yellow-300 to-orange-500 text-black neon">
-      ?
-    </div>
+  <div class="w-28 h-28 rounded-full neon bg-black/20 flex items-center justify-center">
+    <img id="coin-img"
+         src="assets/coin-heads.PNG"
+         class="w-28 h-28 rounded-full select-none"
+         alt="coin" />
   </div>
+</div>
 
   <div id="coin-sub" class="text-center text-xs text-white/50 mt-3">
     Нажми «Подбросить монету»
@@ -540,7 +541,7 @@ const cfPlus  = document.getElementById('cf-plus');
 const cfBetEl = document.getElementById('cf-bet');
 const cfPlay  = document.getElementById('cf-play');
 const cfMsg   = document.getElementById('cf-message');
-const coinEl = document.getElementById('coin');
+const coinImg = document.getElementById('coin-img');
 const coinSub = document.getElementById('coin-sub');
 const cfFloat = document.getElementById('cf-float');
 const cfFloatInner = document.getElementById('cf-float-inner');
@@ -639,12 +640,11 @@ if (cfPlay) {
 
     if (cfMsg) cfMsg.textContent = 'Подбрасываем монету...';
     // старт анимации монеты
-    if (coinEl) {
-      coinEl.textContent = '?';
-      coinEl.classList.remove('coin-anim');
-      void coinEl.offsetWidth;
-      coinEl.classList.add('coin-anim');
-    }
+    if (coinImg) {
+  coinImg.classList.remove('coin-anim');
+  void coinImg.offsetWidth;
+  coinImg.classList.add('coin-anim');
+}
     if (coinSub) coinSub.textContent = 'Крутим...';
 
     // "случайная" сторона
@@ -654,7 +654,9 @@ if (cfPlay) {
     setTimeout(() => {
       const win = (result === cfSide);
       // показываем выпавшую сторону на монетке
-      if (coinEl) coinEl.textContent = (result === 'heads') ? 'О' : 'Р';
+if (coinImg) {
+  coinImg.src = (result === 'heads') ? 'assets/coin-heads.PNG' : 'assets/coin-tails.PNG';
+}
       if (coinSub) coinSub.textContent = (result === 'heads') ? 'Выпал Орёл' : 'Выпала Решка';
 
       if (win) {
