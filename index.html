@@ -805,7 +805,7 @@ if (coinImg) {
         setBalance(getBalance() + payout);
 
         if (cfMsg) cfMsg.textContent = `✅ Победа! Выпало: ${result === 'heads' ? 'Орёл' : 'Решка'} · +${payout} ₽`;
-        showFloat(`+${(payout - cfBet).toLocaleString('ru-RU')} ₽`, true);
+showFloat(`+${payout.toLocaleString('ru-RU')} ₽`, true);
         pulseScreen(true);
         spawnWinParticles();
 if (coinImg) {
