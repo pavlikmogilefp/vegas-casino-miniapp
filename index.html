@@ -11,7 +11,10 @@
 
   <style>
     body {
-      background: radial-gradient(circle at top, #1b0033, #050008 60%);
+      background:
+  radial-gradient(circle at 20% 0%, rgba(255,0,255,0.15), transparent 40%),
+  radial-gradient(circle at 80% 20%, rgba(0,200,255,0.15), transparent 40%),
+  radial-gradient(circle at bottom, #12001f, #050008 60%);
       color: white;
       font-family: system-ui, -apple-system, BlinkMacSystemFont;
     }
@@ -27,6 +30,25 @@
         0 0 10px rgba(255,0,255,0.8),
         0 0 20px rgba(0,150,255,0.6);
     }
+    
+    /* Neon pulse animation */
+@keyframes neonPulse {
+  0% { box-shadow: 0 0 12px rgba(255,0,255,0.4), 0 0 24px rgba(0,150,255,0.3); }
+  50% { box-shadow: 0 0 24px rgba(255,0,255,0.9), 0 0 48px rgba(0,150,255,0.7); }
+  100% { box-shadow: 0 0 12px rgba(255,0,255,0.4), 0 0 24px rgba(0,150,255,0.3); }
+}
+
+.neon-animate {
+  animation: neonPulse 3s infinite ease-in-out;
+}
+
+.card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card:active {
+  transform: scale(0.97);
+}
   </style>
 </head>
 
@@ -45,9 +67,9 @@
       </div>
     </div>
 
-    <div class="px-4 py-1.5 rounded-xl
-                bg-gradient-to-r from-cyan-400 to-purple-600
-                neon font-bold text-sm">
+<div class="px-5 py-2 rounded-xl
+            bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500
+            neon neon-animate font-bold text-sm">
       5 000 ₽
     </div>
   </div>
@@ -57,13 +79,13 @@
   <!-- GAMES -->
 <div class="pt-24 px-4 pb-32 space-y-4">
 
-    <div class="p-5 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 neon">
+<div class="card p-5 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 neon neon-animate">
       <h2 class="text-xl font-bold neon-text">Mines</h2>
       <p class="text-sm opacity-80">Найдите алмазы, избегая мин</p>
     </div>
 
     <div class="grid grid-cols-2 gap-4">
-      <div class="p-4 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 neon">
+<div class="card p-4 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 neon neon-animate">
         <h3 class="font-bold">Слоты</h3>
         <p class="text-sm opacity-80">До 100x</p>
       </div>
@@ -115,6 +137,15 @@
 
   // отключаем случайное выделение
   document.body.style.userSelect = 'none';
+  
+  document.querySelectorAll('.card').forEach(card => {
+  card.addEventListener('click', () => {
+    if (window.Telegram?.WebApp?.HapticFeedback) {
+      Telegram.WebApp.HapticFeedback.impactOccurred('light');
+    }
+  });
+});
+  
 </script>
 
 </body>
