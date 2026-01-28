@@ -80,8 +80,8 @@
 <div class="px-5 py-2 rounded-xl
             bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500
             neon neon-animate font-bold text-sm">
-      5 000 ₽
-    </div>
+  <span id="balance-header">5 000 ₽</span>
+</div>
   </div>
 
 </div>
@@ -149,7 +149,7 @@
 
     <div class="card p-5 rounded-2xl bg-gradient-to-r from-purple-600 to-cyan-500 neon neon-animate">
       <div class="text-sm text-white/70">Баланс</div>
-      <div class="text-3xl font-extrabold">5 000 ₽</div>
+<div id="balance-wallet" class="text-3xl font-extrabold">5 000 ₽</div>
       <div class="text-xs text-white/60 mt-1">Игровая валюта · без вывода</div>
     </div>
 
@@ -159,20 +159,37 @@
     </div>
   </div>
 
-  <!-- BONUSES SCREEN -->
-  <div id="screen-bonuses" class="screen space-y-4">
-    <div class="text-xl font-bold neon-text mb-2">🎁 Бонусы</div>
+  <!-- BONUSES / PROMO SCREEN -->
+<div id="screen-bonuses" class="screen space-y-4">
+  <div class="text-xl font-bold neon-text mb-2">🎟 Промокод</div>
 
-    <div class="card p-5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-700 neon neon-animate">
-      <div class="font-bold text-lg">Ежедневный бонус</div>
-      <div class="text-sm opacity-80">Забирай каждый день и увеличивай серию</div>
-      <button class="mt-4 w-full py-3 rounded-xl bg-black/40 border border-white/10 font-bold">
-        Забрать +250 ₽
-      </button>
-    </div>
+  <div class="card p-5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-700 neon neon-animate">
+    <div class="font-bold text-lg">Введите промокод</div>
+    <div class="text-sm opacity-80">Промокоды дают игровую валюту ₽</div>
 
-    <div class="text-sm text-white/60">Скоро: промокоды, квесты, рейтинг.</div>
+    <input
+      id="promo-input"
+      placeholder="Например: VEGAS250"
+      class="mt-4 w-full px-4 py-3 rounded-xl
+             bg-black/40 border border-white/10
+             outline-none text-white placeholder:text-white/40"
+    />
+
+    <button
+      id="promo-apply"
+      class="mt-3 w-full py-3 rounded-xl
+             bg-black/50 border border-white/10 font-bold
+             active:scale-[0.98] transition"
+    >
+      Активировать
+    </button>
   </div>
+
+  <!-- место для текста/сообщений -->
+  <div id="promo-message" class="text-sm text-white/60">
+    Здесь будут подсказки и сообщения (успех/ошибка).
+  </div>
+</div>
 
 <!-- BOTTOM MENU -->
 <div class="fixed bottom-0 left-0 right-0 z-50
@@ -218,6 +235,52 @@
     bonuses: document.getElementById('tab-bonuses'),
   };
 
+  // ===== Wallet state (local) =====
+  const DEFAULT_BALANCE = 5000;
+
+  function formatRUB(n) {
+    return n.toLocaleString('ru-RU') + ' ₽';
+  }
+
+  function getBalance() {
+    const raw = localStorage.getItem('vegas_balance');
+    const val = raw ? parseInt(raw, 10) : DEFAULT_BALANCE;
+    return Number.isFinite(val) ? val : DEFAULT_BALANCE;
+  }
+
+  function setBalance(newValue) {
+    const val = Math.max(0, Math.floor(newValue));
+    localStorage.setItem('vegas_balance', String(val));
+    renderBalance();
+  }
+
+  function renderBalance() {
+    const b = getBalance();
+    const headerEl = document.getElementById('balance-header');
+    const walletEl = document.getElementById('balance-wallet');
+
+    if (headerEl) headerEl.textContent = formatRUB(b);
+    if (walletEl) walletEl.textContent = formatRUB(b);
+  }
+
+  // промокоды, которые уже использовали (локально)
+  function getUsedPromos() {
+    try {
+      return JSON.parse(localStorage.getItem('vegas_used_promos') || '[]');
+    } catch {
+      return [];
+    }
+  }
+
+  function addUsedPromo(code) {
+    const used = getUsedPromos();
+    if (!used.includes(code)) used.push(code);
+    localStorage.setItem('vegas_used_promos', JSON.stringify(used));
+  }
+
+  // рисуем баланс при запуске
+  renderBalance();
+
   function setActive(name) {
     Object.entries(screens).forEach(([key, el]) => {
       el.classList.toggle('active', key === name);
@@ -254,6 +317,60 @@
     }
   });
 });
+  
+    // Promo (front-only demo)
+  const promoInput = document.getElementById('promo-input');
+  const promoApply = document.getElementById('promo-apply');
+  const promoMessage = document.getElementById('promo-message');
+
+  if (promoApply) {
+    promoApply.addEventListener('click', () => {
+      const code = (promoInput.value || '').trim().toUpperCase();
+
+      if (!code) {
+        promoMessage.textContent = 'Введите промокод.';
+        return;
+      }
+
+            const used = getUsedPromos();
+      if (used.includes(code)) {
+        promoMessage.textContent = '⚠️ Этот промокод уже активирован.';
+        if (window.Telegram?.WebApp?.HapticFeedback) {
+          Telegram.WebApp.HapticFeedback.notificationOccurred('error');
+        }
+        return;
+      }
+
+      // Таблица промокодов (пока тут, потом перенесём на сервер)
+      const promoMap = {
+        'VEGAS250': 250,
+        'VEGAS1000': 1000,
+        'WELCOME100': 100,
+      };
+
+      const amount = promoMap[code];
+
+      if (!amount) {
+        promoMessage.textContent = '❌ Неверный или просроченный промокод.';
+        if (window.Telegram?.WebApp?.HapticFeedback) {
+          Telegram.WebApp.HapticFeedback.notificationOccurred('error');
+        }
+        return;
+      }
+
+      // начисляем
+      const newBalance = getBalance() + amount;
+      setBalance(newBalance);
+      addUsedPromo(code);
+
+      promoMessage.textContent = `✅ Промокод активирован! Начислено +${amount} ₽`;
+      promoInput.value = '';
+
+      if (window.Telegram?.WebApp?.HapticFeedback) {
+        Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+      }
+    });
+  }
   
 </script>
 
