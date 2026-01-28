@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>VEGAS CASINO</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      background: radial-gradient(circle at top, #1b0033, #050008 60%);
+      color: white;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont;
+    }
+
+    .neon {
+      box-shadow:
+        0 0 10px rgba(255,0,255,0.6),
+        0 0 30px rgba(0,150,255,0.4);
+    }
+
+    .neon-text {
+      text-shadow:
+        0 0 10px rgba(255,0,255,0.8),
+        0 0 20px rgba(0,150,255,0.6);
+    }
+  </style>
+</head>
+
+<body class="min-h-screen p-4">
+
+  <!-- HEADER -->
+  <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 neon"></div>
+      <div>
+        <div class="font-bold">Игрок</div>
+        <div class="text-sm text-purple-300">LVL 1 · 0 XP</div>
+      </div>
+    </div>
+
+    <div class="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-purple-600 neon font-bold">
+      5 000 ₽
+    </div>
+  </div>
+
+  <!-- GAMES -->
+  <div class="space-y-4">
+
+    <div class="p-5 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 neon">
+      <h2 class="text-xl font-bold neon-text">Mines</h2>
+      <p class="text-sm opacity-80">Найдите алмазы, избегая мин</p>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div class="p-4 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 neon">
+        <h3 class="font-bold">Слоты</h3>
+        <p class="text-sm opacity-80">До 100x</p>
+      </div>
+
+      <div class="p-4 rounded-2xl bg-gradient-to-br from-pink-500 to-purple-700 neon">
+        <h3 class="font-bold">Кейсы</h3>
+        <p class="text-sm opacity-80">Призы</p>
+      </div>
+    </div>
+
+    <div class="p-4 rounded-2xl bg-gradient-to-r from-yellow-400 to-orange-500 neon text-black font-bold">
+      Орёл или Решка
+    </div>
+
+  </div>
+
+  <!-- BOTTOM MENU -->
+  <div class="fixed bottom-0 left-0 right-0 bg-black/80 backdrop-blur p-3 flex justify-around">
+    <div class="neon-text text-cyan-400">🏠</div>
+    <div class="text-gray-500">🎰</div>
+    <div class="text-gray-500">💼</div>
+    <div class="text-gray-500">🎁</div>
+  </div>
+
+</body>
+</html>
