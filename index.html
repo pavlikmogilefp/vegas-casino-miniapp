@@ -60,16 +60,22 @@
 }
 
 /* Coin animation */
-@keyframes coinFlip {
-  0%   { transform: rotateY(0deg) rotateX(0deg) scale(1); }
-  40%  { transform: rotateY(360deg) rotateX(120deg) scale(1.08); }
-  70%  { transform: rotateY(720deg) rotateX(240deg) scale(1.12); }
-  100% { transform: rotateY(1080deg) rotateX(360deg) scale(1); }
+/* Better coin animation */
+@keyframes coinFlipPro {
+  0%   { transform: rotateY(0deg) rotateX(0deg) translateY(0) scale(1); filter: brightness(1); }
+  15%  { transform: rotateY(220deg) rotateX(80deg) translateY(-4px) scale(1.06); filter: brightness(1.15); }
+  35%  { transform: rotateY(520deg) rotateX(160deg) translateY(-8px) scale(1.10); filter: brightness(1.25); }
+  60%  { transform: rotateY(900deg) rotateX(260deg) translateY(-4px) scale(1.06); filter: brightness(1.18); }
+  85%  { transform: rotateY(1200deg) rotateX(340deg) translateY(0) scale(1.02); filter: brightness(1.08); }
+  100% { transform: rotateY(1440deg) rotateX(360deg) translateY(0) scale(1); filter: brightness(1); }
 }
 
+
 .coin-anim {
-  animation: coinFlip .9s ease-in-out;
+  animation: coinFlipPro 1.05s cubic-bezier(.2,.9,.15,1);
   transform-style: preserve-3d;
+  will-change: transform, filter;
+  backface-visibility: hidden;
 }
 
 @keyframes floatUp {
@@ -542,6 +548,28 @@ const cfBetEl = document.getElementById('cf-bet');
 const cfPlay  = document.getElementById('cf-play');
 const cfMsg   = document.getElementById('cf-message');
 const coinImg = document.getElementById('coin-img');
+const COIN_HEADS_SRC = 'assets/coin-heads.PNG';
+const COIN_TAILS_SRC = 'assets/coin-tails.PNG';
+
+let flickerTimer = null;
+
+function startCoinFlicker() {
+  if (!coinImg) return;
+  stopCoinFlicker();
+  let t = 0;
+  flickerTimer = setInterval(() => {
+    // “мигание” + чуть ускоряем
+    coinImg.src = (t % 2 === 0) ? COIN_HEADS_SRC : COIN_TAILS_SRC;
+    t++;
+  }, 80);
+}
+
+function stopCoinFlicker() {
+  if (flickerTimer) {
+    clearInterval(flickerTimer);
+    flickerTimer = null;
+  }
+}
 const coinSub = document.getElementById('coin-sub');
 const cfFloat = document.getElementById('cf-float');
 const cfFloatInner = document.getElementById('cf-float-inner');
@@ -645,6 +673,7 @@ if (cfPlay) {
   void coinImg.offsetWidth;
   coinImg.classList.add('coin-anim');
 }
+startCoinFlicker();
     if (coinSub) coinSub.textContent = 'Крутим...';
 
     // "случайная" сторона
@@ -654,8 +683,12 @@ if (cfPlay) {
     setTimeout(() => {
       const win = (result === cfSide);
       // показываем выпавшую сторону на монетке
+stopCoinFlicker();
+if (window.Telegram?.WebApp?.HapticFeedback) {
+  Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+}
 if (coinImg) {
-  coinImg.src = (result === 'heads') ? 'assets/coin-heads.PNG' : 'assets/coin-tails.PNG';
+  coinImg.src = (result === 'heads') ? COIN_HEADS_SRC : COIN_TAILS_SRC;
 }
       if (coinSub) coinSub.textContent = (result === 'heads') ? 'Выпал Орёл' : 'Выпала Решка';
 
