@@ -153,6 +153,38 @@
   100% { transform: translate(var(--dx), var(--dy)) scale(.2); opacity: 0; }
 }
 
+.mcell{
+  height: 56px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight: 800;
+  user-select:none;
+  transition: transform .12s ease, background .12s ease, box-shadow .12s ease, border-color .12s ease;
+}
+.mcell:active{ transform: scale(.98); }
+
+.mcell.open{
+  background: rgba(255,255,255,0.10);
+  border-color: rgba(0,200,255,0.25);
+  box-shadow: 0 0 14px rgba(0,200,255,0.18);
+}
+
+.mcell.safe{
+  background: linear-gradient(135deg, rgba(0,210,255,0.18), rgba(255,0,255,0.10));
+  border-color: rgba(255,0,255,0.25);
+  box-shadow: 0 0 18px rgba(255,0,255,0.18), 0 0 26px rgba(0,210,255,0.12);
+}
+
+.mcell.mine{
+  background: linear-gradient(135deg, rgba(255,60,120,0.22), rgba(255,180,0,0.10));
+  border-color: rgba(255,60,120,0.35);
+  box-shadow: 0 0 22px rgba(255,60,120,0.22);
+}
+
   </style>
 </head>
 
@@ -532,6 +564,10 @@ if (el) el.classList.toggle('active', key === name);
       }
     });
 
+if (name === 'mines') {
+  minesResetUI();
+}
+
     // лёгкая вибрация
     if (window.Telegram?.WebApp?.HapticFeedback) {
       Telegram.WebApp.HapticFeedback.impactOccurred('light');
@@ -621,6 +657,247 @@ const minesBack = document.getElementById('mines-back');
 
 if (goMines) goMines.addEventListener('click', () => setActive('mines'));
 if (minesBack) minesBack.addEventListener('click', () => setActive('home'));
+  
+  // ===== MINES GAME =====
+const minesGrid = document.getElementById('mines-grid');
+const minesMsg = document.getElementById('mines-msg');
+
+const minesBetEl = document.getElementById('mines-bet');
+const minesBetMinus = document.getElementById('mines-bet-minus');
+const minesBetPlus  = document.getElementById('mines-bet-plus');
+
+const minesSlider = document.getElementById('mines-slider');
+const minesCountEl = document.getElementById('mines-count');
+const minesMultEl = document.getElementById('mines-mult');
+
+const minesStart = document.getElementById('mines-start');
+const minesCashout = document.getElementById('mines-cashout');
+
+let minesBet = 10;
+let minesCount = 3;
+
+let minesActive = false;
+let minesOpened = 0;
+let minesSet = new Set();     // индексы мин
+let minesOpenSet = new Set(); // открытые клетки
+let minesBaseBet = 0;         // ставка текущей игры
+
+const GRID_SIZE = 25; // 5x5
+
+function minesFormat() {
+  if (minesBetEl) minesBetEl.textContent = formatRUB(minesBet);
+  if (minesCountEl) minesCountEl.textContent = String(minesCount);
+}
+
+function minesSetMultiplier() {
+  // простая модель: чем больше открыто и чем больше мин — тем выше
+  const safeCells = GRID_SIZE - minesCount;
+  const progress = safeCells ? (minesOpened / safeCells) : 0;
+
+  // базовый рост
+  const m = 1 + (minesOpened * (0.12 + minesCount * 0.015));
+
+  // чуть усилим на поздних стадиях
+  const boost = 1 + progress * 0.35;
+
+  const mult = Math.max(1, m * boost);
+  if (minesMultEl) minesMultEl.textContent = mult.toFixed(2) + 'x';
+  return mult;
+}
+
+function minesEnableCashout(enable) {
+  if (!minesCashout) return;
+  minesCashout.disabled = !enable;
+  minesCashout.classList.toggle('opacity-60', !enable);
+}
+
+function minesResetUI() {
+  minesOpened = 0;
+  minesOpenSet.clear();
+  minesSet.clear();
+  minesActive = false;
+  minesBaseBet = 0;
+
+  minesEnableCashout(false);
+  if (minesMultEl) minesMultEl.textContent = '1.00x';
+  if (minesMsg) minesMsg.textContent = 'Выбери ставку и нажми «НАЧАТЬ».';
+  minesRenderGrid(true);
+}
+
+function minesRenderGrid(empty = false) {
+  if (!minesGrid) return;
+  minesGrid.innerHTML = '';
+
+  for (let i = 0; i < GRID_SIZE; i++) {
+    const cell = document.createElement('button');
+    cell.className = 'mcell';
+    cell.dataset.i = String(i);
+
+    if (empty) {
+      cell.disabled = true;
+      cell.style.opacity = '0.9';
+    } else {
+      cell.disabled = !minesActive;
+      cell.addEventListener('click', () => minesOpenCell(i, cell));
+    }
+
+    minesGrid.appendChild(cell);
+  }
+}
+
+function minesPlaceMines() {
+  minesSet.clear();
+  while (minesSet.size < minesCount) {
+    const idx = Math.floor(Math.random() * GRID_SIZE);
+    minesSet.add(idx);
+  }
+}
+
+function minesStartGame() {
+  if (minesActive) return;
+
+  const bal = getBalance();
+  if (minesBet > bal) {
+    if (minesMsg) minesMsg.textContent = 'Недостаточно средств на балансе.';
+    if (window.Telegram?.WebApp?.HapticFeedback) Telegram.WebApp.HapticFeedback.notificationOccurred('error');
+    return;
+  }
+
+  // списываем ставку
+  setBalance(bal - minesBet);
+  minesBaseBet = minesBet;
+
+  minesActive = true;
+  minesOpened = 0;
+  minesOpenSet.clear();
+  minesPlaceMines();
+
+  minesEnableCashout(false);
+  minesSetMultiplier();
+  if (minesMsg) minesMsg.textContent = 'Игра началась! Открывай клетки 💎';
+
+  minesRenderGrid(false);
+
+  if (window.Telegram?.WebApp?.HapticFeedback) Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+}
+
+function minesRevealAll() {
+  if (!minesGrid) return;
+  [...minesGrid.children].forEach((el, idx) => {
+    const cell = el;
+    const isMine = minesSet.has(idx);
+    if (isMine) {
+      cell.classList.add('mine', 'open');
+      cell.textContent = '💣';
+    } else if (minesOpenSet.has(idx)) {
+      cell.classList.add('safe', 'open');
+      cell.textContent = '💎';
+    } else {
+      cell.classList.add('open');
+      cell.textContent = '';
+    }
+    cell.disabled = true;
+  });
+}
+
+function minesOpenCell(i, cellEl) {
+  if (!minesActive) return;
+  if (minesOpenSet.has(i)) return;
+
+  minesOpenSet.add(i);
+
+  if (minesSet.has(i)) {
+    // 💣 проигрыш
+    minesActive = false;
+    minesEnableCashout(false);
+
+    cellEl.classList.add('mine', 'open');
+    cellEl.textContent = '💣';
+
+    minesRevealAll();
+
+    if (minesMsg) minesMsg.textContent = '💥 Бум! Ты попал на мину. Ставка проиграна.';
+    addHistory({
+      game: 'Mines',
+      bet: minesBaseBet,
+      delta: -minesBaseBet,
+      time: new Date().toLocaleString('ru-RU'),
+    });
+
+    if (window.Telegram?.WebApp?.HapticFeedback) Telegram.WebApp.HapticFeedback.notificationOccurred('error');
+    return;
+  }
+
+  // 💎 безопасно
+  minesOpened++;
+  cellEl.classList.add('safe', 'open');
+  cellEl.textContent = '💎';
+
+  const mult = minesSetMultiplier();
+
+  minesEnableCashout(true);
+  if (minesMsg) minesMsg.textContent = `💎 Удачно! Открыто: ${minesOpened}. Множитель: ${mult.toFixed(2)}x`;
+
+  if (window.Telegram?.WebApp?.HapticFeedback) Telegram.WebApp.HapticFeedback.impactOccurred('light');
+}
+
+function minesCashoutNow() {
+  if (!minesActive) return;
+  if (minesOpened <= 0) {
+    if (minesMsg) minesMsg.textContent = 'Сначала открой хотя бы одну клетку 🙂';
+    if (window.Telegram?.WebApp?.HapticFeedback) Telegram.WebApp.HapticFeedback.notificationOccurred('error');
+    return;
+  }
+
+  minesActive = false;
+  minesEnableCashout(false);
+
+  const mult = minesSetMultiplier();
+  const payout = Math.floor(minesBaseBet * mult);
+
+  setBalance(getBalance() + payout);
+
+  if (minesMsg) minesMsg.textContent = `✅ Ты забрал: +${payout.toLocaleString('ru-RU')} ₽ (${mult.toFixed(2)}x)`;
+
+  addHistory({
+    game: 'Mines',
+    bet: minesBaseBet,
+    delta: payout - minesBaseBet,
+    time: new Date().toLocaleString('ru-RU'),
+  });
+
+  minesRevealAll();
+
+  if (window.Telegram?.WebApp?.HapticFeedback) Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+}
+
+// controls
+if (minesSlider) {
+  minesSlider.addEventListener('input', () => {
+    minesCount = parseInt(minesSlider.value, 10);
+    minesFormat();
+    minesSetMultiplier();
+  });
+}
+
+if (minesBetMinus) minesBetMinus.addEventListener('click', () => {
+  if (minesActive) return;
+  minesBet = Math.max(10, minesBet - 10);
+  minesFormat();
+});
+
+if (minesBetPlus) minesBetPlus.addEventListener('click', () => {
+  if (minesActive) return;
+  minesBet = Math.min(100000, minesBet + 10);
+  minesFormat();
+});
+
+if (minesStart) minesStart.addEventListener('click', minesStartGame);
+if (minesCashout) minesCashout.addEventListener('click', minesCashoutNow);
+
+// init
+minesFormat();
+minesResetUI();
   
   // ===== History (local) =====
 function getHistory() {
