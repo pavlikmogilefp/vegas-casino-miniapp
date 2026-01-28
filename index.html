@@ -404,6 +404,14 @@
       Открой алмазы. Попадёшь на мину — проиграл ставку.
     </div>
   </div>
+  <div class="card p-4 rounded-2xl bg-black/30 border border-white/10">
+  <div class="flex items-center justify-between mb-3">
+    <div class="font-bold">Таблица</div>
+    <div class="text-xs text-white/50">Открыто / Множитель / Выплата</div>
+  </div>
+
+  <div id="mines-table" class="space-y-2"></div>
+</div>
 
   <div class="card p-4 rounded-2xl bg-black/30 border border-white/10">
     <div id="mines-grid" class="grid grid-cols-5 gap-2"></div>
@@ -699,6 +707,7 @@ if (minesBack) minesBack.addEventListener('click', () => setActive('home'));
 const minesGrid = document.getElementById('mines-grid');
 const minesMsg = document.getElementById('mines-msg');
 const minesPulse = document.getElementById('mines-pulse');
+const minesTable = document.getElementById('mines-table');
 
 const minesBetEl = document.getElementById('mines-bet');
 const minesBetMinus = document.getElementById('mines-bet-minus');
@@ -737,6 +746,51 @@ function minesFlash(isWin) {
 
   void minesPulse.offsetWidth; // restart
   minesPulse.classList.add(isWin ? 'mines-flash-win' : 'mines-flash');
+}
+
+function minesRenderTable() {
+  if (!minesTable) return;
+
+  const safeCells = GRID_SIZE - minesCount;
+  const rows = [];
+
+  // показываем 6 строк: текущую и следующие
+  const start = Math.max(0, minesOpened - 1);
+  const end = Math.min(safeCells, start + 6);
+
+  for (let opened = start; opened <= end; opened++) {
+    // временно "симулируем" множитель для строки
+    const tmpOpened = minesOpened;
+    minesOpened = opened;
+    const mult = minesSetMultiplier();
+    minesOpened = tmpOpened;
+
+    const payout = minesActive
+      ? Math.floor(minesBaseBet * mult)
+      : Math.floor(minesBet * mult);
+
+    const isCurrent = opened === minesOpened;
+
+    rows.push(`
+      <div class="flex items-center justify-between rounded-xl px-3 py-2 border border-white/10 ${isCurrent ? 'bg-white/10 neon' : 'bg-black/20'}">
+        <div class="text-sm font-bold">${opened} открыто</div>
+        <div class="text-sm neon-text">${mult.toFixed(2)}x</div>
+        <div class="text-sm font-extrabold">${payout.toLocaleString('ru-RU')} ₽</div>
+      </div>
+    `);
+  }
+
+  // если ещё ничего не открыто — подсказка
+  if (minesOpened === 0) {
+    minesTable.innerHTML = `
+      <div class="text-sm text-white/60">
+        Открой первую клетку — появится расчёт выплат.
+      </div>
+    `;
+    return;
+  }
+
+  minesTable.innerHTML = rows.join('');
 }
 
 function popAnim(el, cls) {
@@ -841,6 +895,7 @@ function minesStartGame() {
 
   minesEnableCashout(false);
   minesSetMultiplier();
+  minesRenderTable();
   if (minesMsg) minesMsg.textContent = 'Игра началась! Открывай клетки 💎';
 
   minesRenderGrid(false);
@@ -904,6 +959,7 @@ minesFlash(false);
   popAnim(cellEl, 'gem-pop');
 
   const mult = minesSetMultiplier();
+  minesRenderTable();
 
   minesEnableCashout(true);
   if (minesMsg) minesMsg.textContent = `💎 Удачно! Открыто: ${minesOpened}. Множитель: ${mult.toFixed(2)}x`;
@@ -929,6 +985,7 @@ function minesCashoutNow() {
   minesFlash(true);
 
   if (minesMsg) minesMsg.textContent = `✅ Ты забрал: +${payout.toLocaleString('ru-RU')} ₽ (${mult.toFixed(2)}x)`;
+  minesRenderTable();
 
   addHistory({
     game: 'Mines',
@@ -948,6 +1005,7 @@ if (minesSlider) {
     minesCount = parseInt(minesSlider.value, 10);
     minesFormat();
     minesSetMultiplier();
+    minesRenderTable();
   });
 }
 
@@ -961,6 +1019,7 @@ if (minesBetPlus) minesBetPlus.addEventListener('click', () => {
   if (minesActive) return;
   minesBet = Math.min(100000, minesBet + 10);
   minesFormat();
+  minesRenderTable();
 });
 
 if (minesStart) minesStart.addEventListener('click', minesStartGame);
@@ -969,6 +1028,7 @@ if (minesCashout) minesCashout.addEventListener('click', minesCashoutNow);
 // init
 minesFormat();
 minesResetUI();
+minesRenderTable();
   
   // ===== History (local) =====
 function getHistory() {
