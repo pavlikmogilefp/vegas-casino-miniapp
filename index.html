@@ -323,11 +323,15 @@
 
   <div class="flex items-center justify-between">
     <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 neon"></div>
-      <div>
-        <div class="text-sm font-bold leading-none">Игрок</div>
-        <div class="text-xs text-purple-300">LVL 1 · 0 XP</div>
-      </div>
+<div class="w-10 h-10 rounded-full neon overflow-hidden bg-black/30 border border-white/10 flex items-center justify-center">
+  <img id="user-avatar" class="w-full h-full object-cover hidden" alt="avatar">
+  <div id="user-avatar-fallback" class="text-sm font-extrabold">🎲</div>
+</div>
+
+<div>
+  <div id="user-name" class="text-sm font-bold leading-none">Игрок</div>
+  <div id="user-username" class="text-xs text-purple-300">@username</div>
+</div>
     </div>
 
 <div class="px-5 py-2 rounded-xl
@@ -770,6 +774,34 @@
   const tg = window.Telegram.WebApp;
   tg.ready();
   tg.expand(); // растягиваем на весь экран
+// ===== Telegram user bind =====
+const tgUser = tg?.initDataUnsafe?.user || null;
+const USER_ID = tgUser?.id ? String(tgUser.id) : 'guest';
+
+// UI user
+(function renderUser(){
+  const nameEl = document.getElementById('user-name');
+  const userEl = document.getElementById('user-username');
+  const avEl   = document.getElementById('user-avatar');
+  const avFb   = document.getElementById('user-avatar-fallback');
+
+  if (nameEl) {
+    const full = [tgUser?.first_name, tgUser?.last_name].filter(Boolean).join(' ').trim();
+    nameEl.textContent = full || 'Игрок';
+  }
+
+  if (userEl) {
+    userEl.textContent = tgUser?.username ? ('@' + tgUser.username) : `ID: ${USER_ID}`;
+  }
+
+  // В Telegram WebApp у user иногда есть photo_url (зависит от клиента/прав)
+  const photo = tgUser?.photo_url;
+  if (photo && avEl) {
+    avEl.src = photo;
+    avEl.classList.remove('hidden');
+    if (avFb) avFb.classList.add('hidden');
+  }
+})();
 
   // Navigation
   const screens = {
@@ -789,6 +821,10 @@
     wallet: document.getElementById('tab-wallet'),
     bonuses: document.getElementById('tab-bonuses'),
   };
+  
+  function k(key) {
+  return `vegas_${key}_${USER_ID}`;
+}
 
   // ===== Wallet state (local) =====
   const DEFAULT_BALANCE = 5000;
@@ -798,14 +834,14 @@
   }
 
   function getBalance() {
-    const raw = localStorage.getItem('vegas_balance');
+const raw = localStorage.getItem(k('balance'));
     const val = raw ? parseInt(raw, 10) : DEFAULT_BALANCE;
     return Number.isFinite(val) ? val : DEFAULT_BALANCE;
   }
 
   function setBalance(newValue) {
     const val = Math.max(0, Math.floor(newValue));
-    localStorage.setItem('vegas_balance', String(val));
+localStorage.setItem(k('balance'), String(val));
     renderBalance();
   }
 
@@ -821,7 +857,7 @@
   // промокоды, которые уже использовали (локально)
   function getUsedPromos() {
     try {
-      return JSON.parse(localStorage.getItem('vegas_used_promos') || '[]');
+return JSON.parse(localStorage.getItem(k('used_promos')) || '[]');
     } catch {
       return [];
     }
@@ -830,7 +866,7 @@
   function addUsedPromo(code) {
     const used = getUsedPromos();
     if (!used.includes(code)) used.push(code);
-    localStorage.setItem('vegas_used_promos', JSON.stringify(used));
+localStorage.setItem(k('used_promos'), JSON.stringify(used));
   }
 
   // рисуем баланс при запуске
@@ -1296,7 +1332,7 @@ minesRenderTable();
   // ===== History (local) =====
 function getHistory() {
   try {
-    return JSON.parse(localStorage.getItem('vegas_history') || '[]');
+return JSON.parse(localStorage.getItem(k('history')) || '[]');
   } catch {
     return [];
   }
@@ -1305,7 +1341,7 @@ function getHistory() {
 function addHistory(item) {
   const list = getHistory();
   list.unshift(item); // новое сверху
-  localStorage.setItem('vegas_history', JSON.stringify(list.slice(0, 30))); // максимум 30
+localStorage.setItem(k('history'), JSON.stringify(...));
   renderHistory();
 }
 
