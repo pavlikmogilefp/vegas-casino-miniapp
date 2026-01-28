@@ -305,6 +305,13 @@
     0 0 34px rgba(255,180,0,.18);
 }
 
+@keyframes megaCellWin {
+  0% { transform: scale(1); filter: brightness(1); }
+  35% { transform: scale(1.12); filter: brightness(1.35); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+.mega-win { animation: megaCellWin .45s ease-out; }
+
   </style>
 </head>
 
@@ -613,9 +620,70 @@
 <div id="screen-slots-mega" class="screen space-y-4">
   <div class="text-xl font-bold neon-text mb-2">🔥 Мега-слоты</div>
 
-  <div class="card p-5 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 neon neon-animate">
-    <div class="font-bold text-lg">Скоро</div>
-    <div class="text-sm opacity-80">Добавим линии, множители и эффекты.</div>
+  <div class="card p-5 rounded-2xl bg-black/30 border border-white/10 space-y-4">
+    <div class="flex items-center justify-between">
+      <div>
+        <div class="text-sm text-white/60">Линии</div>
+        <div class="font-extrabold">3×3 · 5 линий</div>
+      </div>
+      <div class="text-right">
+        <div class="text-sm text-white/60">Макс выигрыш</div>
+        <div class="font-extrabold neon-text">до 250x</div>
+      </div>
+    </div>
+
+    <div class="rounded-2xl bg-black/40 border border-white/10 p-4">
+      <div id="mega-grid" class="grid grid-cols-3 gap-3 text-center select-none">
+        <div class="slots-reel"><div class="slots-symbol mega-cell" data-i="0">🍒</div></div>
+        <div class="slots-reel"><div class="slots-symbol mega-cell" data-i="1">🍋</div></div>
+        <div class="slots-reel"><div class="slots-symbol mega-cell" data-i="2">🍇</div></div>
+
+        <div class="slots-reel"><div class="slots-symbol mega-cell" data-i="3">⭐️</div></div>
+        <div class="slots-reel"><div class="slots-symbol mega-cell" data-i="4">7️⃣</div></div>
+        <div class="slots-reel"><div class="slots-symbol mega-cell" data-i="5">💎</div></div>
+
+        <div class="slots-reel"><div class="slots-symbol mega-cell" data-i="6">🍒</div></div>
+        <div class="slots-reel"><div class="slots-symbol mega-cell" data-i="7">🍋</div></div>
+        <div class="slots-reel"><div class="slots-symbol mega-cell" data-i="8">🍇</div></div>
+      </div>
+
+      <div class="mt-3 text-center text-xs text-white/50">
+        Линии: 3 горизонтали + 2 диагонали (суммируются)
+      </div>
+    </div>
+
+    <div class="grid grid-cols-3 gap-3">
+      <button id="mega-minus" class="py-3 rounded-2xl bg-black/40 border border-white/10 text-xl">−</button>
+
+      <div class="text-center">
+        <div class="text-xs text-white/60">Ставка</div>
+        <div id="mega-bet" class="text-2xl font-extrabold">10 ₽</div>
+      </div>
+
+      <button id="mega-plus" class="py-3 rounded-2xl bg-black/40 border border-white/10 text-xl">+</button>
+    </div>
+
+    <div class="grid grid-cols-5 gap-2">
+      <button class="mega-quick py-2 rounded-xl bg-black/40 border border-white/10 text-sm" data-v="10">10</button>
+      <button class="mega-quick py-2 rounded-xl bg-black/40 border border-white/10 text-sm" data-v="50">50</button>
+      <button class="mega-quick py-2 rounded-xl bg-black/40 border border-white/10 text-sm" data-v="100">100</button>
+      <button class="mega-quick py-2 rounded-xl bg-black/40 border border-white/10 text-sm" data-v="250">250</button>
+      <button class="mega-quick py-2 rounded-xl bg-black/40 border border-white/10 text-sm" data-v="MAX">MAX</button>
+    </div>
+
+    <button id="mega-spin" class="w-full py-4 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-700 neon neon-animate font-extrabold active:scale-[0.98] transition">
+      КРУТИТЬ
+    </button>
+
+    <div id="mega-msg" class="text-sm text-white/60">Нажми «КРУТИТЬ».</div>
+  </div>
+
+  <div class="card p-5 rounded-2xl bg-black/30 border border-white/10 space-y-3">
+    <div class="flex items-center justify-between">
+      <div class="font-bold">Таблица выплат</div>
+      <div class="text-xs text-white/50">3 одинаковых по линии</div>
+    </div>
+    <div id="mega-paytable" class="space-y-2"></div>
   </div>
 
   <button id="slots-mega-back" class="w-full py-3 rounded-2xl bg-black/40 border border-white/10">
@@ -1790,6 +1858,172 @@ if (slotsSpin) {
           }
 
           slotsSetSpinning(false);
+          renderBalance();
+        }
+      }, ms);
+    });
+  });
+}
+  
+  // ===== MEGA SLOTS =====
+const MEGA = {
+  symbols: ['🍒','🍋','🍇','⭐️','7️⃣','💎'],
+  pays: { '🍒':3, '🍋':4, '🍇':6, '⭐️':10, '7️⃣':25, '💎':50 }, // до 250x через суммирование линий
+  weights: { '🍒':26, '🍋':22, '🍇':18, '⭐️':12, '7️⃣':7, '💎':3 },
+  lines: [
+    [0,1,2],
+    [3,4,5],
+    [6,7,8],
+    [0,4,8],
+    [2,4,6],
+  ],
+};
+
+let megaBet = 10;
+let megaSpinning = false;
+
+const megaBetEl = document.getElementById('mega-bet');
+const megaMinus = document.getElementById('mega-minus');
+const megaPlus  = document.getElementById('mega-plus');
+const megaSpin  = document.getElementById('mega-spin');
+const megaMsg   = document.getElementById('mega-msg');
+const megaCells = Array.from(document.querySelectorAll('.mega-cell'));
+
+function megaFormatBet(){ if (megaBetEl) megaBetEl.textContent = formatRUB(megaBet); }
+
+function megaWeightedPick(){
+  const entries = Object.entries(MEGA.weights);
+  let total = 0;
+  for (const [,w] of entries) total += w;
+  let r = Math.random() * total;
+  for (const [sym,w] of entries){ r -= w; if (r <= 0) return sym; }
+  return '🍒';
+}
+
+function megaSetSpinning(on){
+  megaSpinning = on;
+  if (!megaSpin) return;
+  megaSpin.disabled = on;
+  megaSpin.style.opacity = on ? '0.7' : '1';
+  megaSpin.textContent = on ? 'КРУТИМ...' : 'КРУТИТЬ';
+}
+
+function megaRenderPaytable(){
+  const box = document.getElementById('mega-paytable');
+  if (!box) return;
+  box.innerHTML = Object.entries(MEGA.pays)
+    .sort((a,b) => b[1]-a[1])
+    .map(([sym,m]) => `
+      <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-white/5 border border-white/10">
+        <div class="flex items-center gap-2">
+          <div class="text-2xl">${sym}</div>
+          <div class="text-sm text-white/70">×3 по линии</div>
+        </div>
+        <div class="font-extrabold neon-text">${m}x</div>
+      </div>
+    `).join('');
+}
+
+function megaClearWin(){ megaCells.forEach(c => c.classList.remove('mega-win')); }
+
+function megaEvaluate(result){
+  let totalPayout = 0;
+  const winCells = new Set();
+
+  for (const line of MEGA.lines){
+    const a = result[line[0]], b = result[line[1]], c = result[line[2]];
+    if (a === b && b === c){
+      const mult = MEGA.pays[a] || 0;
+      totalPayout += Math.floor(megaBet * mult);
+      line.forEach(i => winCells.add(i));
+    }
+  }
+  return { totalPayout, winCells };
+}
+
+megaRenderPaytable();
+megaFormatBet();
+
+if (megaMinus) megaMinus.addEventListener('click', () => {
+  if (megaSpinning) return;
+  megaBet = Math.max(10, megaBet - 10);
+  megaFormatBet();
+});
+
+if (megaPlus) megaPlus.addEventListener('click', () => {
+  if (megaSpinning) return;
+  megaBet = Math.min(100000, megaBet + 10);
+  megaFormatBet();
+});
+
+document.querySelectorAll('.mega-quick').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (megaSpinning) return;
+    const v = btn.getAttribute('data-v');
+    megaBet = (v === 'MAX') ? Math.max(10, getBalance()) : Math.max(10, parseInt(v, 10));
+    megaFormatBet();
+  });
+});
+
+if (megaSpin) {
+  megaSpin.addEventListener('click', () => {
+    if (megaSpinning) return;
+
+    const bal = getBalance();
+    if (megaBet > bal) {
+      if (megaMsg) megaMsg.textContent = 'Недостаточно средств.';
+      if (window.Telegram?.WebApp?.HapticFeedback) Telegram.WebApp.HapticFeedback.notificationOccurred('error');
+      return;
+    }
+
+    megaClearWin();
+    setBalance(bal - megaBet);
+    megaSetSpinning(true);
+    if (megaMsg) megaMsg.textContent = 'Крутим...';
+
+    const result = Array.from({length: 9}, () => megaWeightedPick());
+
+    // по колонкам: [0,3,6], [1,4,7], [2,5,8]
+    const cols = [[0,3,6],[1,4,7],[2,5,8]];
+    const timers = [null,null,null];
+
+    cols.forEach((col, colN) => {
+      timers[colN] = setInterval(() => {
+        col.forEach(i => megaCells[i].textContent = MEGA.symbols[Math.floor(Math.random()*MEGA.symbols.length)]);
+      }, 55);
+    });
+
+    const stops = [700, 980, 1260];
+
+    stops.forEach((ms, colN) => {
+      setTimeout(() => {
+        clearInterval(timers[colN]);
+        cols[colN].forEach(i => megaCells[i].textContent = result[i]);
+
+        if (window.Telegram?.WebApp?.HapticFeedback) Telegram.WebApp.HapticFeedback.impactOccurred('light');
+
+        if (colN === 2) {
+          const { totalPayout, winCells } = megaEvaluate(result);
+
+          if (totalPayout > 0) {
+            setBalance(getBalance() + totalPayout);
+            winCells.forEach(i => megaCells[i].classList.add('mega-win'));
+
+            if (megaMsg) megaMsg.textContent = `✅ WIN! +${totalPayout.toLocaleString('ru-RU')} ₽`;
+            addHistory({ game:'Мега-слоты', bet: megaBet, delta: totalPayout - megaBet, time: new Date().toLocaleString('ru-RU') });
+
+            if (window.Telegram?.WebApp?.HapticFeedback) {
+              Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+              Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
+            }
+          } else {
+            if (megaMsg) megaMsg.textContent = `❌ Мимо: ${result.join(' ')}`;
+            addHistory({ game:'Мега-слоты', bet: megaBet, delta: -megaBet, time: new Date().toLocaleString('ru-RU') });
+
+            if (window.Telegram?.WebApp?.HapticFeedback) Telegram.WebApp.HapticFeedback.notificationOccurred('error');
+          }
+
+          megaSetSpinning(false);
           renderBalance();
         }
       }, ms);
