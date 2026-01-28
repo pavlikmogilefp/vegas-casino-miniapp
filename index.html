@@ -221,6 +221,40 @@
   opacity: 0;
 }
 
+.slots-reel{
+  height: 82px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+
+.slots-symbol{
+  font-size: 46px;
+  line-height: 1;
+  transform: translateY(0);
+  will-change: transform, filter;
+}
+
+@keyframes reelSpin {
+  0%   { transform: translateY(0); filter: blur(0); }
+  20%  { transform: translateY(-140px); filter: blur(1.5px); }
+  60%  { transform: translateY(140px); filter: blur(2px); }
+  100% { transform: translateY(0); filter: blur(0); }
+}
+
+.reel-spin { animation: reelSpin .55s ease-in-out; }
+
+@keyframes slotsWinPop {
+  0% { transform: scale(1); filter: brightness(1); }
+  35% { transform: scale(1.12); filter: brightness(1.35); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+.slots-win { animation: slotsWinPop .45s ease-out; }
+
   </style>
 </head>
 
@@ -254,6 +288,11 @@
 
   <!-- HOME SCREEN -->
 <div id="screen-home" class="screen active space-y-4">
+
+<div id="go-slots" class="card p-4 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 neon neon-animate">
+  <h3 class="font-bold">Слоты</h3>
+  <p class="text-sm opacity-80">До 100x</p>
+</div>
 
   <div id="go-mines" class="card p-5 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 neon neon-animate">
   <h2 class="text-xl font-bold neon-text">Mines</h2>
@@ -426,17 +465,73 @@
 
 <!-- SLOTS SCREEN -->
   <div id="screen-slots" class="screen space-y-4">
-    <div class="text-xl font-bold neon-text mb-2">🎰 Слоты</div>
+  <div class="text-xl font-bold neon-text mb-2">🎰 Слоты</div>
 
-    <div class="card p-5 rounded-2xl bg-gradient-to-r from-cyan-500 to-purple-600 neon neon-animate">
-      <div class="flex items-center justify-between">
-        <div>
-          <div class="font-bold text-lg">Классические</div>
-          <div class="text-sm opacity-80">3 барабана · быстрые спины</div>
-        </div>
-        <div class="text-sm opacity-80">до 100x</div>
+  <div class="card p-5 rounded-2xl bg-black/30 border border-white/10 space-y-4">
+    <div class="flex items-center justify-between">
+      <div>
+        <div class="text-sm text-white/60">Линия</div>
+        <div class="font-extrabold">3 барабана · 1 линия</div>
+      </div>
+      <div class="text-right">
+        <div class="text-sm text-white/60">Макс выигрыш</div>
+        <div class="font-extrabold neon-text">до 25x</div>
       </div>
     </div>
+
+    <!-- reels -->
+    <div class="rounded-2xl bg-black/40 border border-white/10 p-4">
+      <div id="slots-reels" class="grid grid-cols-3 gap-3 text-center select-none">
+        <div class="slots-reel"><div class="slots-symbol" data-i="0">🍒</div></div>
+        <div class="slots-reel"><div class="slots-symbol" data-i="1">🍋</div></div>
+        <div class="slots-reel"><div class="slots-symbol" data-i="2">🍇</div></div>
+      </div>
+      <div class="mt-3 text-center text-xs text-white/50">Совпадение 3 символов по линии</div>
+    </div>
+
+    <!-- bet -->
+    <div class="grid grid-cols-3 gap-3">
+      <button id="slots-minus" class="py-3 rounded-2xl bg-black/40 border border-white/10 text-xl">−</button>
+
+      <div class="text-center">
+        <div class="text-xs text-white/60">Ставка</div>
+        <div id="slots-bet" class="text-2xl font-extrabold">10 ₽</div>
+      </div>
+
+      <button id="slots-plus" class="py-3 rounded-2xl bg-black/40 border border-white/10 text-xl">+</button>
+    </div>
+
+    <div class="grid grid-cols-5 gap-2">
+      <button class="slots-quick py-2 rounded-xl bg-black/40 border border-white/10 text-sm" data-v="10">10</button>
+      <button class="slots-quick py-2 rounded-xl bg-black/40 border border-white/10 text-sm" data-v="50">50</button>
+      <button class="slots-quick py-2 rounded-xl bg-black/40 border border-white/10 text-sm" data-v="100">100</button>
+      <button class="slots-quick py-2 rounded-xl bg-black/40 border border-white/10 text-sm" data-v="250">250</button>
+      <button class="slots-quick py-2 rounded-xl bg-black/40 border border-white/10 text-sm" data-v="MAX">MAX</button>
+    </div>
+
+    <button id="slots-spin" class="w-full py-4 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-700 neon neon-animate font-extrabold active:scale-[0.98] transition">
+      КРУТИТЬ
+    </button>
+
+    <div id="slots-msg" class="text-sm text-white/60">Нажми «КРУТИТЬ».</div>
+  </div>
+
+  <div class="card p-4 rounded-2xl bg-white/5 border border-white/10">
+    <div class="font-bold mb-2">Выплаты (за 3 одинаковых)</div>
+    <div class="text-sm text-white/70 space-y-1">
+      <div>💎 = 25x</div>
+      <div>7️⃣ = 10x</div>
+      <div>⭐️ = 6x</div>
+      <div>🍇 = 4x</div>
+      <div>🍋 = 3x</div>
+      <div>🍒 = 2x</div>
+    </div>
+  </div>
+
+  <button id="slots-back" class="w-full py-3 rounded-2xl bg-black/40 border border-white/10">
+    ← Назад на главную
+  </button>
+</div>
 
     <div class="card p-5 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 neon neon-animate">
       <div class="flex items-center justify-between">
@@ -609,7 +704,7 @@ if (el) el.classList.toggle('active', key === name);
       }
     });
 
-if (name === 'mines') {
+if (name === 'mines' && typeof minesResetUI === 'function') {
   minesResetUI();
 }
 
@@ -695,6 +790,13 @@ const cfBack = document.getElementById('cf-back');
 
 if (goCoinflip) goCoinflip.addEventListener('click', () => setActive('coinflip'));
 if (cfBack) cfBack.addEventListener('click', () => setActive('home'));
+  
+  // ===== Slots navigation =====
+const goSlots = document.getElementById('go-slots');
+const slotsBack = document.getElementById('slots-back');
+
+if (goSlots) goSlots.addEventListener('click', () => setActive('slots'));
+if (slotsBack) slotsBack.addEventListener('click', () => setActive('home'));
   
   // ===== Mines navigation =====
 const goMines = document.getElementById('go-mines');
@@ -1374,6 +1476,164 @@ function spawnWinParticles() {
     // удаляем после
     setTimeout(() => p.remove(), dur + 50);
   }
+}
+  
+  // ===== SLOTS GAME =====
+const SLOTS = {
+  symbols: ['🍒','🍋','🍇','⭐️','7️⃣','💎'],
+  pays: { '🍒':2, '🍋':3, '🍇':4, '⭐️':6, '7️⃣':10, '💎':25 },
+  // веса (чтобы дорогие выпадали реже)
+  weights: { '🍒':30, '🍋':24, '🍇':18, '⭐️':12, '7️⃣':7, '💎':3 }
+};
+
+let slotsBet = 10;
+let slotsSpinning = false;
+
+const slotsBetEl = document.getElementById('slots-bet');
+const slotsMinus = document.getElementById('slots-minus');
+const slotsPlus  = document.getElementById('slots-plus');
+const slotsSpin  = document.getElementById('slots-spin');
+const slotsMsg   = document.getElementById('slots-msg');
+const slotsSymbols = [
+  document.querySelector('.slots-symbol[data-i="0"]'),
+  document.querySelector('.slots-symbol[data-i="1"]'),
+  document.querySelector('.slots-symbol[data-i="2"]'),
+];
+
+function slotsFormatBet(){
+  if (slotsBetEl) slotsBetEl.textContent = formatRUB(slotsBet);
+}
+
+function weightedPick(){
+  const entries = Object.entries(SLOTS.weights);
+  let total = 0;
+  for (const [,w] of entries) total += w;
+  let r = Math.random() * total;
+  for (const [sym,w] of entries){
+    r -= w;
+    if (r <= 0) return sym;
+  }
+  return '🍒';
+}
+
+function slotsSetSpinning(on){
+  slotsSpinning = on;
+  if (!slotsSpin) return;
+  slotsSpin.disabled = on;
+  slotsSpin.style.opacity = on ? '0.7' : '1';
+  slotsSpin.textContent = on ? 'КРУТИМ...' : 'КРУТИТЬ';
+}
+
+function pop(el, cls){
+  if (!el) return;
+  el.classList.remove(cls);
+  void el.offsetWidth;
+  el.classList.add(cls);
+}
+
+if (slotsMinus) slotsMinus.addEventListener('click', () => {
+  if (slotsSpinning) return;
+  slotsBet = Math.max(10, slotsBet - 10);
+  slotsFormatBet();
+});
+
+if (slotsPlus) slotsPlus.addEventListener('click', () => {
+  if (slotsSpinning) return;
+  slotsBet = Math.min(100000, slotsBet + 10);
+  slotsFormatBet();
+});
+
+document.querySelectorAll('.slots-quick').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (slotsSpinning) return;
+    const v = btn.getAttribute('data-v');
+    if (v === 'MAX') slotsBet = Math.max(10, getBalance());
+    else slotsBet = Math.max(10, parseInt(v, 10));
+    slotsFormatBet();
+  });
+});
+
+slotsFormatBet();
+
+if (slotsSpin) {
+  slotsSpin.addEventListener('click', () => {
+    if (slotsSpinning) return;
+
+    const bal = getBalance();
+    if (slotsBet > bal) {
+      if (slotsMsg) slotsMsg.textContent = 'Недостаточно средств.';
+      if (window.Telegram?.WebApp?.HapticFeedback) Telegram.WebApp.HapticFeedback.notificationOccurred('error');
+      return;
+    }
+
+    // списываем ставку
+    setBalance(bal - slotsBet);
+    slotsSetSpinning(true);
+    if (slotsMsg) slotsMsg.textContent = 'Крутим барабаны...';
+
+    // анимация + "мигание" символов
+    const tempTimer = [];
+    for (let i = 0; i < 3; i++){
+      const el = slotsSymbols[i];
+      if (!el) continue;
+      el.classList.remove('reel-spin');
+      void el.offsetWidth;
+      el.classList.add('reel-spin');
+
+      // пока крутится — подменяем символы
+      const t = setInterval(() => { el.textContent = SLOTS.symbols[Math.floor(Math.random()*SLOTS.symbols.length)]; }, 70);
+      tempTimer.push(t);
+    }
+
+    // финальный результат
+    const result = [weightedPick(), weightedPick(), weightedPick()];
+
+    setTimeout(() => {
+      // стоп мигание
+      tempTimer.forEach(t => clearInterval(t));
+
+      // ставим финальные символы
+      for (let i = 0; i < 3; i++){
+        if (slotsSymbols[i]) slotsSymbols[i].textContent = result[i];
+      }
+
+      const win = (result[0] === result[1] && result[1] === result[2]);
+      if (win) {
+        const mult = SLOTS.pays[result[0]] || 0;
+        const payout = Math.floor(slotsBet * mult);
+
+        setBalance(getBalance() + payout);
+
+        for (let i = 0; i < 3; i++) pop(slotsSymbols[i], 'slots-win');
+
+        if (slotsMsg) slotsMsg.textContent = `✅ WIN! ${result[0]} ${result[1]} ${result[2]} · +${payout.toLocaleString('ru-RU')} ₽ (${mult}x)`;
+
+        addHistory({
+          game: 'Слоты',
+          bet: slotsBet,
+          delta: payout - slotsBet,
+          time: new Date().toLocaleString('ru-RU'),
+        });
+
+        if (window.Telegram?.WebApp?.HapticFeedback) {
+          Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+          Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
+        }
+      } else {
+        if (slotsMsg) slotsMsg.textContent = `❌ Мимо: ${result.join(' ')}`;
+        addHistory({
+          game: 'Слоты',
+          bet: slotsBet,
+          delta: -slotsBet,
+          time: new Date().toLocaleString('ru-RU'),
+        });
+        if (window.Telegram?.WebApp?.HapticFeedback) Telegram.WebApp.HapticFeedback.notificationOccurred('error');
+      }
+
+      slotsSetSpinning(false);
+      renderBalance();
+    }, 650);
+  });
 }
   
 </script>
