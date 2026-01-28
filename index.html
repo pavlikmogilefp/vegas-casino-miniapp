@@ -263,25 +263,46 @@
 }
 .reel-stop { animation: reelStopBounce .22s ease-out; }
 
-/* WIN highlight вокруг линии слотов */
+/* WIN highlight вокруг линии слотов (усиленный, всегда виден) */
 @keyframes lineWinGlow {
-  0%   { box-shadow: 0 0 0 rgba(0,0,0,0); transform: scale(1); }
-  35%  { box-shadow: 0 0 22px rgba(80,255,170,.55), 0 0 60px rgba(0,210,255,.25); transform: scale(1.01); }
-  100% { box-shadow: 0 0 0 rgba(0,0,0,0); transform: scale(1); }
+  0%   { opacity: 0; transform: scale(.995); filter: blur(2px); }
+  35%  { opacity: 1; transform: scale(1.01); filter: blur(0px); }
+  100% { opacity: 0; transform: scale(1.02); filter: blur(2px); }
 }
 
-.slots-line {
-  border-radius: 20px;
+.slots-line{
   position: relative;
+  border-radius: 20px;
+  overflow: visible; /* важно */
 }
 
-.slots-line-win {
-  animation: lineWinGlow .55s ease-out;
-  border-color: rgba(80,255,170,.35) !important;
+.slots-line::after{
+  content:"";
+  position:absolute;
+  inset:-4px;               /* чуть снаружи блока */
+  border-radius: 24px;
+  pointer-events:none;
+  opacity:0;
+  z-index: 5;
+
+  /* “неоновая рамка” */
+  border: 2px solid rgba(80,255,170,.35);
+  box-shadow:
+    0 0 14px rgba(80,255,170,.55),
+    0 0 36px rgba(0,210,255,.35),
+    0 0 70px rgba(255,0,255,.18);
 }
 
-.slots-line-lose {
-  border-color: rgba(255,80,120,.25) !important;
+.slots-line-win::after{
+  animation: lineWinGlow .65s ease-out;
+}
+
+.slots-line-lose::after{
+  opacity: 1;
+  border-color: rgba(255,80,120,.35);
+  box-shadow:
+    0 0 14px rgba(255,80,120,.45),
+    0 0 34px rgba(255,180,0,.18);
 }
 
   </style>
@@ -1607,16 +1628,16 @@ function slotsLineFlash(isWin){
   const box = document.getElementById('slots-line');
   if (!box) return;
 
-  // сброс классов + перезапуск анимации
   box.classList.remove('slots-line-win','slots-line-lose');
-  void box.offsetWidth;
 
-  if (isWin) {
-    box.classList.add('slots-line-win');
-  } else {
-    box.classList.add('slots-line-lose');
-    // убрать красную рамку через чуть-чуть
-    setTimeout(() => box.classList.remove('slots-line-lose'), 450);
+  // двойной reflow — на мобильных иногда нужно
+  void box.offsetWidth;
+  void box.offsetHeight;
+
+  box.classList.add(isWin ? 'slots-line-win' : 'slots-line-lose');
+
+  if (!isWin) {
+    setTimeout(() => box.classList.remove('slots-line-lose'), 420);
   }
 }
 
