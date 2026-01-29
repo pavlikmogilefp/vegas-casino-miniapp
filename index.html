@@ -221,102 +221,10 @@
   opacity: 0;
 }
 
-.slots-reel{
-  height: 82px;
-  border-radius: 18px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.10);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
-}
-
-.slots-symbol{
-  font-size: 46px;
-  line-height: 1;
-  transform: translateY(0);
-  will-change: transform, filter;
-}
-
-@keyframes reelSpin {
-  0%   { transform: translateY(0); filter: blur(0); }
-  20%  { transform: translateY(-140px); filter: blur(1.5px); }
-  60%  { transform: translateY(140px); filter: blur(2px); }
-  100% { transform: translateY(0); filter: blur(0); }
-}
-
-.reel-spin { animation: reelSpin .55s ease-in-out; }
-
-@keyframes slotsWinPop {
-  0% { transform: scale(1); filter: brightness(1); }
-  35% { transform: scale(1.12); filter: brightness(1.35); }
-  100% { transform: scale(1); filter: brightness(1); }
-}
-.slots-win { animation: slotsWinPop .45s ease-out; }
-
-/* приятная остановка барабана */
-@keyframes reelStopBounce {
-  0%   { transform: scale(1); filter: blur(0); }
-  35%  { transform: scale(1.08); filter: blur(.2px); }
-  100% { transform: scale(1); filter: blur(0); }
-}
-.reel-stop { animation: reelStopBounce .22s ease-out; }
-
-/* WIN highlight вокруг линии слотов (усиленный, всегда виден) */
-@keyframes lineWinGlow {
-  0%   { opacity: 0; transform: scale(.995); filter: blur(2px); }
-  35%  { opacity: 1; transform: scale(1.01); filter: blur(0px); }
-  100% { opacity: 0; transform: scale(1.02); filter: blur(2px); }
-}
-
-.slots-line{
-  position: relative;
-  border-radius: 20px;
-  overflow: visible; /* важно */
-}
-
-.slots-line::after{
-  content:"";
-  position:absolute;
-  inset:-4px;               /* чуть снаружи блока */
-  border-radius: 24px;
-  pointer-events:none;
-  opacity:0;
-  z-index: 5;
-
-  /* “неоновая рамка” */
-  border: 2px solid rgba(80,255,170,.35);
-  box-shadow:
-    0 0 14px rgba(80,255,170,.55),
-    0 0 36px rgba(0,210,255,.35),
-    0 0 70px rgba(255,0,255,.18);
-}
-
-.slots-line-win::after{
-  animation: lineWinGlow .65s ease-out;
-}
-
-.slots-line-lose::after{
-  opacity: 1;
-  border-color: rgba(255,80,120,.35);
-  box-shadow:
-    0 0 14px rgba(255,80,120,.45),
-    0 0 34px rgba(255,180,0,.18);
-}
-
-@keyframes megaCellWin {
-  0% { transform: scale(1); filter: brightness(1); }
-  35% { transform: scale(1.12); filter: brightness(1.35); }
-  100% { transform: scale(1); filter: brightness(1); }
-}
-.mega-win { animation: megaCellWin .45s ease-out; }
-
   </style>
 </head>
 
 <body class="min-h-screen bg-black text-white">
-<div id="debug" style="font-size:12px; opacity:.7; padding:8px;"></div>
 
 <!-- FIXED HEADER -->
 <div class="fixed top-0 left-0 right-0 z-50 px-4 py-3
@@ -324,15 +232,11 @@
 
   <div class="flex items-center justify-between">
     <div class="flex items-center gap-3">
-<div class="w-10 h-10 rounded-full neon overflow-hidden bg-black/30 border border-white/10 flex items-center justify-center">
-  <img id="user-avatar" class="w-full h-full object-cover hidden" alt="avatar">
-  <div id="user-avatar-fallback" class="text-sm font-extrabold">🎲</div>
-</div>
-
-<div>
-  <div id="user-name" class="text-sm font-bold leading-none">Игрок</div>
-  <div id="user-username" class="text-xs text-purple-300">@username</div>
-</div>
+      <div class="w-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 neon"></div>
+      <div>
+        <div class="text-sm font-bold leading-none">Игрок</div>
+        <div class="text-xs text-purple-300">LVL 1 · 0 XP</div>
+      </div>
     </div>
 
 <div class="px-5 py-2 rounded-xl
@@ -348,20 +252,20 @@
 <!-- SCREENS WRAPPER -->
 <div class="pt-24 px-4 pb-32">
 
- <!-- HOME SCREEN -->
+  <!-- HOME SCREEN -->
 <div id="screen-home" class="screen active space-y-4">
 
-  <div id="go-slots" class="card p-4 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 neon neon-animate">
-    <h3 class="font-bold">Слоты</h3>
-    <p class="text-sm opacity-80">Выбор режима</p>
-  </div>
-
   <div id="go-mines" class="card p-5 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 neon neon-animate">
-    <h2 class="text-xl font-bold neon-text">Mines</h2>
-    <p class="text-sm opacity-80">Найдите алмазы, избегая мин</p>
-  </div>
+  <h2 class="text-xl font-bold neon-text">Mines</h2>
+  <p class="text-sm opacity-80">Найдите алмазы, избегая мин</p>
+</div>
 
   <div class="grid grid-cols-2 gap-4">
+    <div class="card p-4 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 neon neon-animate">
+      <h3 class="font-bold">Слоты</h3>
+      <p class="text-sm opacity-80">До 100x</p>
+    </div>
+
     <div class="card p-4 rounded-2xl bg-gradient-to-br from-pink-500 to-purple-700 neon neon-animate">
       <h3 class="font-bold">Кейсы</h3>
       <p class="text-sm opacity-80">Призы</p>
@@ -520,181 +424,32 @@
   </button>
 </div>
 
-<!-- SLOTS SCREEN (выбор режима) -->
-<div id="screen-slots" class="screen space-y-4">
-  <div class="text-xl font-bold neon-text mb-2">🎰 Слоты</div>
+<!-- SLOTS SCREEN -->
+  <div id="screen-slots" class="screen space-y-4">
+    <div class="text-xl font-bold neon-text mb-2">🎰 Слоты</div>
 
-  <div id="pick-slots-classic"
-       class="card p-5 rounded-2xl bg-gradient-to-r from-cyan-500 to-purple-600 neon neon-animate">
-    <div class="flex items-center justify-between">
-      <div>
-        <div class="font-bold text-lg">Слоты</div>
-        <div class="text-sm opacity-80">3 барабана · 1 линия</div>
+    <div class="card p-5 rounded-2xl bg-gradient-to-r from-cyan-500 to-purple-600 neon neon-animate">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="font-bold text-lg">Классические</div>
+          <div class="text-sm opacity-80">3 барабана · быстрые спины</div>
+        </div>
+        <div class="text-sm opacity-80">до 100x</div>
       </div>
-      <div class="text-sm opacity-80">до 25x</div>
     </div>
+
+    <div class="card p-5 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 neon neon-animate">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="font-bold text-lg">Мега-слоты</div>
+          <div class="text-sm opacity-80">больше линий · выше шанс</div>
+        </div>
+        <div class="text-sm opacity-80">до 250x</div>
+      </div>
+    </div>
+
+    <div class="text-sm text-white/60">Скоро добавим настоящие слоты.</div>
   </div>
-
-  <div id="pick-slots-mega"
-       class="card p-5 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 neon neon-animate">
-    <div class="flex items-center justify-between">
-      <div>
-        <div class="font-bold text-lg">Мега-слоты</div>
-        <div class="text-sm opacity-80">больше линий · выше шанс</div>
-      </div>
-      <div class="text-sm opacity-80">до 250x</div>
-    </div>
-  </div>
-
-  <button id="slots-back" class="w-full py-3 rounded-2xl bg-black/40 border border-white/10">
-    ← Назад на главную
-  </button>
-</div>
-
-<!-- CLASSIC SLOTS GAME SCREEN -->
-<div id="screen-slots-classic" class="screen space-y-4">
-  <div class="text-xl font-bold neon-text mb-2">🎰 Слоты</div>
-
-  <div class="card p-5 rounded-2xl bg-black/30 border border-white/10 space-y-4">
-    <div class="flex items-center justify-between">
-      <div>
-        <div class="text-sm text-white/60">Линия</div>
-        <div class="font-extrabold">3 барабана · 1 линия</div>
-      </div>
-      <div class="text-right">
-        <div class="text-sm text-white/60">Макс выигрыш</div>
-        <div class="font-extrabold neon-text">до 25x</div>
-      </div>
-    </div>
-
-<div id="slots-line" class="slots-line rounded-2xl bg-black/40 border border-white/10 p-4">
-      <div id="slots-reels" class="grid grid-cols-3 gap-3 text-center select-none">
-        <div class="slots-reel"><div class="slots-symbol" data-i="0">🍒</div></div>
-        <div class="slots-reel"><div class="slots-symbol" data-i="1">🍋</div></div>
-        <div class="slots-reel"><div class="slots-symbol" data-i="2">🍇</div></div>
-      </div>
-      <div class="mt-3 text-center text-xs text-white/50">Совпадение 3 символов по линии</div>
-    </div>
-
-    <div class="grid grid-cols-3 gap-3">
-      <button id="slots-minus" class="py-3 rounded-2xl bg-black/40 border border-white/10 text-xl">−</button>
-
-      <div class="text-center">
-        <div class="text-xs text-white/60">Ставка</div>
-        <div id="slots-bet" class="text-2xl font-extrabold">10 ₽</div>
-      </div>
-
-      <button id="slots-plus" class="py-3 rounded-2xl bg-black/40 border border-white/10 text-xl">+</button>
-    </div>
-
-    <div class="grid grid-cols-5 gap-2">
-      <button class="slots-quick py-2 rounded-xl bg-black/40 border border-white/10 text-sm" data-v="10">10</button>
-      <button class="slots-quick py-2 rounded-xl bg-black/40 border border-white/10 text-sm" data-v="50">50</button>
-      <button class="slots-quick py-2 rounded-xl bg-black/40 border border-white/10 text-sm" data-v="100">100</button>
-      <button class="slots-quick py-2 rounded-xl bg-black/40 border border-white/10 text-sm" data-v="250">250</button>
-      <button class="slots-quick py-2 rounded-xl bg-black/40 border border-white/10 text-sm" data-v="MAX">MAX</button>
-    </div>
-
-    <button id="slots-spin" class="w-full py-4 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-700 neon neon-animate font-extrabold active:scale-[0.98] transition">
-      КРУТИТЬ
-    </button>
-
-    <div id="slots-msg" class="text-sm text-white/60">Нажми «КРУТИТЬ».</div>
-  </div>
-
-<!-- PAYTABLE -->
-<div class="card p-5 rounded-2xl bg-black/30 border border-white/10 space-y-3">
-  <div class="flex items-center justify-between">
-    <div class="font-bold">Таблица выплат</div>
-    <div class="text-xs text-white/50">3 одинаковых по линии</div>
-  </div>
-
-  <div id="slots-paytable" class="space-y-2"></div>
-
-  <div class="text-xs text-white/50 pt-2 border-t border-white/10">
-    Выплата = ставка × коэффициент
-  </div>
-</div>
-
-  <button id="slots-classic-back" class="w-full py-3 rounded-2xl bg-black/40 border border-white/10">
-    ← Назад к выбору
-  </button>
-</div>
-
-<!-- MEGA SLOTS SCREEN -->
-<div id="screen-slots-mega" class="screen space-y-4">
-  <div class="text-xl font-bold neon-text mb-2">🔥 Мега-слоты</div>
-
-  <div class="card p-5 rounded-2xl bg-black/30 border border-white/10 space-y-4">
-    <div class="flex items-center justify-between">
-      <div>
-        <div class="text-sm text-white/60">Линии</div>
-        <div class="font-extrabold">3×3 · 5 линий</div>
-      </div>
-      <div class="text-right">
-        <div class="text-sm text-white/60">Макс выигрыш</div>
-        <div class="font-extrabold neon-text">до 250x</div>
-      </div>
-    </div>
-
-    <div class="rounded-2xl bg-black/40 border border-white/10 p-4">
-      <div id="mega-grid" class="grid grid-cols-3 gap-3 text-center select-none">
-        <div class="slots-reel"><div class="slots-symbol mega-cell" data-i="0">🍒</div></div>
-        <div class="slots-reel"><div class="slots-symbol mega-cell" data-i="1">🍋</div></div>
-        <div class="slots-reel"><div class="slots-symbol mega-cell" data-i="2">🍇</div></div>
-
-        <div class="slots-reel"><div class="slots-symbol mega-cell" data-i="3">⭐️</div></div>
-        <div class="slots-reel"><div class="slots-symbol mega-cell" data-i="4">7️⃣</div></div>
-        <div class="slots-reel"><div class="slots-symbol mega-cell" data-i="5">💎</div></div>
-
-        <div class="slots-reel"><div class="slots-symbol mega-cell" data-i="6">🍒</div></div>
-        <div class="slots-reel"><div class="slots-symbol mega-cell" data-i="7">🍋</div></div>
-        <div class="slots-reel"><div class="slots-symbol mega-cell" data-i="8">🍇</div></div>
-      </div>
-
-      <div class="mt-3 text-center text-xs text-white/50">
-        Линии: 3 горизонтали + 2 диагонали (суммируются)
-      </div>
-    </div>
-
-    <div class="grid grid-cols-3 gap-3">
-      <button id="mega-minus" class="py-3 rounded-2xl bg-black/40 border border-white/10 text-xl">−</button>
-
-      <div class="text-center">
-        <div class="text-xs text-white/60">Ставка</div>
-        <div id="mega-bet" class="text-2xl font-extrabold">10 ₽</div>
-      </div>
-
-      <button id="mega-plus" class="py-3 rounded-2xl bg-black/40 border border-white/10 text-xl">+</button>
-    </div>
-
-    <div class="grid grid-cols-5 gap-2">
-      <button class="mega-quick py-2 rounded-xl bg-black/40 border border-white/10 text-sm" data-v="10">10</button>
-      <button class="mega-quick py-2 rounded-xl bg-black/40 border border-white/10 text-sm" data-v="50">50</button>
-      <button class="mega-quick py-2 rounded-xl bg-black/40 border border-white/10 text-sm" data-v="100">100</button>
-      <button class="mega-quick py-2 rounded-xl bg-black/40 border border-white/10 text-sm" data-v="250">250</button>
-      <button class="mega-quick py-2 rounded-xl bg-black/40 border border-white/10 text-sm" data-v="MAX">MAX</button>
-    </div>
-
-    <button id="mega-spin" class="w-full py-4 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-700 neon neon-animate font-extrabold active:scale-[0.98] transition">
-      КРУТИТЬ
-    </button>
-
-    <div id="mega-msg" class="text-sm text-white/60">Нажми «КРУТИТЬ».</div>
-  </div>
-
-  <div class="card p-5 rounded-2xl bg-black/30 border border-white/10 space-y-3">
-    <div class="flex items-center justify-between">
-      <div class="font-bold">Таблица выплат</div>
-      <div class="text-xs text-white/50">3 одинаковых по линии</div>
-    </div>
-    <div id="mega-paytable" class="space-y-2"></div>
-  </div>
-
-  <button id="slots-mega-back" class="w-full py-3 rounded-2xl bg-black/40 border border-white/10">
-    ← Назад к выбору
-  </button>
-</div>
 
   <!-- WALLET SCREEN -->
   <div id="screen-wallet" class="screen space-y-4">
@@ -772,110 +527,14 @@
 </div>
 
 <script>
-const API_BASE = "https://vegas-api.82rf86zxqp.workers.dev";
-
-function tgInitData() {
-  return window.Telegram?.WebApp?.initData || "";
-}
-console.log("initData:", window.Telegram?.WebApp?.initData);
-
-async function api(path, { method="GET", body=null } = {}) {
-  const url = API_BASE + "/" + String(path).replace(/^\/+/, ""); // чистим слэши
-  const res = await fetch(url, {
-    method,
-    headers: {
-      "content-type": "application/json",
-      "x-telegram-init-data": tgInitData(),
-    },
-    body: body ? JSON.stringify(body) : null
-  });
-
-
-  const data = await res.json().catch(()=> ({}));
-  if (!res.ok) throw new Error(data?.error || "API_ERROR");
-  return data;
-}
-
   const tg = window.Telegram.WebApp;
   tg.ready();
-  
-  const dbg = document.getElementById('debug');
-const initData = window.Telegram?.WebApp?.initData || '';
-if (dbg) dbg.textContent = 'initData length: ' + initData.length;
-console.log('initData:', initData);
-  
   tg.expand(); // растягиваем на весь экран
-
-(async () => {
-  try {
-    const { me } = await api("me");
-
-    // имя/юзер
-    const nameEl = document.getElementById("user-name");
-    const userEl = document.getElementById("user-username");
-
-    const full = [me.first_name, me.last_name].filter(Boolean).join(" ").trim();
-    if (nameEl) nameEl.textContent = full || "Игрок";
-    if (userEl) userEl.textContent = me.username ? ("@" + me.username) : ("ID: " + me.user_id);
-
-    // аватар (если пришёл)
-    const avEl = document.getElementById("user-avatar");
-    const avFb = document.getElementById("user-avatar-fallback");
-    if (me.photo_url && avEl) {
-      avEl.src = me.photo_url;
-      avEl.classList.remove("hidden");
-      if (avFb) avFb.classList.add("hidden");
-    }
-
-    // баланс с сервера
-    window.__serverBalance = me.balance;
-    window.__serverBalance = me.balance;
-renderBalanceFromServer();
-
-// синхронизируем локальный баланс под сервер,
-// чтобы остальные игры (слоты/майнс) использовали те же цифры:
-localStorage.setItem(k('balance'), String(me.balance));
-    renderBalanceFromServer();
-  } catch (e) {
-    console.log("ME error:", e);
-  }
-})();
-
-// ===== Telegram user bind =====
-const tgUser = tg?.initDataUnsafe?.user || null;
-const USER_ID = tgUser?.id ? String(tgUser.id) : 'guest';
-
-// UI user
-(function renderUser(){
-  const nameEl = document.getElementById('user-name');
-  const userEl = document.getElementById('user-username');
-  const avEl   = document.getElementById('user-avatar');
-  const avFb   = document.getElementById('user-avatar-fallback');
-
-  if (nameEl) {
-    const full = [tgUser?.first_name, tgUser?.last_name].filter(Boolean).join(' ').trim();
-    nameEl.textContent = full || 'Игрок';
-  }
-
-  if (userEl) {
-    userEl.textContent = tgUser?.username ? ('@' + tgUser.username) : `ID: ${USER_ID}`;
-  }
-
-  // В Telegram WebApp у user иногда есть photo_url (зависит от клиента/прав)
-  const photo = tgUser?.photo_url;
-  if (photo && avEl) {
-    avEl.src = photo;
-    avEl.classList.remove('hidden');
-    if (avFb) avFb.classList.add('hidden');
-  }
-})();
 
   // Navigation
   const screens = {
     home: document.getElementById('screen-home'),
     slots: document.getElementById('screen-slots'),
-    slotsClassic: document.getElementById('screen-slots-classic'),// игра
-  slotsMega: document.getElementById('screen-slots-mega'),      // мега
     wallet: document.getElementById('screen-wallet'),
     bonuses: document.getElementById('screen-bonuses'),
     coinflip: document.getElementById('screen-coinflip'), // ← добавь
@@ -888,10 +547,6 @@ const USER_ID = tgUser?.id ? String(tgUser.id) : 'guest';
     wallet: document.getElementById('tab-wallet'),
     bonuses: document.getElementById('tab-bonuses'),
   };
-  
-  function k(key) {
-  return `vegas_${key}_${USER_ID}`;
-}
 
   // ===== Wallet state (local) =====
   const DEFAULT_BALANCE = 5000;
@@ -901,14 +556,14 @@ const USER_ID = tgUser?.id ? String(tgUser.id) : 'guest';
   }
 
   function getBalance() {
-const raw = localStorage.getItem(k('balance'));
+    const raw = localStorage.getItem('vegas_balance');
     const val = raw ? parseInt(raw, 10) : DEFAULT_BALANCE;
     return Number.isFinite(val) ? val : DEFAULT_BALANCE;
   }
 
   function setBalance(newValue) {
     const val = Math.max(0, Math.floor(newValue));
-localStorage.setItem(k('balance'), String(val));
+    localStorage.setItem('vegas_balance', String(val));
     renderBalance();
   }
 
@@ -921,18 +576,10 @@ localStorage.setItem(k('balance'), String(val));
     if (walletEl) walletEl.textContent = formatRUB(b);
   }
 
-function renderBalanceFromServer() {
-  const b = window.__serverBalance ?? 0;
-  const headerEl = document.getElementById('balance-header');
-  const walletEl = document.getElementById('balance-wallet');
-  if (headerEl) headerEl.textContent = b.toLocaleString('ru-RU') + ' ₽';
-  if (walletEl) walletEl.textContent = b.toLocaleString('ru-RU') + ' ₽';
-}
-
   // промокоды, которые уже использовали (локально)
   function getUsedPromos() {
     try {
-return JSON.parse(localStorage.getItem(k('used_promos')) || '[]');
+      return JSON.parse(localStorage.getItem('vegas_used_promos') || '[]');
     } catch {
       return [];
     }
@@ -941,7 +588,7 @@ return JSON.parse(localStorage.getItem(k('used_promos')) || '[]');
   function addUsedPromo(code) {
     const used = getUsedPromos();
     if (!used.includes(code)) used.push(code);
-localStorage.setItem(k('used_promos'), JSON.stringify(used));
+    localStorage.setItem('vegas_used_promos', JSON.stringify(used));
   }
 
   // рисуем баланс при запуске
@@ -952,17 +599,15 @@ localStorage.setItem(k('used_promos'), JSON.stringify(used));
 if (el) el.classList.toggle('active', key === name);
     });
 
-const tabName = (name === 'slotsClassic' || name === 'slotsMega') ? 'slots' : name;
-
-Object.entries(tabs).forEach(([key, btn]) => {
-  if (key === tabName) {
-    btn.classList.remove('text-gray-500');
-    btn.classList.add('text-cyan-400', 'neon-text');
-  } else {
-    btn.classList.remove('text-cyan-400', 'neon-text');
-    btn.classList.add('text-gray-500');
-  }
-});
+    Object.entries(tabs).forEach(([key, btn]) => {
+      if (key === name) {
+        btn.classList.remove('text-gray-500');
+        btn.classList.add('text-cyan-400', 'neon-text');
+      } else {
+        btn.classList.remove('text-cyan-400', 'neon-text');
+        btn.classList.add('text-gray-500');
+      }
+    });
 
 if (name === 'mines' && typeof minesResetUI === 'function') {
   minesResetUI();
@@ -1050,25 +695,6 @@ const cfBack = document.getElementById('cf-back');
 
 if (goCoinflip) goCoinflip.addEventListener('click', () => setActive('coinflip'));
 if (cfBack) cfBack.addEventListener('click', () => setActive('home'));
-  
-  // ===== Slots navigation =====
-const goSlots = document.getElementById('go-slots');
-const slotsBack = document.getElementById('slots-back');
-
-if (goSlots) goSlots.addEventListener('click', () => setActive('slots'));
-if (slotsBack) slotsBack.addEventListener('click', () => setActive('home'));
-
-// ===== Slots mode picker =====
-const pickClassic = document.getElementById('pick-slots-classic');
-const pickMega = document.getElementById('pick-slots-mega');
-const backClassic = document.getElementById('slots-classic-back');
-const backMega = document.getElementById('slots-mega-back');
-
-if (pickClassic) pickClassic.addEventListener('click', () => setActive('slotsClassic'));
-if (pickMega) pickMega.addEventListener('click', () => setActive('slotsMega'));
-
-if (backClassic) backClassic.addEventListener('click', () => setActive('slots'));
-if (backMega) backMega.addEventListener('click', () => setActive('slots'));
   
   // ===== Mines navigation =====
 const goMines = document.getElementById('go-mines');
@@ -1407,7 +1033,7 @@ minesRenderTable();
   // ===== History (local) =====
 function getHistory() {
   try {
-return JSON.parse(localStorage.getItem(k('history')) || '[]');
+    return JSON.parse(localStorage.getItem('vegas_history') || '[]');
   } catch {
     return [];
   }
@@ -1416,7 +1042,7 @@ return JSON.parse(localStorage.getItem(k('history')) || '[]');
 function addHistory(item) {
   const list = getHistory();
   list.unshift(item); // новое сверху
-localStorage.setItem(k('history'), JSON.stringify(list.slice(0, 30)));
+  localStorage.setItem('vegas_history', JSON.stringify(list.slice(0, 30))); // максимум 30
   renderHistory();
 }
 
@@ -1595,8 +1221,7 @@ function pulseScreen(isWin) {
 
 // сам бросок
 if (cfPlay) {
-  cfPlay.addEventListener('click', async () => {
-    // 1) проверки выбора
+  cfPlay.addEventListener('click', () => {
     if (!cfSide) {
       if (cfMsg) cfMsg.textContent = 'Сначала выбери сторону 🙂';
       if (window.Telegram?.WebApp?.HapticFeedback) {
@@ -1605,107 +1230,99 @@ if (cfPlay) {
       return;
     }
 
-    // 2) UI: старт
-    cfSetPlaying(true);
-    if (cfMsg) cfMsg.textContent = 'Подбрасываем монету...';
-
-    // запускаем твою анимацию (оставляем как было)
-    if (coinImg) {
-      coinImg.classList.remove('coin-anim');
-      void coinImg.offsetWidth;
-      coinImg.classList.add('coin-anim');
+    const bal = getBalance();
+    if (cfBet > bal) {
+      if (cfMsg) cfMsg.textContent = 'Недостаточно средств на балансе.';
+      if (window.Telegram?.WebApp?.HapticFeedback) {
+        Telegram.WebApp.HapticFeedback.notificationOccurred('error');
+      }
+      return;
     }
-    startCoinFlicker();
+
+    // списываем ставку сразу
+    setBalance(bal - cfBet);
+    cfSetPlaying(true);
+
+    if (cfMsg) cfMsg.textContent = 'Подбрасываем монету...';
+    // старт анимации монеты
+    if (coinImg) {
+  coinImg.classList.remove('coin-anim');
+  void coinImg.offsetWidth;
+  coinImg.classList.add('coin-anim');
+}
+startCoinFlicker();
     if (coinSub) coinSub.textContent = 'Крутим...';
 
-    try {
-      // 3) ВЫЗОВ СЕРВЕРА (самое важное)
-      // сервер сам проверит баланс, спишет ставку, определит win/lose, начислит payout
-      const r = await api("play/coinflip", { method:"POST", body:{ bet: cfBet, pick: cfSide }});
-      // r = { result, win, payout, balance }
+    // "случайная" сторона
+    const result = Math.random() < 0.5 ? 'heads' : 'tails';
 
-      // 4) остановка “мигания” и показ реального результата
-      stopCoinFlicker();
+    // небольшая пауза для ощущения анимации
+    setTimeout(() => {
+      const win = (result === cfSide);
+      // показываем выпавшую сторону на монетке
+stopCoinFlicker();
+if (window.Telegram?.WebApp?.HapticFeedback) {
+  Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+}
+if (coinImg) {
+  coinImg.src = (result === 'heads') ? COIN_HEADS_SRC : COIN_TAILS_SRC;
+}
+      if (coinSub) coinSub.textContent = (result === 'heads') ? 'Выпал Орёл' : 'Выпала Решка';
 
-      if (window.Telegram?.WebApp?.HapticFeedback) {
-        Telegram.WebApp.HapticFeedback.impactOccurred('medium');
-      }
+      if (win) {
+        const payout = Math.floor(cfBet * CF_MULT); // округляем вниз
+        setBalance(getBalance() + payout);
 
-      if (coinImg) {
-        coinImg.src = (r.result === 'heads') ? COIN_HEADS_SRC : COIN_TAILS_SRC;
-      }
-      if (coinSub) {
-        coinSub.textContent = (r.result === 'heads') ? 'Выпал Орёл' : 'Выпала Решка';
-      }
-
-      // 5) обновляем баланс на экране (серверный)
-      window.__serverBalance = r.balance;
-      renderBalanceFromServer();
-
-      // 6) показываем win/lose эффекты
-      if (r.win) {
-        if (cfMsg) cfMsg.textContent =
-          `✅ Победа! +${r.payout.toLocaleString('ru-RU')} ₽`;
-
-        showFloat(`+${r.payout.toLocaleString('ru-RU')} ₽`, true);
+        if (cfMsg) cfMsg.textContent = `✅ Победа! Выпало: ${result === 'heads' ? 'Орёл' : 'Решка'} · +${payout} ₽`;
+showFloat(`+${payout.toLocaleString('ru-RU')} ₽`, true);
         pulseScreen(true);
         spawnWinParticles();
-
-        if (coinImg) {
-          coinImg.classList.remove('win-pop');
-          void coinImg.offsetWidth;
-          coinImg.classList.add('win-pop');
-        }
-
-        if (window.Telegram?.WebApp?.HapticFeedback) {
-          Telegram.WebApp.HapticFeedback.notificationOccurred('success');
-          Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
-        }
-
-        // история (пока оставляем локально)
+if (coinImg) {
+  coinImg.classList.remove('win-pop');
+  void coinImg.offsetWidth;
+  coinImg.classList.add('win-pop');
+}
+if (window.Telegram?.WebApp?.HapticFeedback) {
+  Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+  Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
+}
         addHistory({
           game: 'Орёл / Решка',
           bet: cfBet,
-          delta: r.payout - cfBet,
+          delta: payout - cfBet, // чистая прибыль
           time: new Date().toLocaleString('ru-RU'),
         });
 
-      } else {
-        if (cfMsg) cfMsg.textContent = `❌ Проигрыш.`;
-
-        showFloat(`−${cfBet.toLocaleString('ru-RU')} ₽`, false);
-        pulseScreen(false);
-
-        if (coinImg) {
-          coinImg.classList.remove('lose-shake');
-          void coinImg.offsetWidth;
-          coinImg.classList.add('lose-shake');
-        }
-
         if (window.Telegram?.WebApp?.HapticFeedback) {
-          Telegram.WebApp.HapticFeedback.notificationOccurred('error');
+          Telegram.WebApp.HapticFeedback.notificationOccurred('success');
         }
-
-        addHistory({
+      } else {
+        if (cfMsg) cfMsg.textContent = `❌ Проигрыш. Выпало: ${result === 'heads' ? 'Орёл' : 'Решка'}`;
+        showFloat(`−${cfBet.toLocaleString('ru-RU')} ₽`, false);
+       pulseScreen(false);
+if (coinImg) {
+  coinImg.classList.remove('lose-shake');
+  void coinImg.offsetWidth;
+  coinImg.classList.add('lose-shake');
+}
+if (window.Telegram?.WebApp?.HapticFeedback) {
+  Telegram.WebApp.HapticFeedback.notificationOccurred('error');
+}
+         addHistory({
           game: 'Орёл / Решка',
           bet: cfBet,
           delta: -cfBet,
           time: new Date().toLocaleString('ru-RU'),
         });
+
+        if (window.Telegram?.WebApp?.HapticFeedback) {
+          Telegram.WebApp.HapticFeedback.notificationOccurred('error');
+        }
       }
 
-    } catch (e) {
-      // 7) если сервер вернул ошибку (например NO_MONEY)
-      stopCoinFlicker();
-      if (cfMsg) cfMsg.textContent = 'Ошибка: ' + e.message;
-
-      if (window.Telegram?.WebApp?.HapticFeedback) {
-        Telegram.WebApp.HapticFeedback.notificationOccurred('error');
-      }
-    }
-
-    // 8) UI: конец
-    cfSetPlaying(false);
+      cfSetPlaying(false);
+      renderBalance();
+    }, 900);
   });
 }
   
@@ -1757,398 +1374,6 @@ function spawnWinParticles() {
     // удаляем после
     setTimeout(() => p.remove(), dur + 50);
   }
-}
-  
-  // ===== SLOTS GAME =====
-const SLOTS = {
-  symbols: ['🍒','🍋','🍇','⭐️','7️⃣','💎'],
-  pays: { '🍒':2, '🍋':3, '🍇':4, '⭐️':6, '7️⃣':10, '💎':25 },
-  // веса (чтобы дорогие выпадали реже)
-  weights: { '🍒':30, '🍋':24, '🍇':18, '⭐️':12, '7️⃣':7, '💎':3 }
-};
-
-let slotsBet = 10;
-let slotsSpinning = false;
-
-const slotsBetEl = document.getElementById('slots-bet');
-const slotsMinus = document.getElementById('slots-minus');
-const slotsPlus  = document.getElementById('slots-plus');
-const slotsSpin  = document.getElementById('slots-spin');
-const slotsMsg   = document.getElementById('slots-msg');
-const slotsSymbols = [
-  document.querySelector('.slots-symbol[data-i="0"]'),
-  document.querySelector('.slots-symbol[data-i="1"]'),
-  document.querySelector('.slots-symbol[data-i="2"]'),
-];
-
-function slotsFormatBet(){
-  if (slotsBetEl) slotsBetEl.textContent = formatRUB(slotsBet);
-}
-
-function weightedPick(){
-  const entries = Object.entries(SLOTS.weights);
-  let total = 0;
-  for (const [,w] of entries) total += w;
-  let r = Math.random() * total;
-  for (const [sym,w] of entries){
-    r -= w;
-    if (r <= 0) return sym;
-  }
-  return '🍒';
-}
-
-function slotsSetSpinning(on){
-  slotsSpinning = on;
-  if (!slotsSpin) return;
-  slotsSpin.disabled = on;
-  slotsSpin.style.opacity = on ? '0.7' : '1';
-  slotsSpin.textContent = on ? 'КРУТИМ...' : 'КРУТИТЬ';
-}
-
-function pop(el, cls){
-  if (!el) return;
-  el.classList.remove(cls);
-  void el.offsetWidth;
-  el.classList.add(cls);
-}
-
-function slotsLineFlash(isWin){
-  const box = document.getElementById('slots-line');
-  if (!box) return;
-
-  box.classList.remove('slots-line-win','slots-line-lose');
-
-  // двойной reflow — на мобильных иногда нужно
-  void box.offsetWidth;
-  void box.offsetHeight;
-
-  box.classList.add(isWin ? 'slots-line-win' : 'slots-line-lose');
-
-  if (!isWin) {
-    setTimeout(() => box.classList.remove('slots-line-lose'), 420);
-  }
-}
-
-// paytable
-function slotsRenderPaytable(){
-  const box = document.getElementById('slots-paytable');
-  if (!box) return;
-
-  const rows = Object.entries(SLOTS.pays)
-    .sort((a,b) => b[1] - a[1])
-    .map(([sym, mult]) => `
-      <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-white/5 border border-white/10">
-        <div class="flex items-center gap-2">
-          <div class="text-2xl">${sym}</div>
-          <div class="text-sm text-white/70">×3 по линии</div>
-        </div>
-        <div class="font-extrabold neon-text">${mult}x</div>
-      </div>
-    `);
-
-  box.innerHTML = rows.join('');
-}
-
-// рисуем при запуске
-slotsRenderPaytable();
-
-if (slotsMinus) slotsMinus.addEventListener('click', () => {
-  if (slotsSpinning) return;
-  slotsBet = Math.max(10, slotsBet - 10);
-  slotsFormatBet();
-});
-
-if (slotsPlus) slotsPlus.addEventListener('click', () => {
-  if (slotsSpinning) return;
-  slotsBet = Math.min(100000, slotsBet + 10);
-  slotsFormatBet();
-});
-
-document.querySelectorAll('.slots-quick').forEach(btn => {
-  btn.addEventListener('click', () => {
-    if (slotsSpinning) return;
-    const v = btn.getAttribute('data-v');
-    if (v === 'MAX') slotsBet = Math.max(10, getBalance());
-    else slotsBet = Math.max(10, parseInt(v, 10));
-    slotsFormatBet();
-  });
-});
-
-slotsFormatBet();
-
-if (slotsSpin) {
-  slotsSpin.addEventListener('click', () => {
-    if (slotsSpinning) return;
-
-    const bal = getBalance();
-    if (slotsBet > bal) {
-      if (slotsMsg) slotsMsg.textContent = 'Недостаточно средств.';
-      if (window.Telegram?.WebApp?.HapticFeedback) Telegram.WebApp.HapticFeedback.notificationOccurred('error');
-      return;
-    }
-
-    // списываем ставку
-    setBalance(bal - slotsBet);
-    slotsSetSpinning(true);
-    if (slotsMsg) slotsMsg.textContent = 'Крутим барабаны...';
-
-    // мигание символов во время прокрутки (по отдельному таймеру на барабан)
-    const tempTimer = [];
-    for (let i = 0; i < 3; i++){
-      const el = slotsSymbols[i];
-      if (!el) continue;
-
-      el.classList.remove('reel-spin');
-      void el.offsetWidth;
-      el.classList.add('reel-spin');
-
-      const t = setInterval(() => {
-        el.textContent = SLOTS.symbols[Math.floor(Math.random()*SLOTS.symbols.length)];
-      }, 60);
-
-      tempTimer[i] = t;
-    }
-
-    // финальный результат
-    const result = [weightedPick(), weightedPick(), weightedPick()];
-
-    // поочередная остановка
-    const stops = [650, 900, 1150]; // 1-й, 2-й, 3-й
-
-    stops.forEach((ms, idx) => {
-      setTimeout(() => {
-        // остановить мигание только этого барабана
-        if (tempTimer[idx]) clearInterval(tempTimer[idx]);
-
-        // зафиксировать символ
-        if (slotsSymbols[idx]) {
-          slotsSymbols[idx].textContent = result[idx];
-          slotsSymbols[idx].classList.remove('reel-stop');
-          void slotsSymbols[idx].offsetWidth;
-          slotsSymbols[idx].classList.add('reel-stop');
-        }
-
-        // вибрация на каждом стопе
-        if (window.Telegram?.WebApp?.HapticFeedback) {
-          Telegram.WebApp.HapticFeedback.impactOccurred('light');
-        }
-
-        // после 3-го барабана — считаем итог
-        if (idx === 2) {
-          const win = (result[0] === result[1] && result[1] === result[2]);
-
-          if (win) {
-            const mult = SLOTS.pays[result[0]] || 0;
-            const payout = Math.floor(slotsBet * mult);
-
-            setBalance(getBalance() + payout);
-
-            for (let i = 0; i < 3; i++) pop(slotsSymbols[i], 'slots-win');
-            slotsLineFlash(true);
-            
-            if (slotsMsg) slotsMsg.textContent =
-              `✅ WIN! ${result.join(' ')} · +${payout.toLocaleString('ru-RU')} ₽ (${mult}x)`;
-            
-            addHistory({
-              game: 'Слоты',
-              bet: slotsBet,
-              delta: payout - slotsBet,
-              time: new Date().toLocaleString('ru-RU'),
-            });
-
-            if (window.Telegram?.WebApp?.HapticFeedback) {
-              Telegram.WebApp.HapticFeedback.notificationOccurred('success');
-              Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
-            }
-          } else {
-            slotsLineFlash(false);
-            if (slotsMsg) slotsMsg.textContent = `❌ Мимо: ${result.join(' ')}`;
-            
-            
-            addHistory({
-              game: 'Слоты',
-              bet: slotsBet,
-              delta: -slotsBet,
-              time: new Date().toLocaleString('ru-RU'),
-            });
-
-            if (window.Telegram?.WebApp?.HapticFeedback) {
-              Telegram.WebApp.HapticFeedback.notificationOccurred('error');
-            }
-          }
-
-          slotsSetSpinning(false);
-          renderBalance();
-        }
-      }, ms);
-    });
-  });
-}
-  
-  // ===== MEGA SLOTS =====
-const MEGA = {
-  symbols: ['🍒','🍋','🍇','⭐️','7️⃣','💎'],
-  pays: { '🍒':3, '🍋':4, '🍇':6, '⭐️':10, '7️⃣':25, '💎':50 }, // до 250x через суммирование линий
-  weights: { '🍒':26, '🍋':22, '🍇':18, '⭐️':12, '7️⃣':7, '💎':3 },
-  lines: [
-    [0,1,2],
-    [3,4,5],
-    [6,7,8],
-    [0,4,8],
-    [2,4,6],
-  ],
-};
-
-let megaBet = 10;
-let megaSpinning = false;
-
-const megaBetEl = document.getElementById('mega-bet');
-const megaMinus = document.getElementById('mega-minus');
-const megaPlus  = document.getElementById('mega-plus');
-const megaSpin  = document.getElementById('mega-spin');
-const megaMsg   = document.getElementById('mega-msg');
-const megaCells = Array.from(document.querySelectorAll('.mega-cell'));
-
-function megaFormatBet(){ if (megaBetEl) megaBetEl.textContent = formatRUB(megaBet); }
-
-function megaWeightedPick(){
-  const entries = Object.entries(MEGA.weights);
-  let total = 0;
-  for (const [,w] of entries) total += w;
-  let r = Math.random() * total;
-  for (const [sym,w] of entries){ r -= w; if (r <= 0) return sym; }
-  return '🍒';
-}
-
-function megaSetSpinning(on){
-  megaSpinning = on;
-  if (!megaSpin) return;
-  megaSpin.disabled = on;
-  megaSpin.style.opacity = on ? '0.7' : '1';
-  megaSpin.textContent = on ? 'КРУТИМ...' : 'КРУТИТЬ';
-}
-
-function megaRenderPaytable(){
-  const box = document.getElementById('mega-paytable');
-  if (!box) return;
-  box.innerHTML = Object.entries(MEGA.pays)
-    .sort((a,b) => b[1]-a[1])
-    .map(([sym,m]) => `
-      <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-white/5 border border-white/10">
-        <div class="flex items-center gap-2">
-          <div class="text-2xl">${sym}</div>
-          <div class="text-sm text-white/70">×3 по линии</div>
-        </div>
-        <div class="font-extrabold neon-text">${m}x</div>
-      </div>
-    `).join('');
-}
-
-function megaClearWin(){ megaCells.forEach(c => c.classList.remove('mega-win')); }
-
-function megaEvaluate(result){
-  let totalPayout = 0;
-  const winCells = new Set();
-
-  for (const line of MEGA.lines){
-    const a = result[line[0]], b = result[line[1]], c = result[line[2]];
-    if (a === b && b === c){
-      const mult = MEGA.pays[a] || 0;
-      totalPayout += Math.floor(megaBet * mult);
-      line.forEach(i => winCells.add(i));
-    }
-  }
-  return { totalPayout, winCells };
-}
-
-megaRenderPaytable();
-megaFormatBet();
-
-if (megaMinus) megaMinus.addEventListener('click', () => {
-  if (megaSpinning) return;
-  megaBet = Math.max(10, megaBet - 10);
-  megaFormatBet();
-});
-
-if (megaPlus) megaPlus.addEventListener('click', () => {
-  if (megaSpinning) return;
-  megaBet = Math.min(100000, megaBet + 10);
-  megaFormatBet();
-});
-
-document.querySelectorAll('.mega-quick').forEach(btn => {
-  btn.addEventListener('click', () => {
-    if (megaSpinning) return;
-    const v = btn.getAttribute('data-v');
-    megaBet = (v === 'MAX') ? Math.max(10, getBalance()) : Math.max(10, parseInt(v, 10));
-    megaFormatBet();
-  });
-});
-
-if (megaSpin) {
-  megaSpin.addEventListener('click', () => {
-    if (megaSpinning) return;
-
-    const bal = getBalance();
-    if (megaBet > bal) {
-      if (megaMsg) megaMsg.textContent = 'Недостаточно средств.';
-      if (window.Telegram?.WebApp?.HapticFeedback) Telegram.WebApp.HapticFeedback.notificationOccurred('error');
-      return;
-    }
-
-    megaClearWin();
-    setBalance(bal - megaBet);
-    megaSetSpinning(true);
-    if (megaMsg) megaMsg.textContent = 'Крутим...';
-
-    const result = Array.from({length: 9}, () => megaWeightedPick());
-
-    // по колонкам: [0,3,6], [1,4,7], [2,5,8]
-    const cols = [[0,3,6],[1,4,7],[2,5,8]];
-    const timers = [null,null,null];
-
-    cols.forEach((col, colN) => {
-      timers[colN] = setInterval(() => {
-        col.forEach(i => megaCells[i].textContent = MEGA.symbols[Math.floor(Math.random()*MEGA.symbols.length)]);
-      }, 55);
-    });
-
-    const stops = [700, 980, 1260];
-
-    stops.forEach((ms, colN) => {
-      setTimeout(() => {
-        clearInterval(timers[colN]);
-        cols[colN].forEach(i => megaCells[i].textContent = result[i]);
-
-        if (window.Telegram?.WebApp?.HapticFeedback) Telegram.WebApp.HapticFeedback.impactOccurred('light');
-
-        if (colN === 2) {
-          const { totalPayout, winCells } = megaEvaluate(result);
-
-          if (totalPayout > 0) {
-            setBalance(getBalance() + totalPayout);
-            winCells.forEach(i => megaCells[i].classList.add('mega-win'));
-
-            if (megaMsg) megaMsg.textContent = `✅ WIN! +${totalPayout.toLocaleString('ru-RU')} ₽`;
-            addHistory({ game:'Мега-слоты', bet: megaBet, delta: totalPayout - megaBet, time: new Date().toLocaleString('ru-RU') });
-
-            if (window.Telegram?.WebApp?.HapticFeedback) {
-              Telegram.WebApp.HapticFeedback.notificationOccurred('success');
-              Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
-            }
-          } else {
-            if (megaMsg) megaMsg.textContent = `❌ Мимо: ${result.join(' ')}`;
-            addHistory({ game:'Мега-слоты', bet: megaBet, delta: -megaBet, time: new Date().toLocaleString('ru-RU') });
-
-            if (window.Telegram?.WebApp?.HapticFeedback) Telegram.WebApp.HapticFeedback.notificationOccurred('error');
-          }
-
-          megaSetSpinning(false);
-          renderBalance();
-        }
-      }, ms);
-    });
-  });
 }
   
 </script>
