@@ -771,14 +771,18 @@
 </div>
 
 <script>
-const API_BASE = "https://vegas-api.82rf86zxqp.workers.dev/"; // сюда вставь ссылку worker
+const API_BASE = "https://vegas-api.82rf86zxqp.workers.dev";
 
 function tgInitData() {
   return window.Telegram?.WebApp?.initData || "";
 }
 
 async function api(path, { method="GET", body=null } = {}) {
-  const res = await fetch(API_BASE + path, {
+  const base = API_BASE.replace(/\/+$/,'');      // убираем / в конце
+  const p = String(path).replace(/^\/+/,'');     // убираем / в начале
+  const url = `${base}/${p}`;
+
+  const res = await fetch(url, {
     method,
     headers: {
       "content-type": "application/json",
@@ -819,6 +823,12 @@ async function api(path, { method="GET", body=null } = {}) {
 
     // баланс с сервера
     window.__serverBalance = me.balance;
+    window.__serverBalance = me.balance;
+renderBalanceFromServer();
+
+// синхронизируем локальный баланс под сервер,
+// чтобы остальные игры (слоты/майнс) использовали те же цифры:
+localStorage.setItem(k('balance'), String(me.balance));
     renderBalanceFromServer();
   } catch (e) {
     console.log("ME error:", e);
