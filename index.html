@@ -771,9 +771,60 @@
 </div>
 
 <script>
+const API_BASE = "https://vegas-api.82rf86zxqp.workers.dev/"; // сюда вставь ссылку worker
+
+function tgInitData() {
+  return window.Telegram?.WebApp?.initData || "";
+}
+
+async function api(path, { method="GET", body=null } = {}) {
+  const res = await fetch(API_BASE + path, {
+    method,
+    headers: {
+      "content-type": "application/json",
+      "x-telegram-init-data": tgInitData(),
+    },
+    body: body ? JSON.stringify(body) : null
+  });
+
+  const data = await res.json().catch(()=> ({}));
+  if (!res.ok) throw new Error(data?.error || "API_ERROR");
+  return data;
+}
+
   const tg = window.Telegram.WebApp;
   tg.ready();
   tg.expand(); // растягиваем на весь экран
+
+(async () => {
+  try {
+    const { me } = await api("/me");
+
+    // имя/юзер
+    const nameEl = document.getElementById("user-name");
+    const userEl = document.getElementById("user-username");
+
+    const full = [me.first_name, me.last_name].filter(Boolean).join(" ").trim();
+    if (nameEl) nameEl.textContent = full || "Игрок";
+    if (userEl) userEl.textContent = me.username ? ("@" + me.username) : ("ID: " + me.user_id);
+
+    // аватар (если пришёл)
+    const avEl = document.getElementById("user-avatar");
+    const avFb = document.getElementById("user-avatar-fallback");
+    if (me.photo_url && avEl) {
+      avEl.src = me.photo_url;
+      avEl.classList.remove("hidden");
+      if (avFb) avFb.classList.add("hidden");
+    }
+
+    // баланс с сервера
+    window.__serverBalance = me.balance;
+    renderBalanceFromServer();
+  } catch (e) {
+    console.log("ME error:", e);
+  }
+})();
+
 // ===== Telegram user bind =====
 const tgUser = tg?.initDataUnsafe?.user || null;
 const USER_ID = tgUser?.id ? String(tgUser.id) : 'guest';
@@ -853,6 +904,14 @@ localStorage.setItem(k('balance'), String(val));
     if (headerEl) headerEl.textContent = formatRUB(b);
     if (walletEl) walletEl.textContent = formatRUB(b);
   }
+
+function renderBalanceFromServer() {
+  const b = window.__serverBalance ?? 0;
+  const headerEl = document.getElementById('balance-header');
+  const walletEl = document.getElementById('balance-wallet');
+  if (headerEl) headerEl.textContent = b.toLocaleString('ru-RU') + ' ₽';
+  if (walletEl) walletEl.textContent = b.toLocaleString('ru-RU') + ' ₽';
+}
 
   // промокоды, которые уже использовали (локально)
   function getUsedPromos() {
@@ -1520,7 +1579,8 @@ function pulseScreen(isWin) {
 
 // сам бросок
 if (cfPlay) {
-  cfPlay.addEventListener('click', () => {
+  cfPlay.addEventListener('click', async () => {
+    // 1) проверки выбора
     if (!cfSide) {
       if (cfMsg) cfMsg.textContent = 'Сначала выбери сторону 🙂';
       if (window.Telegram?.WebApp?.HapticFeedback) {
@@ -1529,99 +1589,110 @@ if (cfPlay) {
       return;
     }
 
-    const bal = getBalance();
-    if (cfBet > bal) {
-      if (cfMsg) cfMsg.textContent = 'Недостаточно средств на балансе.';
-      if (window.Telegram?.WebApp?.HapticFeedback) {
-        Telegram.WebApp.HapticFeedback.notificationOccurred('error');
-      }
-      return;
-    }
-
-    // списываем ставку сразу
-    setBalance(bal - cfBet);
+    // 2) UI: старт
     cfSetPlaying(true);
-
     if (cfMsg) cfMsg.textContent = 'Подбрасываем монету...';
-    // старт анимации монеты
+
+    // запускаем твою анимацию (оставляем как было)
     if (coinImg) {
-  coinImg.classList.remove('coin-anim');
-  void coinImg.offsetWidth;
-  coinImg.classList.add('coin-anim');
-}
-startCoinFlicker();
+      coinImg.classList.remove('coin-anim');
+      void coinImg.offsetWidth;
+      coinImg.classList.add('coin-anim');
+    }
+    startCoinFlicker();
     if (coinSub) coinSub.textContent = 'Крутим...';
 
-    // "случайная" сторона
-    const result = Math.random() < 0.5 ? 'heads' : 'tails';
+    try {
+      // 3) ВЫЗОВ СЕРВЕРА (самое важное)
+      // сервер сам проверит баланс, спишет ставку, определит win/lose, начислит payout
+      const r = await api("/play/coinflip", {
+        method: "POST",
+        body: { bet: cfBet, pick: cfSide }
+      });
+      // r = { result, win, payout, balance }
 
-    // небольшая пауза для ощущения анимации
-    setTimeout(() => {
-      const win = (result === cfSide);
-      // показываем выпавшую сторону на монетке
-stopCoinFlicker();
-if (window.Telegram?.WebApp?.HapticFeedback) {
-  Telegram.WebApp.HapticFeedback.impactOccurred('medium');
-}
-if (coinImg) {
-  coinImg.src = (result === 'heads') ? COIN_HEADS_SRC : COIN_TAILS_SRC;
-}
-      if (coinSub) coinSub.textContent = (result === 'heads') ? 'Выпал Орёл' : 'Выпала Решка';
+      // 4) остановка “мигания” и показ реального результата
+      stopCoinFlicker();
 
-      if (win) {
-        const payout = Math.floor(cfBet * CF_MULT); // округляем вниз
-        setBalance(getBalance() + payout);
+      if (window.Telegram?.WebApp?.HapticFeedback) {
+        Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+      }
 
-        if (cfMsg) cfMsg.textContent = `✅ Победа! Выпало: ${result === 'heads' ? 'Орёл' : 'Решка'} · +${payout} ₽`;
-showFloat(`+${payout.toLocaleString('ru-RU')} ₽`, true);
+      if (coinImg) {
+        coinImg.src = (r.result === 'heads') ? COIN_HEADS_SRC : COIN_TAILS_SRC;
+      }
+      if (coinSub) {
+        coinSub.textContent = (r.result === 'heads') ? 'Выпал Орёл' : 'Выпала Решка';
+      }
+
+      // 5) обновляем баланс на экране (серверный)
+      window.__serverBalance = r.balance;
+      renderBalanceFromServer();
+
+      // 6) показываем win/lose эффекты
+      if (r.win) {
+        if (cfMsg) cfMsg.textContent =
+          `✅ Победа! +${r.payout.toLocaleString('ru-RU')} ₽`;
+
+        showFloat(`+${r.payout.toLocaleString('ru-RU')} ₽`, true);
         pulseScreen(true);
         spawnWinParticles();
-if (coinImg) {
-  coinImg.classList.remove('win-pop');
-  void coinImg.offsetWidth;
-  coinImg.classList.add('win-pop');
-}
-if (window.Telegram?.WebApp?.HapticFeedback) {
-  Telegram.WebApp.HapticFeedback.notificationOccurred('success');
-  Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
-}
-        addHistory({
-          game: 'Орёл / Решка',
-          bet: cfBet,
-          delta: payout - cfBet, // чистая прибыль
-          time: new Date().toLocaleString('ru-RU'),
-        });
+
+        if (coinImg) {
+          coinImg.classList.remove('win-pop');
+          void coinImg.offsetWidth;
+          coinImg.classList.add('win-pop');
+        }
 
         if (window.Telegram?.WebApp?.HapticFeedback) {
           Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+          Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
         }
+
+        // история (пока оставляем локально)
+        addHistory({
+          game: 'Орёл / Решка',
+          bet: cfBet,
+          delta: r.payout - cfBet,
+          time: new Date().toLocaleString('ru-RU'),
+        });
+
       } else {
-        if (cfMsg) cfMsg.textContent = `❌ Проигрыш. Выпало: ${result === 'heads' ? 'Орёл' : 'Решка'}`;
+        if (cfMsg) cfMsg.textContent = `❌ Проигрыш.`;
+
         showFloat(`−${cfBet.toLocaleString('ru-RU')} ₽`, false);
-       pulseScreen(false);
-if (coinImg) {
-  coinImg.classList.remove('lose-shake');
-  void coinImg.offsetWidth;
-  coinImg.classList.add('lose-shake');
-}
-if (window.Telegram?.WebApp?.HapticFeedback) {
-  Telegram.WebApp.HapticFeedback.notificationOccurred('error');
-}
-         addHistory({
+        pulseScreen(false);
+
+        if (coinImg) {
+          coinImg.classList.remove('lose-shake');
+          void coinImg.offsetWidth;
+          coinImg.classList.add('lose-shake');
+        }
+
+        if (window.Telegram?.WebApp?.HapticFeedback) {
+          Telegram.WebApp.HapticFeedback.notificationOccurred('error');
+        }
+
+        addHistory({
           game: 'Орёл / Решка',
           bet: cfBet,
           delta: -cfBet,
           time: new Date().toLocaleString('ru-RU'),
         });
-
-        if (window.Telegram?.WebApp?.HapticFeedback) {
-          Telegram.WebApp.HapticFeedback.notificationOccurred('error');
-        }
       }
 
-      cfSetPlaying(false);
-      renderBalance();
-    }, 900);
+    } catch (e) {
+      // 7) если сервер вернул ошибку (например NO_MONEY)
+      stopCoinFlicker();
+      if (cfMsg) cfMsg.textContent = 'Ошибка: ' + e.message;
+
+      if (window.Telegram?.WebApp?.HapticFeedback) {
+        Telegram.WebApp.HapticFeedback.notificationOccurred('error');
+      }
+    }
+
+    // 8) UI: конец
+    cfSetPlaying(false);
   });
 }
   
