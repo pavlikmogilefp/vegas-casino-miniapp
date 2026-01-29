@@ -316,6 +316,7 @@
 </head>
 
 <body class="min-h-screen bg-black text-white">
+<div id="debug" style="font-size:12px; opacity:.7; padding:8px;"></div>
 
 <!-- FIXED HEADER -->
 <div class="fixed top-0 left-0 right-0 z-50 px-4 py-3
@@ -778,10 +779,7 @@ function tgInitData() {
 }
 
 async function api(path, { method="GET", body=null } = {}) {
-  const base = API_BASE.replace(/\/+$/,'');      // убираем / в конце
-  const p = String(path).replace(/^\/+/,'');     // убираем / в начале
-  const url = `${base}/${p}`;
-
+  const url = API_BASE + "/" + String(path).replace(/^\/+/, ""); // чистим слэши
   const res = await fetch(url, {
     method,
     headers: {
@@ -791,6 +789,7 @@ async function api(path, { method="GET", body=null } = {}) {
     body: body ? JSON.stringify(body) : null
   });
 
+
   const data = await res.json().catch(()=> ({}));
   if (!res.ok) throw new Error(data?.error || "API_ERROR");
   return data;
@@ -798,11 +797,17 @@ async function api(path, { method="GET", body=null } = {}) {
 
   const tg = window.Telegram.WebApp;
   tg.ready();
+  
+  const dbg = document.getElementById('debug');
+const initData = window.Telegram?.WebApp?.initData || '';
+if (dbg) dbg.textContent = 'initData length: ' + initData.length;
+console.log('initData:', initData);
+  
   tg.expand(); // растягиваем на весь экран
 
 (async () => {
   try {
-    const { me } = await api("/me");
+    const { me } = await api("me");
 
     // имя/юзер
     const nameEl = document.getElementById("user-name");
@@ -1615,10 +1620,7 @@ if (cfPlay) {
     try {
       // 3) ВЫЗОВ СЕРВЕРА (самое важное)
       // сервер сам проверит баланс, спишет ставку, определит win/lose, начислит payout
-      const r = await api("/play/coinflip", {
-        method: "POST",
-        body: { bet: cfBet, pick: cfSide }
-      });
+      const r = await api("play/coinflip", { method:"POST", body:{ bet: cfBet, pick: cfSide }});
       // r = { result, win, payout, balance }
 
       // 4) остановка “мигания” и показ реального результата
