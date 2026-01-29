@@ -777,6 +777,7 @@ const API_BASE = "https://vegas-api.82rf86zxqp.workers.dev";
 function tgInitData() {
   return window.Telegram?.WebApp?.initData || "";
 }
+console.log("initData:", window.Telegram?.WebApp?.initData);
 
 async function api(path, { method="GET", body=null } = {}) {
   const url = API_BASE + "/" + String(path).replace(/^\/+/, ""); // чистим слэши
